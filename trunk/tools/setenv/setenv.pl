@@ -7,7 +7,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.6 2004-06-08 14:36:40 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.7 2004-06-28 20:37:42 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -73,7 +73,7 @@ my $opt_category = undef;
 # Parse the command line
 # ----------------------------------------------------------
 
-parseOptions($0);
+parseCmdLine($0);
 
 # ----------------------------------------------------------
 # Run
@@ -266,10 +266,10 @@ sub GenEnvSettings
 }
 
 #############################################################################
-## parseOptions
+## parseCmdLine
 #############################################################################
 
-sub parseOptions
+sub parseCmdLine
 {
   my ($command) = @_;
   
