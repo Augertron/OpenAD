@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.1 2004-05-20 02:29:09 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.2 2004-05-20 02:35:43 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -210,9 +210,9 @@ sub RunGetOpenAD
 {
   #my($mode) = @_;
 
-  my @CVSReposHiper = ('Open64', 'OpenADFortTk', 'OpenAnalysis', 'xercesc') 
-  my $EnvHiper = "CVS_RSH=" . $opt_cvsRice->{rsh};
-  my $OptHiper = "-d " . $opt_cvsRice->{root};
+  my @CVSReposHiper = ('Open64', 'OpenADFortTk', 'OpenAnalysis', 'xercesc');
+  my $EnvHiper = 'CVS_RSH=' . $opt_cvsRice->{rsh};
+  my $OptHiper = '-d ' . $opt_cvsRice->{root};
   
   #my @BKReposANL = ('/home/utke/bk_tmpRep/xaifBooster_CFR/xaifBooster', 
   #		    '/home/utke/BK_Reps/CODE/angel');
@@ -224,6 +224,9 @@ sub RunGetOpenAD
   # --------------------------------------------------------
   my $cmdDescVecRef = [ ];
   
+  # FIXME: generate commands to update OpenAD directories and files
+  # (cannot just run cvs update)
+
   # Hipersoft repositories
   for my $repo (@CVSReposHiper) {
     my $desc = { %RunCmds::CmdDesc, };
