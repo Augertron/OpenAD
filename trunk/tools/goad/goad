@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.3 2004-05-20 15:11:13 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.4 2004-05-20 15:36:04 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -222,11 +222,11 @@ sub RunGetOpenAD
   my @CVSSelf = ('bin', 'doc', 'test', 'tools', 'README.*', 'xercesc');
   
   my @CVSReposRice = ('Open64', 'OpenADFortTk', 'OpenAnalysis', 'xercesc');
-  my $OptRice = '-z5 -s CVS_RSH=' . $opt_cvsRice->{rsh} . 
-      ' -d ' . $opt_cvsRice->{root};
+  my $EnvRice = 'CVS_RSH=' . $opt_cvsRice->{rsh};
+  my $OptRice = '-z5 -d ' . $opt_cvsRice->{root};
   
-  my $OptSF = '-z5 -s CVS_RSH=' . $opt_cvsSF->{rsh} . 
-      ' -d ' . $opt_cvsSF->{root};
+  my $EnvSF = 'CVS_RSH=' . $opt_cvsSF->{rsh};
+  my $OptSF = '-z5 -d ' . $opt_cvsSF->{root};
   
   #my @BKReposANL = ('/home/utke/bk_tmpRep/xaifBooster_CFR/xaifBooster', 
   #		    '/home/utke/BK_Reps/CODE/angel');
@@ -247,12 +247,12 @@ sub RunGetOpenAD
     $desc = { %RunCmds::CmdDesc, };
     if (-d "./${repo}") {
       if (!$opt_skipupdate) {
-	$desc->{cmd} = "cvs ${OptRice} update ${repo}";
+	$desc->{cmd} = "${EnvRice} cvs ${OptRice} update ${repo}";
 	$desc->{desc} = "cvs update ${repo} (Rice)";
       }
     }
     else {
-      $desc->{cmd} = "cvs ${OptRice} co ${repo}";
+      $desc->{cmd} = "${EnvRice} cvs ${OptRice} co ${repo}";
       $desc->{desc} = "cvs co ${repo} (Rice)";
     }
     push(@{$cmdDescVecRef}, $desc) if (defined($desc->{cmd}));
@@ -294,7 +294,7 @@ sub RunGetOpenAD
     # FIXME: skip this for now
   }
   else {
-    $desc->{cmd} = "cvs ${OptSF}/boost login ; cvs ${OptSF}/boost co boost";
+    $desc->{cmd} = "${EnvSF} cvs ${OptSF}/boost login ; cvs ${OptSF}/boost co boost";
     $desc->{desc} = 'cvs co boost (sourceforge.net)' . "\n" .
 	'  ---> Press <Enter> at anonymous CVS password prompt.';
   }
