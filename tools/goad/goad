@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.10 2004-06-01 02:32:22 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.11 2004-06-01 14:04:09 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -289,7 +289,7 @@ sub RunGetOpenAD
   my $verb = $opt_verbose - $mode_verb_terse; # normal goes to 1
   
   my $dir = cwd();
-  my $stamp = strftime("%Y%m%d-%H:%M:%S", localtime(time()));
+  my $stamp = strftime("%Y_%m_%d-%H_%M_%S", localtime(time()));
   my $logfnm = "${dir}/goad.${stamp}.log~";
   truncate($logfnm, 0);
   
