@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.9 2004-09-28 20:19:33 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.10 2004-09-30 15:31:53 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -478,10 +478,12 @@ sub undefEnvVarErr
     my ($pathnmsRef) = @_;
     for my $path (@{$pathnmsRef}) {
       my ($vol,$dir,$file) = File::Spec->splitpath($path);
-      if (${PLATFORM} eq "i686-Cygwin") {
-	link($path, "./$file") or die "Error: could not link $path";
-      } else {
-	symlink($path, "./$file") or die "Error: could not link $path";
+      if (! -e $file) {
+	if (${PLATFORM} eq "i686-Cygwin") {
+	  link($path, "./$file") or die "Error: could not link $path";
+	} else {
+	  symlink($path, "./$file") or die "Error: could not link $path";
+	}
       }
     }
   }
