@@ -1,5 +1,5 @@
 # -*-Mode: perl;-*-
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.8 2004-09-28 22:08:10 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.9 2004-09-30 21:15:10 eraxxon Exp $
 
 #############################################################################
 ##
@@ -32,11 +32,6 @@ use RepositoryTools qw(%RepositoryDesc %CVSReposDesc %BKReposDesc);
 use base qw(Exporter);
 use vars qw(@EXPORT @EXPORT_OK);
 #@EXPORT_OK = qw();
-
-# Why won't Perl preserve these initializations from the module!!??
-$RepositoryTools::CVSReposDesc{iscvs} = 1;
-$RepositoryTools::BKReposDesc{isbk} = 1;
-
 
 #############################################################################
 ## Subpackage configuration information
