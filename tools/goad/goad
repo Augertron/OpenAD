@@ -1,0 +1,297 @@
+#! /usr/bin/env perl
+# -*-Mode: perl;-*-
+
+# make sure we execute perl
+#eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+#& eval 'exec perl -S $0 $argv:q'
+#if 0;
+
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.1 2004-05-20 02:29:09 eraxxon Exp $
+## * BeginCopyright *********************************************************
+## 
+## 
+## *********************************************************** EndCopyright *
+
+#############################################################################
+##
+## $Source: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v $ 
+##
+##   Nathan Tallent.
+##
+#############################################################################
+
+use strict;
+use warnings;
+
+use FindBin qw($Script $RealBin);
+use File::Spec;
+use IO::File;
+use Getopt::Long;
+
+use lib "$RealBin/../libperl";
+use RunCmds qw(%CmdDesc RunCmds RunCmd);
+
+
+STDOUT->autoflush(1); 
+
+my $the_program = $Script;
+my $the_usage = 
+"usage: ${the_program} [options]
+
+Requires:
+  * cvs, bitkeeper, (perl)
+
+Options:
+  -v [lvl], --verbose [lvl]
+    Set verbosity level.  If no level is supplied, defaults to 2.
+    0: Play the silent game
+    1: Pouty (terse message)
+    2: Sanguine (standard activity messages) [Default]
+    3: Chatty
+    4: Talk your ear off
+  -h, --help         print help
+
+  -useranl=<ANL user name> [temporary]
+
+Development options:
+  -i, --interactive  
+    prompt user to authorize each step in pipeline
+\n";
+
+my @the_options = ('verbose|v:i',
+		   'help|h', 
+		   'interactive|i',
+
+		   'useranl=s',
+		   );
+
+#############################################################################
+
+my ($mode_verb_silent,
+    $mode_verb_terse,
+    $mode_verb_normal,
+    $mode_verb_chatty,
+    $mode_verb_teengirls) =
+    (0, 1, 2, 3, 4);
+
+# CmdDesc: a pipeline command and associated metadata
+my %CVSDesc = (rsh          => undef,
+	       root         => undef, );
+my %BKDesc = (user          => undef, );
+
+#############################################################################
+## main/driver
+#############################################################################
+
+
+my $opt_verbose = undef;
+my $opt_interactive = undef;
+#my $opt_debug = 0;
+
+my $opt_userArgonne = undef;
+
+# references to a 'CVSDesc' and 'BKDesc'
+my ($opt_cvsRice, $opt_cvsANL, $opt_bkANL) = (undef, undef, undef);
+
+# ----------------------------------------------------------
+# Parse the command line
+# ----------------------------------------------------------
+
+parseOptions($0);
+
+# ----------------------------------------------------------
+# Run
+# ----------------------------------------------------------
+
+RunGetOpenAD();
+
+
+#############################################################################
+## parseOptions
+#############################################################################
+
+sub parseOptions
+{
+  my ($command) = @_;
+  
+  # Get optional arguments
+  my %opts = ();
+  my $ret = GetOptions(\%opts, @the_options);
+  if (!$ret) { 
+    printErrorAndExit(); 
+  }
+  
+  # Get optional arguments: verbose, help
+  $opt_verbose = $mode_verb_normal; # default
+  if (defined($opts{'verbose'})) {
+    $opt_verbose = $opts{'verbose'};
+  } 
+  if (defined($opts{'help'})) {
+    printUsageAndExit($the_program);
+  } 
+  
+  # Get optional arguments: interactive
+  if (defined($opts{'interactive'})) {
+    $opt_interactive = 1;
+  } 
+
+  if (defined($opts{'useranl'})) {
+    $opt_userArgonne = $opts{'useranl'};
+  } 
+
+  
+  # Get required arguments
+  my $numArgs = scalar(@ARGV);
+  if ($numArgs != 0) { 
+    printErrorAndExit("Invalid number of required arguments!\n"); 
+  }
+  
+  
+  # Set CVS stuff
+  my $user = $ENV{'USER'};
+  if (defined($opt_userArgonne)) {
+    $user = $opt_userArgonne;
+  }
+  
+  
+  $opt_cvsRice         = { %CVSDesc, }; 
+  $opt_cvsRice->{rsh}  = "$RealBin/../cvs/hipersoft-anonssh";
+  $opt_cvsRice->{root} = 
+      ':ext:anoncvs@koolkat2.cs.rice.edu:/Volumes/cvsrep/developer';
+  
+  $opt_cvsANL         = { %CVSDesc, }; 
+  $opt_cvsANL->{rsh}  = 'ssh';
+  $opt_cvsANL->{root} = ':ext:' . $user . 
+      '@terra.mcs.anl.gov:/homes/utke/***';
+
+  $opt_bkANL         = { %BKDesc, }; 
+  $opt_bkANL->{user} = ':ext:' . $user . '@terra.mcs.anl.gov';
+  
+      ':/home/utke/BK_Reps/CODE/angel';
+
+}
+
+
+# printUsageAndExit
+sub printUsageAndExit 
+{
+  my ($command) = @_; # not used now
+  print STDOUT ${the_usage};
+  exit(-1);
+}
+
+# printErrorAndExit
+sub printErrorAndExit 
+{
+  my ($msg) = @_;
+  if (defined($msg)) {
+    print STDOUT "${msg}";
+  }
+  print STDOUT "Try `${the_program} --help' for more information.\n";
+  exit(-1);
+}
+
+# printUsageAndExit
+sub undefEnvVarErr 
+{
+  my ($var) = @_;
+  print STDOUT "Undefined environment variable '${var}'\n";
+  exit(-1);
+}
+
+
+#############################################################################
+## Subroutines
+#############################################################################
+
+# RunGetOpenAD
+
+sub RunGetOpenAD 
+{
+  #my($mode) = @_;
+
+  my @CVSReposHiper = ('Open64', 'OpenADFortTk', 'OpenAnalysis', 'xercesc') 
+  my $EnvHiper = "CVS_RSH=" . $opt_cvsRice->{rsh};
+  my $OptHiper = "-d " . $opt_cvsRice->{root};
+  
+  #my @BKReposANL = ('/home/utke/bk_tmpRep/xaifBooster_CFR/xaifBooster', 
+  #		    '/home/utke/BK_Reps/CODE/angel');
+  
+  # $opt_cvsANL
+
+  # --------------------------------------------------------
+  # Generate commands
+  # --------------------------------------------------------
+  my $cmdDescVecRef = [ ];
+  
+  # Hipersoft repositories
+  for my $repo (@CVSReposHiper) {
+    my $desc = { %RunCmds::CmdDesc, };
+    if (! -d "./${repo}") {
+      $desc->{cmd} = "${EnvHiper} cvs ${OptHiper} co ${repo}";
+      $desc->{desc} = 'cvs co Open64 (Rice HiPerSoft)';
+    }
+    else {
+      $desc->{cmd} = "${EnvHiper} cvs ${OptHiper} update ${repo}";
+      $desc->{desc} = 'cvs update Open64 (Rice HiPerSoft)';
+    }
+    push @{$cmdDescVecRef}, $desc;
+  }
+  
+  # xaifBooster
+  my $desc = { %RunCmds::CmdDesc, }; 
+  if (! -d './xaifBooster') {
+    $desc->{cmd} = 'bk clone ' . $opt_bkANL->{user} . 
+	':/home/utke/bk_tmpRep/xaifBooster_CFR/xaifBooster';
+    $desc->{desc} = 'bk clone xaifBooster (ANL)';
+  }
+  else {
+    $desc->{cmd} = 'cd ./xaifBooster ; bk pull';
+    $desc->{desc} = 'bk pull xaifBooster (ANL)';
+  }
+  push @{$cmdDescVecRef}, $desc;
+  
+  # angel
+  my $desc = { %RunCmds::CmdDesc, }; 
+  if (! -d './angel') {
+    $desc->{cmd} = 'bk clone ' . $opt_bkANL->{user} . 
+	':/home/utke/BK_Reps/CODE/angel';
+    $desc->{desc} = 'bk clone angel (ANL)';
+  }
+  else {
+    $desc->{cmd} = 'cd ./angel ; bk pull';
+    $desc->{desc} = 'bk pull angel (ANL)';
+  }
+  push @{$cmdDescVecRef}, $desc;
+  
+
+  # boost
+  
+  # xaif-1.0
+  my $desc = { %RunCmds::CmdDesc, }; 
+  if (! -d './xaif-1.0') {
+    $desc->{cmd} = 'bk clone http://xaif.bkbits.net/xaif-1.0';
+    $desc->{desc} = 'bk clone xaif-1.0 (bkbits.net)';
+  }
+  else {
+    $desc->{cmd} = 'cd ./xaif-1.0 ; bk pull';
+    $desc->{desc} = 'bk pull xaif-1.0 (bkbits.net)';
+  }
+  push @{$cmdDescVecRef}, $desc;
+  
+  
+  # --------------------------------------------------------
+  # Execute commands
+  # --------------------------------------------------------
+  my $verb = $opt_verbose - $mode_verb_terse; # normal goes to 1
+  
+  RunCmds($cmdDescVecRef, $verb, $opt_interactive);
+}
+
+
+
+#############################################################################
+
+# Local Variables:
+# perl-indent-level: 2
+# End:
