@@ -1,5 +1,5 @@
 # -*-Mode: perl;-*-
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.3 2004-07-16 15:34:49 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.4 2004-07-16 15:37:40 eraxxon Exp $
 
 #############################################################################
 ##
@@ -108,7 +108,7 @@ my $OPENAD_OPEN64 = { %OpenADReposDesc, };
 $OPENAD_OPEN64->{name}  = 'Open64';
 $OPENAD_OPEN64->{path}  = "$TheRealBin";
 $OPENAD_OPEN64->{repos} = $OPENAD_REPO_RICECVS;
-$OPENAD_BOOST->{tag}    = 'OpenAD';
+$OPENAD_OPEN64->{tag}   = 'OpenAD';
 $OPENAD_OPEN64->{var}   = 'OPEN64_BASE';
 
 my $OPENAD_OPENADFORTTK = { %OpenADReposDesc, };
