@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.3 2004-05-20 02:28:06 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.4 2004-06-23 19:00:42 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -92,26 +92,26 @@ my @the_options = ('bb-rev',
 
 #############################################################################
 
-my ($mode_BBReverse,
-    $mode_BBTapeAdjoint,
-    $mode_BBTape,
-    $mode_BB,
-    $mode_CFR,
-    $mode_Linearization,
-    $mode_MemOpsTradeoff) =
-    (1, 2, 3, 4, 5, 6, 7);
+my %xbModeType = ('BBReverse'      => 1,
+		  'BBTapeAdjoint'  => 2,
+		  'BBTape'         => 3,
+		  'BB'             => 4,
+		  'CFR'            => 5,
+		  'Linearization'  => 6,
+		  'MemOpsTradeoff' => 7,
+		  );
 
-my ($mode_x2w_structured,
-    $mode_x2w_unstructured,
-    $mode_x2w_bb) =
-    (1, 2, 3);
+my %x2wModeType = ('structured'   => 1,
+		   'unstructured' => 2,
+		   'bb'           => 3,
+		   );
 
-my ($mode_verb_silent,
-    $mode_verb_terse,
-    $mode_verb_normal,
-    $mode_verb_chatty,
-    $mode_verb_teengirls) =
-    (0, 1, 2, 3, 4);
+my %VerboseType = ('silent'    => 0,
+		   'terse'     => 1,
+		   'normal'    => 2,
+		   'chatty'    => 3,
+		   'teengirls' => 4,
+		   );
 
 #############################################################################
 ## main/driver
@@ -138,7 +138,7 @@ if (!$ret) {
 }
 
 # Get optional arguments: verbose, help
-$opt_verbose = $mode_verb_normal; # default
+$opt_verbose = $VerboseType{normal}; # default
 if (defined($opts{'verbose'})) {
   $opt_verbose = $opts{'verbose'};
 } 
@@ -147,42 +147,42 @@ if (defined($opts{'help'})) {
 } 
 
 # Get required argument: OpenAD Mode
-$openad_mode = $mode_BBReverse; # default
+$openad_mode = $xbModeType{BBReverse}; # default
 if (defined($opts{'bb-rev'})) {
-  $openad_mode = $mode_BBReverse;
+  $openad_mode = $xbModeType{BBReverse};
 } 
 if (defined($opts{'bb-tapeadj'})) {
-  $openad_mode = $mode_BBTapeAdjoint;
+  $openad_mode = $xbModeType{BBTapeAdjoint};
 } 
 if (defined($opts{'bb-tape'})) {
-  $openad_mode = $mode_BBTape;
+  $openad_mode = $xbModeType{BBTape};
 } 
 if (defined($opts{'bb'})) {
-  $openad_mode = $mode_BB;
+  $openad_mode = $xbModeType{BB};
 } 
 if (defined($opts{'cfr'})) {
-  $openad_mode = $mode_CFR;
+  $openad_mode = $xbModeType{CFR};
 } 
 if (defined($opts{'linear'})) {
-  $openad_mode = $mode_Linearization;
+  $openad_mode = $xbModeType{Linearization};
 } 
 if (defined($opts{'memopstradeoff'})) {
-  $openad_mode = $mode_MemOpsTradeoff;
+  $openad_mode = $xbModeType{MemOpsTradeoff};
 } 
 if (!defined($openad_mode)) {
   printUsageAndExit($the_program);
 }
 
 # Get optional arguments: OpenAD xaif2whirl mode
-$openad_x2w_mode = $mode_x2w_structured; # default
+$openad_x2w_mode = $x2wModeType{structured}; # default
 if (defined($opts{'x2w-structured'})) {
-  $openad_x2w_mode = $mode_x2w_structured;
+  $openad_x2w_mode = $x2wModeType{structured};
 } 
 if (defined($opts{'x2w-unstructured'})) {
-  $openad_x2w_mode = $mode_x2w_unstructured;
+  $openad_x2w_mode = $x2wModeType{unstructured};
 } 
 if (defined($opts{'x2w-bb'})) {
-  $openad_x2w_mode = $mode_x2w_bb;
+  $openad_x2w_mode = $x2wModeType{bb};
 } 
 
 # Get optional arguments: normalize, interactive
@@ -278,25 +278,25 @@ sub undefEnvVarErr
     #print STDOUT "$XB\n";
     # Will have to do this after some preprocessing...
     my $x2w_opt = "";
-    if ($openad_mode == $mode_BB 
-	|| $openad_mode == $mode_Linearization 
-	|| $openad_mode == $mode_MemOpsTradeoff) {
+    if ($openad_mode == $xbModeType{BB} 
+	|| $openad_mode == $xbModeType{Linearization} 
+	|| $openad_mode == $xbModeType{MemOpsTradeoff}) {
       $x2w_opt .= " --mode=forward";
     }
-    elsif ($openad_mode == $mode_BBReverse 
-	   || $openad_mode == $mode_BBTapeAdjoint
-	   || $openad_mode == $mode_BBTape 
-	   || $openad_mode == $mode_CFR) {
+    elsif ($openad_mode == $xbModeType{BBReverse} 
+	   || $openad_mode == $xbModeType{BBTapeAdjoint}
+	   || $openad_mode == $xbModeType{BBTape} 
+	   || $openad_mode == $xbModeType{CFR}) {
       $x2w_opt .= " --mode=reverse";
     }
     
-    if ($openad_x2w_mode == $mode_x2w_structured) {
+    if ($openad_x2w_mode == $x2wModeType{structured}) {
       $x2w_opt .= " --structured";
     } 
-    elsif ($openad_x2w_mode == $mode_x2w_unstructured) {
+    elsif ($openad_x2w_mode == $x2wModeType{unstructured}) {
       $x2w_opt .= " --unstructured";
     } 
-    elsif ($openad_x2w_mode == $mode_x2w_bb) {
+    elsif ($openad_x2w_mode == $x2wModeType{bb}) {
       $x2w_opt .= " --bb";
     }
     
@@ -348,15 +348,15 @@ sub undefEnvVarErr
     $desc->{desc} = "Postprocess Fortran: '${base}.xb.x2w.w2f.f' -> '${base}.xb.x2w.w2f.pp.f'";
     push @{$cmdDescVecRef}, $desc;
     
-    my $verb = $opt_verbose - $mode_verb_terse; # normal goes to 1
+    my $verb = $opt_verbose - $VerboseType{terse}; # normal goes to 1
 
     RunCmds($cmdDescVecRef, $verb, $opt_interactive);
 
-    if ($opt_verbose >= $mode_verb_normal) {
+    if ($opt_verbose >= $VerboseType{normal}) {
       print STDOUT "\n";
     }
 
-    if ($opt_verbose >= $mode_verb_terse) {
+    if ($opt_verbose >= $VerboseType{terse}) {
       print STDOUT "OpenAD: '${fortranfile}' --> '${base}.xb.x2w.w2f.pp.f'\n";
     }
   }
@@ -390,25 +390,25 @@ sub undefEnvVarErr
     
     my $XB_alg_path = "${XAIFBOOSTERROOT}/xaifBooster/algorithms";
     my $XB_alg = undef;
-    if ($mode == $mode_BBReverse) {
+    if ($mode == $xbModeType{BBReverse}) {
       $XB_alg = "${XB_alg_path}/BasicBlockPreaccumulationReverse/test/t";
     } 
-    elsif ($mode == $mode_BBTapeAdjoint) {
+    elsif ($mode == $xbModeType{BBTapeAdjoint}) {
       $XB_alg = "${XB_alg_path}/BasicBlockPreaccumulationTapeAdjoint/test/t";
     } 
-    elsif ($mode == $mode_BBTape) {
+    elsif ($mode == $xbModeType{BBTape}) {
       $XB_alg = "${XB_alg_path}/BasicBlockPreaccumulationTape/test/t";
     }
-    elsif ($mode == $mode_BB) {
+    elsif ($mode == $xbModeType{BB}) {
       $XB_alg = "${XB_alg_path}/BasicBlockPreaccumulation/test/t";
     }
-    elsif ($mode == $mode_CFR) {
+    elsif ($mode == $xbModeType{CFR}) {
       $XB_alg = "${XB_alg_path}/ControlFlowReversal/test/t";
     }
-    elsif ($mode == $mode_Linearization) {
+    elsif ($mode == $xbModeType{Linearization}) {
       $XB_alg = "${XB_alg_path}/Linearization/test/t";
     }
-    elsif ($mode == $mode_MemOpsTradeoff) {
+    elsif ($mode == $xbModeType{MemOpsTradeoff}) {
       $XB_alg = "${XB_alg_path}/MemOpsTradeoffPreaccumulation/test/t";
     } 
     else {
