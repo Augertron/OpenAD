@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.7 2004-06-28 20:38:13 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.8 2004-07-16 15:53:58 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -347,7 +347,7 @@ sub undefEnvVarErr
     push @{$cmdDescVecRef}, $desc;
 
     $desc = { %RunCmds::CmdDesc, }; 
-    $desc->{cmd} = "$WHIRL2F '${base}.xb.x2w.B'"; # -openad
+    $desc->{cmd} = "$WHIRL2F -openad '${base}.xb.x2w.B'";
     $desc->{desc} = "WHIRL to Fortran: '${base}.xb.x2w.B' -> '${base}.xb.x2w.w2f.f'";
     push @{$cmdDescVecRef}, $desc;
 
