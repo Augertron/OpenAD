@@ -1,5 +1,5 @@
 # -*-Mode: perl;-*-
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.11 2004-12-01 16:37:49 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.12 2005-03-23 14:27:53 eraxxon Exp $
 
 #############################################################################
 ##
@@ -139,7 +139,7 @@ my $OPENAD_BOOST = { %RepositoryTools::RepositoryDesc, };
 $OPENAD_BOOST->{name}  = 'boost';
 $OPENAD_BOOST->{path}  = "$TheRealBin";
 $OPENAD_BOOST->{repos} = $OPENAD_REPO_SF_BOOST;
-$OPENAD_BOOST->{tag}   = 'Version_1_30_2';
+$OPENAD_BOOST->{tag}   = '{date}2005/03/21';
 $OPENAD_BOOST->{var}   = 'BOOST_BASE';
 
 my $OPENAD_XAIF = { %RepositoryTools::RepositoryDesc, };
