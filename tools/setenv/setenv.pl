@@ -7,7 +7,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.3 2004-05-21 15:03:52 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.4 2004-05-21 16:38:54 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -177,6 +177,8 @@ sub GenEnvSettings
   # --------------------------------------------------------
   print STDOUT "\n";
   
+  print STDOUT genSetEnvVar('OPENAD_BASE', $OpenADRoot, $shell);
+
   my $config = openad_config->new();
   my $OpenADRepos = $config->getRepos();
   
@@ -194,6 +196,8 @@ sub GenEnvSettings
   # Generate environment vars for sub repositories
   # --------------------------------------------------------
   print STDOUT "\n";
+  
+  print STDOUT genSetEnvVar('OPENADROOT', $OpenADRoot, $shell);
   
   my @EnvVars = (@RootEnvVars, @OtherEnvVars);
   for my $pair (@EnvVars) {
@@ -217,7 +221,9 @@ sub GenEnvSettings
   else {
     print STDOUT 'source ${OPENADFORTTK}/Sourceme-csh', "\n";
   }
-
+  
+  print STDOUT genAppendEnvVar('PATH', '${OPENADROOT}/bin', $shell);
+  
   print STDOUT "\n";  
   if ($platform eq 'i686-Cygwin') {
     my $path = '${XERCESCROOT}/bin:${XERCESCROOT}/lib:${OPEN64ROOT}/be:${OPEN64ROOT}/whirl2f:${PATH}';
