@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.12 2004-09-28 19:57:28 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.13 2004-09-28 20:19:33 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -30,7 +30,7 @@ use Getopt::Long;
 
 use POSIX qw(strftime);
 
-use lib "$RealBin/../libperl";
+use lib "$RealBin/../libperltk";
 use RunCmds qw(%CmdDesc RunCmds RunCmd);
 
 use lib "$RealBin/../..";

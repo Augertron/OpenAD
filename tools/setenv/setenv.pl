@@ -7,7 +7,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.8 2004-07-06 15:59:43 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.9 2004-09-28 20:19:33 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -29,7 +29,7 @@ use Cwd qw(abs_path);
 use IO::File;
 use Getopt::Long;
 
-use lib "$RealBin/../libperl";
+use lib "$RealBin/../libperltk";
 use setenv qw(genSetEnvVar genSetVar genAppendEnvVar 
 	      genUnSetEnvVar genUnSetVar genPrintEnvVar genPrintVar
 	      genSetAlias genUnSetAlias genIf
