@@ -1,4 +1,4 @@
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.4 2004-07-16 20:52:20 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.5 2005-03-19 23:42:37 eraxxon Exp $
 # -*-makefile-*-
 ## * BeginCopyright *********************************************************
 ## 
@@ -107,9 +107,9 @@ oa_build:
 	@if [ -d $(OPENANALYSIS_BASE) ]; then \
 	  echo "*** Building OA ***" ; \
 	  if [ -d $(OPENANALYSIS_BASE)/build-$(PLATFORM) ]; then \
-	    cd $(OPENANALYSIS_BASE) && $(MAKE) build install ; \
+	    cd $(OPENANALYSIS_BASE) && $(MAKE) install ; \
 	  else \
-	    cd $(OPENANALYSIS_BASE) && $(MAKE) ; \
+	    cd $(OPENANALYSIS_BASE) && $(MAKE) -f Makefile.quick all; \
 	  fi \
 	else \
 	  echo "*** Building OA -- NON-EXISTENT ***" ; \
@@ -118,7 +118,7 @@ oa_build:
 oa_clean:
 	@if [ -d $(OPENANALYSIS_BASE) ]; then \
 	  echo "*** Cleaning OA ***" ; \
-	  cd $(OPENANALYSIS_BASE) && $(MAKE) clean ; \
+	  cd $(OPENANALYSIS_BASE) && $(MAKE) -f Makefile.quick clean ; \
 	else \
 	  echo "*** Cleaning OA -- NON-EXISTENT ***" ; \
 	fi
