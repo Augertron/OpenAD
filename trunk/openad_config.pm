@@ -1,5 +1,5 @@
 # -*-Mode: perl;-*-
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.4 2004-07-16 15:37:40 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.5 2004-07-16 20:22:02 eraxxon Exp $
 
 #############################################################################
 ##
@@ -56,17 +56,34 @@ my %OpenADBKDesc = (isbk          => 1,
 # Repository information
 ######################################################################
 
+# USER is not available in some Cygwin environments
+my $defaultUser = (defined($ENV{'USER'})) ? $ENV{'USER'} : $ENV{'USERNAME'};
+
 ##################################################
 # Rice HiPerSoft CVS Repository
 ##################################################
 
-my $riceUser = 'anoncvs'; # $ENV{'USER'};
+my $riceUser = 'anoncvs'; # $defaultUser
 
 my $OPENAD_REPO_RICECVS = { %OpenADCVSDesc, }; 
 $OPENAD_REPO_RICECVS->{rsh} = 
     "$TheRealBin/tools/sshcvs/sshcvs-hipersoft-anon";
 $OPENAD_REPO_RICECVS->{root} = 
     ':ext:' . $riceUser . '@koolkat2.cs.rice.edu:/Volumes/cvsrep/developer';
+
+##################################################
+# Argonne Bitkeeper
+##################################################
+
+my $anlUser = $defaultUser;
+
+my $OPENAD_REPO_ANLBK_XB = { %OpenADBKDesc, }; 
+$OPENAD_REPO_ANLBK_XB->{root} = $anlUser . 
+    '@terra.mcs.anl.gov:/home/derivs/share/xaifBooster';
+
+my $OPENAD_REPO_ANLBK_ANGEL = { %OpenADBKDesc, }; 
+$OPENAD_REPO_ANLBK_ANGEL->{root} = $anlUser . 
+    '@terra.mcs.anl.gov:/home/utke/BK_Reps/CODE/angel';
 
 ##################################################
 # Bkbits Bitkeeper Repositories
@@ -84,21 +101,6 @@ $OPENAD_REPO_SF_BOOST->{rsh} =
     'pserver';
 $OPENAD_REPO_SF_BOOST->{root} = 
     ':pserver:anonymous@cvs.sourceforge.net:/cvsroot/boost';
-
-##################################################
-# Argonne Bitkeeper
-##################################################
-
-my $anlUser = $ENV{'USER'};
-
-my $OPENAD_REPO_ANLBK_XB = { %OpenADBKDesc, }; 
-$OPENAD_REPO_ANLBK_XB->{root} = $anlUser . 
-    '@terra.mcs.anl.gov:/home/utke/bk_tmpRep/xaifBooster_CFR/xaifBooster';
-
-my $OPENAD_REPO_ANLBK_ANGEL = { %OpenADBKDesc, }; 
-$OPENAD_REPO_ANLBK_ANGEL->{root} = $anlUser . 
-    '@terra.mcs.anl.gov:/home/utke/BK_Reps/CODE/angel';
-
 
 ######################################################################
 # OpenAD Repositories, Local Instances
