@@ -1,4 +1,4 @@
-$Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/README,v 1.1 2004-05-14 15:23:41 eraxxon Exp $
+$Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/README,v 1.2 2004-05-21 15:06:55 eraxxon Exp $
 
 =============================================================================
 ==
@@ -11,6 +11,7 @@ This is the README for OpenAD.
 Contents:
   0. What is OpenAD
   1. For More Information
+  2. Temporary Getting and Building Instructions
 
 =============================================================================
 
@@ -33,3 +34,27 @@ OpenAD documentation: Point your browser to <FIXME>
 OpenAD Website: <FIXME>
 
 See README.Index in this directory.
+
+=============================================================================
+
+2. For More Information:
+--------------------
+
+1. Get the rest of the repository using 'goad'.  
+
+('goad' is a tool for getting and updating OpenAD repositories.  It
+can be customized to support many disparate repositories and
+non-standard local installations of the same, but this feature will
+typically only be used by developers who need repository write access
+or the ability to switch betweeen different versions of a local
+repository.  The default configuration file is ./openad_config.pm.)
+
+  ./bin/goad
+
+2. Set the environment
+
+  source setenv.sh -or- source setenv.csh
+  
+3. 
+
+
