@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.5 2004-05-20 21:36:13 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.6 2004-05-21 15:12:45 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -194,7 +194,10 @@ sub RunGetOpenAD
   
   # FIXME: generate commands to update OpenAD directories and files
   # (cannot just run cvs update)
-  my @CVSSelf = ('bin', 'doc', 'test', 'tools', 'README.*', 'xercesc');
+  my @CVSSelf = ('bin', 'config', 'doc', 'test', 'tools', 
+		 'openad_config.pm', 'README*', 'setenv.*');
+
+  # bin config doc test tools openad_config.pm README* setenv.*
 
   
   # --------------------------------------------------------
