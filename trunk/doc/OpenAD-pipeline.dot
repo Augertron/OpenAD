@@ -1,0 +1,202 @@
+
+digraph OpenAD_Pipeline {
+  graph [
+    rankdir = "LR"
+  ];
+  node [
+    shape = "record"
+    fontsize = "10"
+  ];
+  edge [
+  ];
+
+
+  /* *******************************************************/
+  /* Nodes                                                 */
+  /* *******************************************************/
+
+  /* Key */
+  subgraph cluster_KEY { /* cluster prefix is special! */
+    label = "KEY";
+    rankdir = "LR"
+    node [
+      shape = "Mrecord"
+      fontsize = "10"
+    ]
+    edge [
+      color = "white" /* invisible! */
+    ];
+
+
+    KEY_code_subset [ 
+      label = "\<code_subset\>|num = numerical|frags = fragments"
+    ];
+
+    KEY_math_version [ 
+      label = "\<math_version\>|d = derivative|adj = adjoint"
+    ];
+    
+    /* Force left to right layout! */
+    KEY_code_subset -> KEY_math_version;
+  }
+
+
+  /* Open64 tools */
+  tool_f90fe [ 
+    label = "mfef90"
+    shape = "ellipse"
+    style = "filled"
+    fontsize = "13"
+  ];
+  tool_whirl2f [ 
+    label = "whirl2f"
+    shape = "ellipse"
+    style = "filled"
+    fontsize = "13"
+  ];
+  tool_whirl2f_r [   /* bogus node to keep graph looking nice */
+    label = "whirl2f"
+    shape = "ellipse"
+    style = "filled"
+    fontsize = "13"
+  ];
+
+
+  /* Rice OpenAD tools */
+  tool_w2x [ 
+    label = "whirl2xaif"
+    shape = "ellipse"
+    style = "filled"
+    fontsize = "13"
+  ];
+  tool_x2w [ 
+    label = "xaif2whirl\n(forward)"
+    shape = "ellipse"
+    style = "filled"
+    fontsize = "13"
+  ];
+  tool_x2w_r [ 
+    label = "xaif2whirl\n(reverse)"
+    shape = "ellipse"
+    style = "filled"
+    fontsize = "13"
+  ];
+  tool_pp [ 
+    label = "pp"
+    shape = "ellipse"
+    style = "filled"
+    fontsize = "13"
+  ];
+  tool_pp_r [ 
+    label = "pp\n(reverse)"
+    shape = "ellipse"
+    style = "filled"
+    fontsize = "13"
+  ];
+
+  /* Argonne OpenAD tools */
+  tool_xboost [ 
+    label = "xaifbooster\n(forward)"
+    shape = "ellipse"
+    style = "filled"
+    fontsize = "13"
+  ];
+  tool_xboost_r [ 
+    label = "xaifbooster\n(reverse)"
+    shape = "ellipse"
+    style = "filled"
+    fontsize = "13"
+  ];
+
+
+  /* input program subset and mathematical version */
+  prog_f90 [ 
+    label = "prog|F90" 
+  ];
+  prog_B [ 
+    label = "prog|WHIRL" 
+  ];
+  prog_num_XAIF [ 
+    label = "prog-num|XAIF" 
+  ];
+
+  prog_num_d_XAIF [   /* forward mode */
+    label = "prog-num-d|XAIF" 
+  ];
+  prog_numfrags_adj_XAIF [ /* reverse mode */
+    label = "prog-numfrags-adj|XAIF" 
+  ];
+
+  prog_d_B [          /* forward mode */
+    label = "prog-d|WHIRL" 
+  ];
+  prog_frags_adj_B [    /* reverse mode */
+    label = "prog-frags-adj|WHIRL" 
+  ];
+
+  prog_d_F90a [       /* forward mode, a = approximately */
+    label = "prog-d|(F90)"
+  ];
+  prog_d_F90 [ 
+    label = "prog-d|F90"
+  ];
+  prog_frags_adj_F90 [  /* reverse mode */ 
+    label = "prog-frags-adj|F90"
+  ];
+  prog_adj_F90 [      /* reverse mode */
+    label = "prog-adj|F90"
+  ];
+
+
+  /* misc. files */
+  ppinfo [
+    label = "ppinfo" 
+  ];
+  adjtemplate_F90 [
+    label = "adjtemplate|F90"
+  ];
+  adjinlines_F90 [
+    label = "adjinlines|F90"
+  ];
+  
+
+  /* *******************************************************/
+  /* Edges                                                 */
+  /* *******************************************************/
+  "prog_f90"        -> "tool_f90fe"    -> "prog_B";
+  "prog_B"          -> "tool_w2x"      -> "prog_num_XAIF";
+
+  /* Forward mode */
+  "prog_num_XAIF"   -> "tool_xboost";
+  "prog_B"          -> "tool_x2w";
+  subgraph cluster_forward { /* cluster prefix is special! */
+    label = "Forward mode";
+    color = "blue";
+                         "tool_xboost"   -> "prog_num_d_XAIF";
+    "prog_num_d_XAIF" -> "tool_x2w"      -> "prog_d_B";
+    "prog_d_B"        -> "tool_whirl2f"  -> "prog_d_F90a";
+
+    "prog_d_F90a"     -> "tool_pp";
+    subgraph cluster_forward_opt {
+      label = "optional?";
+                          "tool_pp"       -> "prog_d_F90";
+    }
+  }
+
+  /* Reverse mode */
+  "prog_num_XAIF"   -> "tool_xboost_r";
+  "prog_B"            -> "tool_x2w_r";
+  subgraph cluster_reverse { /* cluster prefix is special! */
+    label = "Reverse mode";
+    color = "red";
+                                "tool_xboost_r"  -> "prog_numfrags_adj_XAIF";
+    "prog_numfrags_adj_XAIF" -> "tool_x2w_r"     -> "prog_frags_adj_B";
+                                "tool_x2w_r"     -> "ppinfo";
+    "prog_frags_adj_B"       -> "tool_whirl2f_r" -> "prog_frags_adj_F90";
+    "prog_frags_adj_F90"     -> "tool_pp_r"      -> "prog_adj_F90";
+    "ppinfo"                 -> "tool_pp_r";
+    "adjtemplate_F90"        -> "tool_pp_r";
+    "adjinlines_F90"         -> "tool_pp_r";
+  }
+
+}
