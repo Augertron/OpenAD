@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.11 2004-09-30 16:18:59 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.12 2004-09-30 16:49:13 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -451,6 +451,9 @@ sub undefEnvVarErr
   sub ConfigSchema 
   {
     # Check if files already exist
+
+    # FIXME: we should do this individually!
+
     my @schemafiles = glob("xaif*.xsd");
     if (scalar(@schemafiles) > 0) {
       return;
@@ -470,7 +473,16 @@ sub undefEnvVarErr
       push(@ppfiles, "${pfx}/ad_inline.f");
     }
     if (! -e './ad_template.f') {
-      push(@ppfiles, "${pfx}/ad_template.f");
+      # FIXME: TMP HACK
+      #push(@ppfiles, "${pfx}/simple.ad_template_split.f"); --> "ad_template.f"
+      
+      my $src = "${pfx}/simple.ad_template_split.f";
+      my $dst = './ad_template.f';
+      if (${PLATFORM} eq "i686-Cygwin") {
+	link($src, $dst) or die "Error: could not link $src";
+      } else {
+	symlink($src, $dst) or die "Error: could not link $src";
+      }
     }
     
     LinkFiles(\@ppfiles);
