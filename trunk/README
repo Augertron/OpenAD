@@ -1,4 +1,4 @@
-$Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/README,v 1.5 2004-06-01 21:10:46 eraxxon Exp $
+$Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/README,v 1.6 2004-06-08 14:35:14 eraxxon Exp $
 
 =============================================================================
 ==
@@ -49,7 +49,7 @@ typically only be used by developers who need repository write access
 or the ability to switch betweeen different versions of a local
 repository.)
 
-Developers should at check the configuration file, openad_config.pm,
+Developers should check the configuration file, openad_config.pm,
 and at least verify the setting of 
   riceUser
   $OPENAD_REPO_RICECVS->{rsh}
