@@ -1,7 +1,7 @@
 # -*-Mode: sh;-*-
 # For csh variants
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/setenv.csh,v 1.1 2004-05-21 15:06:03 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/setenv.csh,v 1.2 2004-06-08 14:35:31 eraxxon Exp $
 
 #echo "$0 $*"
 
@@ -18,8 +18,6 @@
 set prog = "./tools/setenv/setenv.pl"
 set shell = "--shell=csh"
 
-set tmpfile = "$prog.tmp.$$"
-
 #############################################################################
 ## Run the program
 #############################################################################
@@ -27,18 +25,9 @@ set tmpfile = "$prog.tmp.$$"
 set cmd = "$prog $shell $*"
 
 #echo "--> $cmd"
-$cmd > $tmpfile
+eval `$cmd`
 if ( $status != 0 ) then
-    echo "Error executing: $cmd > $tmpfile"
+    echo "*** Error eval'ing: '$cmd' ***"
     exit 1
 endif
-
-source $tmpfile
-if ( $status == 0 ) then
-    #echo "* Environment changed successfully *"
-    /bin/rm -f $tmpfile
-else
-    echo "*** Environment not changed successfully (see $tmpfile) ***"
-    exit 1
-endif
-
+unset cmd
