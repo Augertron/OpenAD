@@ -1,5 +1,5 @@
 # -*-Mode: perl;-*-
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.1 2004-05-20 21:37:25 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.2 2004-05-21 19:03:17 eraxxon Exp $
 
 #############################################################################
 ##
@@ -37,15 +37,18 @@ my %OpenADReposDesc =
     (name      => undef, # name
      path      => undef, # path to repository
      repos     => undef, # if undef, considered 'external'; user must manage
+     tag       => undef, # version or tag
      var       => undef, # corresponding environment variable
      );
 
 my %OpenADCVSDesc = (iscvs        => 1,
 		     rsh          => undef,
-		     root         => undef, );
+		     root         => undef,
+		     );
 
 my %OpenADBKDesc = (isbk          => 1,
-		    root          => undef, );
+		    root          => undef,
+		    );
 
 #############################################################################
 
@@ -86,7 +89,7 @@ $OPENAD_REPO_SF_BOOST->{root} =
 # Argonne Bitkeeper
 ##################################################
 
-my $anlUser = $ENV{'USER'}; # 'ntallent';
+my $anlUser = $ENV{'USER'};
 
 my $OPENAD_REPO_ANLBK_XB = { %OpenADBKDesc, }; 
 $OPENAD_REPO_ANLBK_XB->{root} = $anlUser . 
@@ -141,6 +144,7 @@ my $OPENAD_BOOST = { %OpenADReposDesc, };
 $OPENAD_BOOST->{name}  = 'boost';
 $OPENAD_BOOST->{path}  = "$TheRealBin";
 $OPENAD_BOOST->{repos} = $OPENAD_REPO_SF_BOOST;
+$OPENAD_BOOST->{tag}   = 'Version_1_30_2';
 $OPENAD_BOOST->{var}   = 'BOOST_BASE';
 
 my $OPENAD_XAIF = { %OpenADReposDesc, };
