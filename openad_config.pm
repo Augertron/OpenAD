@@ -1,5 +1,5 @@
 # -*-Mode: perl;-*-
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.6 2004-09-27 21:29:51 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.7 2004-09-27 21:31:23 eraxxon Exp $
 
 #############################################################################
 ##
@@ -75,7 +75,7 @@ $OPENAD_REPO_RICECVS->{root} =
 # Argonne Bitkeeper
 ##################################################
 
-my $anlUser = ntallent; # $defaultUser;
+my $anlUser = $defaultUser;
 
 my $OPENAD_REPO_ANLBK_XB = { %OpenADBKDesc, }; 
 $OPENAD_REPO_ANLBK_XB->{root} = 'http://xaifbooster.bkbits.net/xaifBooster';
