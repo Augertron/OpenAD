@@ -1,4 +1,4 @@
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.6 2005-03-21 15:57:15 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.7 2005-03-24 19:31:56 eraxxon Exp $
 # -*-makefile-*-
 ## * BeginCopyright *********************************************************
 ## 
@@ -132,7 +132,7 @@ oa_veryclean: oa_clean
 xercesc_build:
 	@if [ -d $(XERCESC_BASE) ]; then \
 	  echo "*** Building xercesc ***" ; \
-	  if [ -d $(XERCESC_BASE)/xerces-c-src_2_3_0/obj/$(XERCESPLATFORM) ]; then \
+	  if [ -d $(XERCESC_BASE)/xerces-c-src_2_6_0/obj/$(XERCESPLATFORM) ]; then \
 	    cd $(XERCESC_BASE) && $(MAKE) build install ; \
 	  else \
 	    cd $(XERCESC_BASE) && $(MAKE) ; \
