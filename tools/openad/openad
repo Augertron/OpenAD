@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.10 2004-09-30 15:31:53 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.11 2004-09-30 16:18:59 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -462,13 +462,17 @@ sub undefEnvVarErr
 
   sub ConfigPPFiles
   {
+    my $pfx = "${XAIFBOOSTERROOT}/xaifBooster/testRoundTrip";
+    my @ppfiles = ();
+    
     # Check if files already exist
-    if (-f './ad_inline.f' && -f './ad_template.f') {
-      return;
+    if (! -e './ad_inline.f') {
+      push(@ppfiles, "${pfx}/ad_inline.f");
+    }
+    if (! -e './ad_template.f') {
+      push(@ppfiles, "${pfx}/ad_template.f");
     }
     
-    my $pfx = "${XAIFBOOSTERROOT}/xaifBooster/testRoundTrip";
-    my @ppfiles = ("${pfx}/ad_inline.f", "${pfx}/ad_template.f");
     LinkFiles(\@ppfiles);
   }
 
@@ -478,12 +482,10 @@ sub undefEnvVarErr
     my ($pathnmsRef) = @_;
     for my $path (@{$pathnmsRef}) {
       my ($vol,$dir,$file) = File::Spec->splitpath($path);
-      if (! -e $file) {
-	if (${PLATFORM} eq "i686-Cygwin") {
-	  link($path, "./$file") or die "Error: could not link $path";
-	} else {
-	  symlink($path, "./$file") or die "Error: could not link $path";
-	}
+      if (${PLATFORM} eq "i686-Cygwin") {
+	link($path, "./$file") or die "Error: could not link $path";
+      } else {
+	symlink($path, "./$file") or die "Error: could not link $path";
       }
     }
   }
