@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.11 2004-06-01 14:04:09 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.12 2004-09-28 19:57:28 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -68,12 +68,15 @@ Development options:
     prompt user to authorize each command
 \n";
 
+# -d, --debug [lvl]  Debug level
+
 my @the_options = ('skip-update',
 		   'self-only',
 		   
 		   'verbose|v:i',
 		   'help|h', 
 		   'interactive|i',
+		   'debug|d:i',
 		   );
 
 #############################################################################
@@ -93,13 +96,18 @@ my ($mode_verb_silent,
     $mode_verb_teengirls) =
     (0, 1, 2, 3, 4);
 
+my $cvsSelfRepo = 
+    [ 'bin', 'config', 'doc', 'test', 'tools',
+      'Makefile*', 'openad_config.pm', 'README*', 'setenv.*' ];
+
+
 #############################################################################
 ## main/driver
 #############################################################################
 
 my $opt_verbose = undef;
 my $opt_interactive = undef;
-#my $opt_debug = 0;
+my $opt_debug = 0;
 
 my $opt_skipupdate = 0;
 my $opt_selfonly = 0;
@@ -115,8 +123,20 @@ parseOptions($0);
 # Run
 # ----------------------------------------------------------
 
-RunGetOpenAD();
+my $config = openad_config->new();
+my $opts = { 
+  selfonly   => $opt_selfonly,
+  skipupdate => $opt_skipupdate,
+  verbose    => $opt_verbose - $mode_verb_terse, # normal goes to 1
+  logfnm     => prepareLogFile(),
+  debug      => $opt_debug,
+};
 
+print STDOUT "Sending output to '" . $opts->{logfnm} . "'\n";
+
+RunRepositoryUpdate($OpenADRoot, $cvsSelfRepo, $config, $opts);
+
+exit(0);
 
 #############################################################################
 ## parseOptions
@@ -140,7 +160,10 @@ sub parseOptions
   } 
   if (defined($opts{'help'})) {
     printUsageAndExit($the_program);
-  } 
+  }
+  if (defined($opts{'debug'})) {
+    $opt_debug = $opts{'debug'};
+  }
   
   # Get optional arguments: interactive
   if (defined($opts{'interactive'})) {
@@ -196,26 +219,58 @@ sub undefEnvVarErr
 ## Subroutines
 #############################################################################
 
-# RunGetOpenAD
-
-sub RunGetOpenAD 
+# Returns the name of a log file that has size 0 in the filesystem.
+sub prepareLogFile
 {
-  #my($mode) = @_;
+  #my ($x) = @_;
+
+  my $dir = cwd();
+  my $stamp = strftime("%Y_%m_%d-%H_%M_%S", localtime(time()));
+  my $logfnm = "${dir}/goad.${stamp}.log~";
+  truncate($logfnm, 0);
+  
+  return $logfnm;
+}
+
+
+# RunRepositoryUpdate: Given several arguments, perform a get or
+# update on a repository that itself contains other cvs or bitkeeper
+# repositories.
+#   selfRoot     - the root of the shell CVS repository
+#   selfCVSFiles - list of shell globs representing the shell CVS repository
+#   otherConfig  - config file defining other repository info
+#   opts         - a hash of options
+#     'selfonly'   - update only the shell repository (boolean)
+#     'skipupdate' - do not update an existing repository (boolean)
+#     'verbose'    - 0 (no), 1 (moderate) or 2 (extreme)
+#     'logfnm'     - if defined, the name of a log file to which all output
+#                    should be sent
+#     'debug'      - if defined, a debug level from 0 - 9
+sub RunRepositoryUpdate 
+{
+  my($selfRoot, $selfCVSFiles, $otherConfig, $opts) = @_;
   
   my $cmdDescVecRef = [ ];
   my $desc = undef;
+  
+  my $selfonly   = (defined($opts->{selfonly})) ? $opts->{selfonly} : 0;
+  my $skipupdate = (defined($opts->{skipupdate})) ? $opts->{skipupdate} : 0;
+  my $verbose    = (defined($opts->{verbose})) ? $opts->{verbose} : 0;
+  my $debug      = (defined($opts->{debug})) ? $opts->{debug} : 0;
 
   # --------------------------------------------------------
   # Generate commands for self (always a cvs update)
   # --------------------------------------------------------
 
-  if ($opt_selfonly) {
-    my $cvsself = 'bin config doc test tools ' . 
-	'Makefile* openad_config.pm README* setenv.*';
+  if ($selfonly) {
+    my $selfFiles = '';
+    for my $x (@{$selfCVSFiles}) {
+      $selfFiles .= ' ' . $x;
+    }
     
     $desc = { %RunCmds::CmdDesc, };  
-    $desc->{cmd} = "cd ${OpenADRoot} ; cvs update ${cvsself}";
-    $desc->{desc} = "cvs update ${OpenADRoot}";
+    $desc->{cmd} = "cd ${selfRoot} ; cvs update ${selfFiles}";
+    $desc->{desc} = "cvs update ${selfRoot}";
     push(@{$cmdDescVecRef}, $desc); 
   }
 
@@ -223,9 +278,8 @@ sub RunGetOpenAD
   # Generate commands for sub repositories
   # --------------------------------------------------------
   
-  if (!$opt_selfonly) {
-    my $config = openad_config->new();
-    my $OpenADRepos = $config->getRepos();
+  if (!$selfonly) {
+    my $OpenADRepos = $otherConfig->getRepos();
   
     for my $repo (@{$OpenADRepos}) {
       
@@ -237,7 +291,7 @@ sub RunGetOpenAD
       my $repoTag = (defined($repo->{tag})) ? $repo->{tag} : "default";
       #print("--> $repoPath\n");
       
-      next if ($repoExists && $opt_skipupdate);
+      next if ($repoExists && $skipupdate);
       
       # Either checkout or update the repository
       $desc = { %RunCmds::CmdDesc, };
@@ -285,16 +339,11 @@ sub RunGetOpenAD
   # --------------------------------------------------------
   # Run commands
   # --------------------------------------------------------
-  
-  my $verb = $opt_verbose - $mode_verb_terse; # normal goes to 1
-  
-  my $dir = cwd();
-  my $stamp = strftime("%Y_%m_%d-%H_%M_%S", localtime(time()));
-  my $logfnm = "${dir}/goad.${stamp}.log~";
-  truncate($logfnm, 0);
-  
-  print STDOUT "Sending output to '${logfnm}'\n";
-  RunCmds($cmdDescVecRef, $verb, $opt_interactive, $logfnm);
+  if ($debug) {
+    print STDOUT "--> ", $opts->{logfnm}, "\n";
+  }
+
+  RunCmds($cmdDescVecRef, $verbose, $opt_interactive, $opts->{logfnm});
 }
 
 
