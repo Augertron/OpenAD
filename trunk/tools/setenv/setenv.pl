@@ -7,7 +7,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.4 2004-05-21 16:38:54 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.5 2004-05-21 17:47:02 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -111,7 +111,7 @@ BEGIN {
        ['OPENADFORTTKROOT', '${OPENADFORTTK_BASE}'],
        ['OPENANALYSISROOT', '${OPENANALYSIS_BASE}/${PLATFORM}'],
        ['XERCESCROOT',      '${XERCESC_BASE}/${PLATFORM}'],
-       ['XAIFBOOSTERROOT',  '${XAIFBOOSTER_BASE}'],
+       ['XAIFBOOSTERROOT',  '${XAIFBOOSTER_BASE}/..'],
        ['BOOSTROOT',        '${BOOST_BASE}'],
        ['ANGELROOT',        '${ANGEL_BASE}'],
        ['XAIFSCHEMAROOT',   '${XAIFSCHEMA_BASE}'],
