@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.4 2004-06-23 19:00:42 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.5 2004-06-23 22:51:17 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -113,6 +113,8 @@ my %VerboseType = ('silent'    => 0,
 		   'teengirls' => 4,
 		   );
 
+my $shortCircuitExitVal = 42;
+
 #############################################################################
 ## main/driver
 #############################################################################
@@ -130,76 +132,7 @@ my $openad_input = undef;
 # Parse the command line
 # ----------------------------------------------------------
 
-# Get optional arguments
-my %opts = ();
-my $ret = GetOptions(\%opts, @the_options);
-if (!$ret) { 
-  printErrorAndExit(); 
-}
-
-# Get optional arguments: verbose, help
-$opt_verbose = $VerboseType{normal}; # default
-if (defined($opts{'verbose'})) {
-  $opt_verbose = $opts{'verbose'};
-} 
-if (defined($opts{'help'})) {
-  printUsageAndExit($the_program);
-} 
-
-# Get required argument: OpenAD Mode
-$openad_mode = $xbModeType{BBReverse}; # default
-if (defined($opts{'bb-rev'})) {
-  $openad_mode = $xbModeType{BBReverse};
-} 
-if (defined($opts{'bb-tapeadj'})) {
-  $openad_mode = $xbModeType{BBTapeAdjoint};
-} 
-if (defined($opts{'bb-tape'})) {
-  $openad_mode = $xbModeType{BBTape};
-} 
-if (defined($opts{'bb'})) {
-  $openad_mode = $xbModeType{BB};
-} 
-if (defined($opts{'cfr'})) {
-  $openad_mode = $xbModeType{CFR};
-} 
-if (defined($opts{'linear'})) {
-  $openad_mode = $xbModeType{Linearization};
-} 
-if (defined($opts{'memopstradeoff'})) {
-  $openad_mode = $xbModeType{MemOpsTradeoff};
-} 
-if (!defined($openad_mode)) {
-  printUsageAndExit($the_program);
-}
-
-# Get optional arguments: OpenAD xaif2whirl mode
-$openad_x2w_mode = $x2wModeType{structured}; # default
-if (defined($opts{'x2w-structured'})) {
-  $openad_x2w_mode = $x2wModeType{structured};
-} 
-if (defined($opts{'x2w-unstructured'})) {
-  $openad_x2w_mode = $x2wModeType{unstructured};
-} 
-if (defined($opts{'x2w-bb'})) {
-  $openad_x2w_mode = $x2wModeType{bb};
-} 
-
-# Get optional arguments: normalize, interactive
-if (defined($opts{'normalize'})) {
-  $opt_normalize = 1;
-} 
-if (defined($opts{'interactive'})) {
-  $opt_interactive = 1;
-} 
-
-# Get required arguments
-my $numArgs = scalar(@ARGV);
-if ($numArgs != 1) { 
-  printErrorAndExit("Invalid number of required arguments!\n"); 
-}
-
-$openad_input = $ARGV[0];
+parseCmdLine($0);
 
 # ----------------------------------------------------------
 # Run
@@ -207,9 +140,89 @@ $openad_input = $ARGV[0];
 
 RunOpenADPipeline($openad_mode, $openad_input);
 
+
+##############################################################################
+## parseCmdLine
 #############################################################################
-## Subroutines
-#############################################################################
+
+sub parseCmdLine
+{
+  my ($command) = @_;
+  
+  # Get optional arguments
+  my %opts = ();
+  my $ret = GetOptions(\%opts, @the_options);
+  if (!$ret) { 
+    printErrorAndExit(); 
+  }
+
+  # Get optional arguments: verbose, help
+  $opt_verbose = $VerboseType{normal}; # default
+  if (defined($opts{'verbose'})) {
+    $opt_verbose = $opts{'verbose'};
+  } 
+  if (defined($opts{'help'})) {
+    printUsageAndExit($the_program);
+  } 
+  
+  # Get required argument: OpenAD Mode
+  $openad_mode = $xbModeType{BBReverse}; # default
+  if (defined($opts{'bb-rev'})) {
+    $openad_mode = $xbModeType{BBReverse};
+  } 
+  if (defined($opts{'bb-tapeadj'})) {
+    $openad_mode = $xbModeType{BBTapeAdjoint};
+  } 
+  if (defined($opts{'bb-tape'})) {
+    $openad_mode = $xbModeType{BBTape};
+  } 
+  if (defined($opts{'bb'})) {
+    $openad_mode = $xbModeType{BB};
+  } 
+  if (defined($opts{'cfr'})) {
+    $openad_mode = $xbModeType{CFR};
+  } 
+  if (defined($opts{'linear'})) {
+    $openad_mode = $xbModeType{Linearization};
+  } 
+  if (defined($opts{'memopstradeoff'})) {
+    $openad_mode = $xbModeType{MemOpsTradeoff};
+  } 
+  if (!defined($openad_mode)) {
+    printUsageAndExit($the_program);
+  }
+  
+  # Get optional arguments: OpenAD xaif2whirl mode
+  $openad_x2w_mode = $x2wModeType{structured}; # default
+  if (defined($opts{'x2w-structured'})) {
+    $openad_x2w_mode = $x2wModeType{structured};
+  } 
+  if (defined($opts{'x2w-unstructured'})) {
+    $openad_x2w_mode = $x2wModeType{unstructured};
+  } 
+  if (defined($opts{'x2w-bb'})) {
+    $openad_x2w_mode = $x2wModeType{bb};
+  } 
+  
+  # Get optional arguments: normalize, interactive
+  if (defined($opts{'normalize'})) {
+    $opt_normalize = 1;
+  } 
+  if (defined($opts{'interactive'})) {
+    $opt_interactive = 1;
+  } 
+  
+  # ----------------------------------------------------------
+  # Required arguments
+  # ----------------------------------------------------------
+
+  my $numArgs = scalar(@ARGV);
+  if ($numArgs != 1) { 
+    printErrorAndExit("Invalid number of required arguments!\n"); 
+  }
+  
+  $openad_input = $ARGV[0];
+}
 
 # printUsageAndExit
 sub printUsageAndExit 
@@ -453,6 +466,130 @@ sub undefEnvVarErr
   }
 
 }
+
+# add a SHELL=/bin/sh
+
+
+#############################################################################
+## Generate Makefile commands
+#############################################################################
+
+# genSetVar: Given a variable name and value, generate a makefile
+#   command to set the variable
+# returns: a string
+# effect: nothing
+# assumes: nothing
+sub genSetVar
+{
+  my($var, $value) = @_;
+  
+  if (!defined($value)) { 
+    $value = '';
+  }
+  
+  my $str = "${var}=${value}\n";
+  return $str;
+}
+
+
+# genRule: Given a target string, a prerequisite string, a reference
+#   to a list of commands (or a string with a command; or undef) and
+#   whether target is PHONY or not, generate a makefile rule and return
+#   the string.
+# returns: a string
+# effect: nothing
+# assumes: nothing
+sub genRule
+{
+  my($target, $prereq, $cmds, $phony) = @_;
+
+  # Set up arguments
+  if (!defined($phony)) {
+    $phony = 0;
+  }
+
+  # Generate rule
+  my $str = "${target} : ${prereq}\n";
+  if (defined($cmds)) {
+    if (ref($cmds)) {
+      for my $cmd (@{$cmds}) {
+	$str .= "\t${cmd}\n";
+      }
+    } 
+    else {
+      $str .= "\t${cmds}\n";
+    }
+  }
+  
+  if ($phony) {
+    $str .= ".PHONY : ${target}\n";
+  }
+  
+  return $str;
+}
+
+
+# addCmdWrappers: ??? take a command and add interactive or verbose
+#   wrappers around it
+# returns: a string
+# effect: nothing
+# assumes: nothing
+sub addCmdWrappers
+{
+  my($cmdDescRef, $verbose, $interactive) = @_;
+  
+  my $str = "";
+  
+  # Note: must allow for both verbose and interactive at the same time
+  if ($verbose >= 1) {
+    $str = cmdCat($str, "echo \"$cmdDescRef->{desc}\"");
+  }
+  if ($interactive) {
+    $str = cmdCat($str, "echo \"Execute? '$cmdDescRef->{cmd}'\n...[Y/n]\n\"");
+    $str = cmdCat($str, 'read ans');
+    $str = cmdCat($str, 'if [ "$$ans" = "n" ] || [ "$$ans" = "N" ] ; then');
+    $str = cmdCat($str, "exit $shortCircuitExitVal ; fi");
+  }
+  
+  $str = cmdCat($str, "$cmdDescRef->{cmd}");
+  $str = "@" . $str;
+  
+  return $str;
+}
+
+
+# cmdCat: Given two or more command strings, concatenate them together
+#   to form one command string that will exectute in one shell (one line
+#   of a command in makefile rule)
+# returns: a string
+# effect: nothing
+# assumes: nothing
+sub cmdCat
+{
+  my(@cmds) = @_;
+  
+  my($re1) = qr/^\t/;
+  my($re2) = qr/\n$/;
+
+  my $str = "";
+  for my $cmd (@cmds) {
+    
+    next if (!$cmd);
+
+    # strip off leading tab and ending newline
+    $str =~ s/$re1//;
+    $str =~ s/$re2//;
+
+    # add a semicolon and a line-continue if appending to a non-empty str    
+    if ($str) { 
+      $str .= " ; \\\n";
+    }
+    $str .= "\t${cmd}\n";
+  }
+  
+  return $str;
+}
+
 
 #############################################################################
 
