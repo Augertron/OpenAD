@@ -1,4 +1,4 @@
-$Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/README,v 1.6 2004-06-08 14:35:14 eraxxon Exp $
+$Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/README,v 1.7 2004-06-23 17:34:36 eraxxon Exp $
 
 =============================================================================
 ==
@@ -67,20 +67,6 @@ and at least verify the setting of
   source ./setenv.sh   -or-   source ./setenv.csh
   
 3. Build
-
-For some reason Open64 builds die when launched from this Makefile. How
-lame.
-
-   cd ${OPEN64ROOT}/crayf90/sgi
-   make
-
-   cd ${OPEN64ROOT}/whirl2f
-   make
-
-   cd ${OPEN64ROOT}/ir_tools
-   make
-
-Build other things with a sane build system
 
   cd ${OPENADROOT}
   make
