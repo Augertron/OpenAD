@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.7 2004-05-21 16:39:35 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.8 2004-05-21 17:49:35 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -197,7 +197,7 @@ sub RunGetOpenAD
   my @CVSSelf = ('bin', 'config', 'doc', 'test', 'tools', 
 		 'Makefile*', 'openad_config.pm', 'README*', 'setenv.*');
 
-  # bin config doc test tools openad_config.pm README* setenv.*
+  # bin config doc test tools Makefile* openad_config.pm README* setenv.*
 
   
   # --------------------------------------------------------
@@ -223,7 +223,7 @@ sub RunGetOpenAD
     if (defined($repo->{repos}->{iscvs})) {
       # A CVS repository
       my $nm = $repo->{name};
-      my $env = 'CVS_RSH=' . $repo->{repos}->{rsh};
+      my $env = 'CVS_RSH="' . $repo->{repos}->{rsh} . '"';
       my $opt = '-z5 -d ' . $repo->{repos}->{root};
 
       if ($repoExists) {
