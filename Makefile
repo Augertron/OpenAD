@@ -1,4 +1,4 @@
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.3 2004-06-23 17:34:36 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.4 2004-07-16 20:52:20 eraxxon Exp $
 # -*-makefile-*-
 ## * BeginCopyright *********************************************************
 ## 
@@ -72,84 +72,143 @@ veryclean: open64_veryclean oa_veryclean xercesc_veryclean \
 #############################################################################
 
 open64_build:
-	@echo "*** Building Open64 ***"
-	cd $(OPEN64ROOT)/crayf90/sgi && $(MAKE)
-	cd $(OPEN64ROOT)/whirl2f && $(MAKE)
-	cd $(OPEN64ROOT)/ir_tools && $(MAKE)
+	@if [ -d $(OPEN64ROOT) ]; then \
+	  echo "*** Building Open64 ***" ; \
+	  cd $(OPEN64ROOT)/crayf90/sgi && $(MAKE) ; \
+	  cd $(OPEN64ROOT)/whirl2f && $(MAKE) ; \
+	  cd $(OPEN64ROOT)/ir_tools && $(MAKE) ; \
+	else \
+	  echo "*** Building Open64 -- NON-EXISTENT ***" ; \
+	fi
 
 open64_clean:
-	@echo "*** Cleaning Open64 ***"
-	cd $(OPEN64ROOT) ; $(MAKE) clean
+	@if [ -d $(OPEN64ROOT) ]; then \
+	  echo "*** Cleaning Open64 ***" ; \
+	  cd $(OPEN64ROOT) && $(MAKE) clean ; \
+	else \
+	  echo "*** Cleaning Open64 -- NON-EXISTENT ***" ; \
+	fi
 
 open64_veryclean:
-	@echo "*** Very-Cleaning Open64 ***"
-	cd $(OPEN64ROOT) ; $(MAKE) clobber
+	@if [ -d $(OPEN64ROOT) ]; then \
+	  echo "*** Very-Cleaning Open64 ***" ; \
+	  cd $(OPEN64ROOT) && $(MAKE) clobber ; \
+	else \
+	  echo "*** Very-Cleaning -- NON-EXISTENT ***" ; \
+	fi
 
+.PHONY : open64_build open64_clean open64_veryclean 
+
+############################################################
 
 # FIXME: make a rebuild target for OA and Xercesc Makefiles
 # FIXME: reinstalling this stuff will cause exes like xaifbooster to relink!
 oa_build:
-	@echo "*** Building OA ***"
-	if [ -d $(OPENANALYSIS_BASE)/build-$(PLATFORM) ]; then \
-	  cd $(OPENANALYSIS_BASE) ; $(MAKE) build install ; \
+	@if [ -d $(OPENANALYSIS_BASE) ]; then \
+	  echo "*** Building OA ***" ; \
+	  if [ -d $(OPENANALYSIS_BASE)/build-$(PLATFORM) ]; then \
+	    cd $(OPENANALYSIS_BASE) && $(MAKE) build install ; \
+	  else \
+	    cd $(OPENANALYSIS_BASE) && $(MAKE) ; \
+	  fi \
 	else \
-	  cd $(OPENANALYSIS_BASE) ; $(MAKE) ; \
+	  echo "*** Building OA -- NON-EXISTENT ***" ; \
 	fi
 
 oa_clean:
-	@echo "*** Cleaning OA ***"
-	cd $(OPENANALYSIS_BASE) ; $(MAKE) clean
+	@if [ -d $(OPENANALYSIS_BASE) ]; then \
+	  echo "*** Cleaning OA ***" ; \
+	  cd $(OPENANALYSIS_BASE) && $(MAKE) clean ; \
+	else \
+	  echo "*** Cleaning OA -- NON-EXISTENT ***" ; \
+	fi
 
 oa_veryclean: oa_clean
 
+.PHONY : oa_build oa_clean oa_veryclean 
+
+############################################################
 
 xercesc_build:
-	@echo "*** Building xercesc ***"
-	if [ -d $(XERCESC_BASE)/xerces-c-src_2_3_0/obj/$(XERCESPLATFORM) ]; then \
-	  cd $(XERCESC_BASE) ; $(MAKE) build install ; \
+	@if [ -d $(XERCESC_BASE) ]; then \
+	  echo "*** Building xercesc ***" ; \
+	  if [ -d $(XERCESC_BASE)/xerces-c-src_2_3_0/obj/$(XERCESPLATFORM) ]; then \
+	    cd $(XERCESC_BASE) && $(MAKE) build install ; \
+	  else \
+	    cd $(XERCESC_BASE) && $(MAKE) ; \
+	  fi \
 	else \
-	  cd $(XERCESC_BASE) ; $(MAKE) ; \
+	  echo "*** Building xercesc -- NON-EXISTENT ***" ; \
 	fi
 
 xercesc_clean:
-	@echo "*** Cleaning xercesc ***"
-	cd $(XERCESC_BASE) ; $(MAKE) clean
+	@if [ -d $(XERCESC_BASE) ]; then \
+	  echo "*** Cleaning xercesc ***" ; \
+	  cd $(XERCESC_BASE) && $(MAKE) clean ; \
+	else \
+	  echo "*** Cleaning xercesc -- NON-EXISTENT ***" ; \
+	fi
 
 xercesc_veryclean: xercesc_clean
 
+.PHONY : xercesc_build xercesc_clean xercesc_veryclean 
+
+############################################################
 
 openadforttk_build:
-	@echo "*** Building OpenADFortTk ***"
-	cd $(OPENADFORTTK)/src ; $(MAKE)
+	@if [ -d $(OPENADFORTTK) ]; then \
+	  echo "*** Building OpenADFortTk ***" ; \
+	  cd $(OPENADFORTTK)/src && $(MAKE) ; \
+	else \
+	  echo "*** Building OpenADFortTk -- NON-EXISTENT ***" ; \
+	fi
 
 openadforttk_clean:
-	@echo "*** Cleaning OpenADFortTk -- SKIPPING ***"
+	@if [ -d $(OPENADFORTTK) ]; then \
+	  echo "*** Cleaning OpenADFortTk (skipping) ***" ; \
+	else \
+	  echo "*** Cleaning OpenADFortTk -- NON-EXISTENT ***" ; \
+	fi
 
 openadforttk_veryclean:
-	@echo "*** Very-Cleaning OpenADFortTk ***"
-	cd $(OPENADFORTTK)/src ; $(MAKE) veryclean
+	@if [ -d $(OPENADFORTTK) ]; then \
+	  echo "*** Very-Cleaning OpenADFortTk ***" ; \
+	  cd $(OPENADFORTTK)/src && $(MAKE) veryclean ; \
+	else \
+	  echo "*** Very-Cleaning OpenADFortTk -- NON-EXISTENT ***" ; \
+	fi
 
+.PHONY : openadforttk_build openadforttk_clean openadforttk_veryclean 
+
+############################################################
 
 xaifbooster_build:
-	@echo "*** Building xaifBooster ***"
-	cd $(XAIFBOOSTER_BASE) ; $(MAKE)
-	cd $(ANGEL_BASE) ; $(MAKE)
-	cd $(XAIFBOOSTER_BASE) ; $(MAKE) test
+	@if [ -d $(XAIFBOOSTER_BASE) -a -d $(ANGEL_BASE) ]; then \
+	  echo "*** Building xaifBooster ***" ; \
+	  cd $(XAIFBOOSTER_BASE) && $(MAKE) ; \
+	  cd $(ANGEL_BASE) && $(MAKE) ; \
+	  cd $(XAIFBOOSTER_BASE) && $(MAKE) test ; \
+	else \
+	  echo "*** Building xaifBooster -- NON-EXISTENT ***" ; \
+	fi
 
 xaifbooster_clean:
-	@echo "*** Cleaning xaifBooster -- SKIPPING ***"
+	@if [ -d $(XAIFBOOSTER_BASE) -a -d $(ANGEL_BASE) ]; then \
+	  echo "*** Cleaning xaifBooster (skipping) ***" ; \
+	else \
+	  echo "*** Cleaning xaifBooster -- NON-EXISTENT ***" ; \
+	fi
 
 xaifbooster_veryclean:
-	@echo "*** Very-Cleaning xaifBooster ***"
-	cd $(ANGEL_BASE) ; $(MAKE) clean
-	cd $(XAIFBOOSTER_BASE) ; $(MAKE) clean
+	@if [ -d $(XAIFBOOSTER_BASE) -a -d $(ANGEL_BASE) ]; then \
+	  echo "*** Very-Cleaning xaifBooster ***" ; \
+	  cd $(ANGEL_BASE) && $(MAKE) clean ; \
+	  cd $(XAIFBOOSTER_BASE) && $(MAKE) clean ; \
+	else \
+	  echo "*** Very-Cleaning xaifBooster -- NON-EXISTENT ***" ; \
+	fi
 
-
-.PHONY : open64_build open64_clean open64_veryclean \
-	oa_build oa_clean oa_veryclean \
-	xercesc_build xercesc_clean xercesc_veryclean \
-	openadforttk_build openadforttk_clean openadforttk_veryclean \
-	xaifbooster_build xaifbooster_clean xaifbooster_veryclean
+.PHONY : xaifbooster_build xaifbooster_clean xaifbooster_veryclean
 
 ############################################################
 
