@@ -1,4 +1,4 @@
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.5 2005-03-19 23:42:37 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.6 2005-03-21 15:57:15 eraxxon Exp $
 # -*-makefile-*-
 ## * BeginCopyright *********************************************************
 ## 
@@ -107,7 +107,7 @@ oa_build:
 	@if [ -d $(OPENANALYSIS_BASE) ]; then \
 	  echo "*** Building OA ***" ; \
 	  if [ -d $(OPENANALYSIS_BASE)/build-$(PLATFORM) ]; then \
-	    cd $(OPENANALYSIS_BASE) && $(MAKE) install ; \
+	    cd $(OPENANALYSIS_BASE) && $(MAKE) -f Makefile.quick install ; \
 	  else \
 	    cd $(OPENANALYSIS_BASE) && $(MAKE) -f Makefile.quick all; \
 	  fi \
