@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.1 2004-05-19 15:46:52 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.2 2004-05-19 17:45:29 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -27,6 +27,10 @@ use FindBin qw($Script $RealBin);
 use File::Spec;
 use IO::File;
 use Getopt::Long;
+
+use lib "$RealBin/../libperl";
+use RunCmds qw(%RunCmdDesc RunCmds RunCmd);
+
 
 STDOUT->autoflush(1); 
 
@@ -88,13 +92,6 @@ my ($mode_verb_silent,
     $mode_verb_chatty,
     $mode_verb_teengirls) =
     (0, 1, 2, 3, 4);
-
-
-# CmdDesc: a pipeline command and associated metadata
-my %CmdDesc = (
-	      cmd          => undef,
-	      desc         => undef,
-	      );
 
 #############################################################################
 ## main/driver
@@ -220,6 +217,7 @@ sub printUsageAndExit
   print STDOUT ${the_usage};
   exit(-1);
 }
+
 # printErrorAndExit
 sub printErrorAndExit 
 {
@@ -305,51 +303,53 @@ sub undefEnvVarErr
     # will be passed to system().
     my $cmdDescVecRef = [ ];
 
-    my $desc = { %CmdDesc, }; 
+    my $desc = { %RunCmds::CmdDesc, }; 
     $desc->{cmd} = "$MFEF90 '${fortranfile}'";
     $desc->{desc} = "Fortran to WHIRL: '${fortranfile}' -> '${base}.B'";
     push @{$cmdDescVecRef}, $desc;
 
-    $desc = { %CmdDesc, }; 
+    $desc = { %RunCmds::CmdDesc, }; 
     $desc->{cmd} = "$W2X '${base}.B' -o '${base}.xaif'";
     $desc->{desc} = "WHIRL to XAIF: '${base}.B' -> '${base}.xaif'";
     push @{$cmdDescVecRef}, $desc;
 
     if ($opt_normalize) {
-      $desc = { %CmdDesc, }; 
+      $desc = { %RunCmds::CmdDesc, }; 
       $desc->{cmd} = "$NORM '${base}.xaif'";
       $desc->{desc} = "Normalize XAIF: '${base}.xaif'";
       push @{$cmdDescVecRef}, $desc;
     }
     
-    $desc = { %CmdDesc, }; 
+    $desc = { %RunCmds::CmdDesc, }; 
     $desc->{cmd} = "$XB -i '${base}.xaif' -o '${base}.xb.xaif'";
     $desc->{desc} = "xaifBooster: '${base}.xaif' -> '${base}.xb.xaif'";
     push @{$cmdDescVecRef}, $desc;
     
-    $desc = { %CmdDesc, }; 
+    $desc = { %RunCmds::CmdDesc, }; 
     $desc->{cmd} = "$X2W $x2w_opt '${base}.B' '${base}.xb.xaif' -o '${base}.xb.x2w.B'";
     $desc->{desc} = "XAIF to WHIRL: ('${base}.B' '${base}.xb.xaif') -> '${base}.xb.x2w.B'";
     push @{$cmdDescVecRef}, $desc;
 
-    $desc = { %CmdDesc, }; 
+    $desc = { %RunCmds::CmdDesc, }; 
     $desc->{cmd} = "$WHIRL2F '${base}.xb.x2w.B'";
     $desc->{desc} = "WHIRL to Fortran: '${base}.xb.x2w.B' -> '${base}.xb.x2w.w2f.f'";
     push @{$cmdDescVecRef}, $desc;
 
     if ($opt_normalize) {
-      $desc = { %CmdDesc, }; 
+      $desc = { %RunCmds::CmdDesc, }; 
       $desc->{cmd} = "$NORM '${base}.xb.x2w.w2f.f'";
       $desc->{desc} = "Normalize Fortran: '${base}.xb.x2w.w2f.f'";
       push @{$cmdDescVecRef}, $desc;
     }
     
-    $desc = { %CmdDesc, }; 
+    $desc = { %RunCmds::CmdDesc, }; 
     $desc->{cmd} = "$PP -f '${base}.xb.x2w.w2f.f'";
     $desc->{desc} = "Postprocess Fortran: '${base}.xb.x2w.w2f.f' -> '${base}.xb.x2w.w2f.pp.f'";
     push @{$cmdDescVecRef}, $desc;
     
-    RunCmds($cmdDescVecRef, $opt_verbose, $opt_interactive);
+    my $verb = $opt_verbose - $mode_verb_terse; # normal goes to 1
+
+    RunCmds($cmdDescVecRef, $verb, $opt_interactive);
 
     if ($opt_verbose >= $mode_verb_normal) {
       print STDOUT "\n";
@@ -451,50 +451,6 @@ sub undefEnvVarErr
     }
   }
 
-  sub RunCmds
-  {
-    my($cmdDescVecRef, $verbose, $interactive) = @_;
-    
-    for my $desc (@{$cmdDescVecRef}) {
-      if ($verbose >= $mode_verb_normal) {
-	print STDOUT $desc->{desc}, "\n";
-      }
-      if ($interactive) {
-	print STDOUT "Execute? '$desc->{cmd}'\n";
-	print STDOUT "...[Y/n]\n";
-	my $ans = <STDIN>;
-	chomp($ans);
-	if (defined($ans) && ($ans eq 'n' || $ans eq 'N')) {
-	  last;
-	}
-      }
-      RunCmd($desc->{cmd}, $verbose); 
-    }
-  }
-
-  sub RunCmd
-  {
-    my($cmd, $verbose) = @_;
-
-    my $outfile = "./OpenAD-out.tmp~";
-    $cmd .= " > ${outfile} 2>&1";
-
-    if ($verbose >= $mode_verb_chatty) {
-      print STDOUT "OpenAD: Executing '${cmd}'\n";
-    }
-
-    if (system($cmd) != 0) {
-      my $exit_value  = $? >> 8;
-      my $signal_num  = $? & 127;
-      my $dumped_core = $? & 128;  
-      print STDERR "*** OpenAD failure (exit: $exit_value) ***\n";
-      print STDERR "$cmd\n";
-      system("cat ${outfile}");
-      exit(-1);
-    } else {
-      unlink($outfile);
-    }
-  }
 }
 
 #############################################################################
