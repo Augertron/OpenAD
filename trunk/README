@@ -1,4 +1,4 @@
-$Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/README,v 1.8 2004-07-16 16:31:44 eraxxon Exp $
+$Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/README,v 1.9 2004-10-18 15:23:54 utke Exp $
 
 =============================================================================
 ==
@@ -18,56 +18,59 @@ Contents:
 0. What is OpenAD:
 --------------------
 
-OpenAD is a <FIXME>.
+  OpenAD is a <FIXME>.
 
-OpenAD is an effort of <FIXME>.
+  OpenAD is an effort of <FIXME>.
 
-Development was supported in part though <FIXME>
+  Development was supported in part though <FIXME>
 
 =============================================================================
 
 1. For More Information:
---------------------
+----------------------------------------------
 
-OpenAD documentation: Point your browser to <FIXME>
+  OpenAD Website and documentation: 
+  http://www-unix.mcs.anl.gov/~utke/OpenAD
 
-OpenAD Website: <FIXME>
-
-See README.Index in this directory.
+  See README.Index in this directory.
 
 =============================================================================
 
 2. Temporary Getting and Building Instructions:
---------------------
+-----------------------------------------------
 
 1. Get the rest of the repository using 'goad'.  
 
-('goad' is a tool for getting and updating OpenAD repositories.  It
-can be customized to support many disparate repositories and
-non-standard local installations of the same, but this feature will
-typically only be used by developers who need repository write access
-or the ability to switch betweeen different versions of a local
-repository.)
+  ('goad' is a tool for getting and updating OpenAD repositories.  It
+  can be customized to support many disparate repositories and
+  non-standard local installations of the same, but this feature will
+  typically only be used by developers who need repository write access
+  or the ability to switch betweeen different versions of a local
+  repository.)
 
-Developers should check the configuration file, openad_config.pm,
-and at least verify the setting of 
-  riceUser
-  $OPENAD_REPO_RICECVS->{rsh}
-  anlUser
+  The default setup allows read-only access to the repositories with 
+  the following command: 
 
-  ./bin/goad
+  	./bin/goad
 
-*** Make sure you have your private ANL SSH key.
-
-2. Set the environment
+2. Set the environment:
 
   (The environment settings are built dynamically using the
   configuration file, openad_config.pm.  No need to tinker.)
 
-  source ./setenv.sh   -or-   source ./setenv.csh
+  	source ./setenv.sh   -or-   source ./setenv.csh
   
 3. Build
 
-  cd ${OPENADROOT}
-  make
+ 	cd ${OPENADROOT}
+  	make
 
+4. Write Access for Developers
+
+  Developers seeking write access should check the configuration file, 
+  openad_config.pm, and verify the setting of 
+    riceUser
+    $OPENAD_REPO_RICECVS->{rsh}
+    anlUser
+  Refer to the website for 
+  further information.

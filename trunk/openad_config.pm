@@ -1,5 +1,5 @@
 # -*-Mode: perl;-*-
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.9 2004-09-30 21:15:10 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.10 2004-10-18 15:23:54 utke Exp $
 
 #############################################################################
 ##
@@ -60,15 +60,15 @@ $OPENAD_REPO_RICECVS->{root} =
 # Argonne Bitkeeper
 ##################################################
 
-my $anlUser = $defaultUser;
+#my $anlUser = $defaultUser;
 
 #my $OPENAD_REPO_ANLBK_XB = { %RepositoryTools::BKReposDesc, }; 
 #$OPENAD_REPO_ANLBK_XB->{root} =
 #   $anlUser . '@terra.mcs.anl.gov:/home/derivs/share/xaifBooster';
 
-my $OPENAD_REPO_ANLBK_ANGEL = { %RepositoryTools::BKReposDesc, }; 
-$OPENAD_REPO_ANLBK_ANGEL->{root} = $anlUser . 
-    '@terra.mcs.anl.gov:/home/utke/BK_Reps/CODE/angel';
+#my $OPENAD_REPO_ANLBK_ANGEL = { %RepositoryTools::BKReposDesc, }; 
+#$OPENAD_REPO_ANLBK_ANGEL->{root} = $anlUser . 
+#    '@terra.mcs.anl.gov:/home/utke/BK_Reps/CODE/angel';
 
 ##################################################
 # Bkbits Bitkeeper Repositories
@@ -84,10 +84,10 @@ $OPENAD_REPO_BK_XAIF->{root} = 'http://xaif.bkbits.net/xaif-1.0';
 # SourceForge CVS Repositories
 ##################################################
 
-#my $OPENAD_REPO_SF_ANGEL = { %RepositoryTools::CVSReposDesc, }; 
-#$OPENAD_REPO_SF_ANGEL->{rsh} = 'pserver';
-#$OPENAD_REPO_SF_ANGEL->{root} = 
-#    ':pserver:anonymous@cvs.sourceforge.net:/cvsroot/angellib';
+my $OPENAD_REPO_SF_ANGEL = { %RepositoryTools::CVSReposDesc, }; 
+$OPENAD_REPO_SF_ANGEL->{rsh} = 'pserver';
+$OPENAD_REPO_SF_ANGEL->{root} = 
+    ':pserver:anonymous@cvs.sourceforge.net:/cvsroot/angellib';
 
 my $OPENAD_REPO_SF_BOOST = { %RepositoryTools::CVSReposDesc, }; 
 $OPENAD_REPO_SF_BOOST->{rsh} = 'pserver';
@@ -132,7 +132,7 @@ $OPENAD_XAIFBOOSTER->{var}   = 'XAIFBOOSTER_BASE';
 my $OPENAD_ANGEL = { %RepositoryTools::RepositoryDesc, };
 $OPENAD_ANGEL->{name}  = 'angel';
 $OPENAD_ANGEL->{path}  = "$TheRealBin";
-$OPENAD_ANGEL->{repos} = $OPENAD_REPO_ANLBK_ANGEL;
+$OPENAD_ANGEL->{repos} = $OPENAD_REPO_SF_ANGEL;
 $OPENAD_ANGEL->{var}   = 'ANGEL_BASE';
 
 my $OPENAD_BOOST = { %RepositoryTools::RepositoryDesc, };
