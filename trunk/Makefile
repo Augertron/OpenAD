@@ -1,4 +1,4 @@
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.7 2005-03-24 19:31:56 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.8 2005-03-25 14:58:18 eraxxon Exp $
 # -*-makefile-*-
 ## * BeginCopyright *********************************************************
 ## 
@@ -103,13 +103,15 @@ open64_veryclean:
 
 # FIXME: make a rebuild target for OA and Xercesc Makefiles
 # FIXME: reinstalling this stuff will cause exes like xaifbooster to relink!
+OA_OPT = -f Makefile.quick CXX="$(CXX)"
+
 oa_build:
 	@if [ -d $(OPENANALYSIS_BASE) ]; then \
 	  echo "*** Building OA ***" ; \
 	  if [ -d $(OPENANALYSIS_BASE)/build-$(PLATFORM) ]; then \
-	    cd $(OPENANALYSIS_BASE) && $(MAKE) -f Makefile.quick install ; \
+	    cd $(OPENANALYSIS_BASE) && $(MAKE) $(OA_OPT) install ; \
 	  else \
-	    cd $(OPENANALYSIS_BASE) && $(MAKE) -f Makefile.quick all; \
+	    cd $(OPENANALYSIS_BASE) && $(MAKE) $(OA_OPT) all; \
 	  fi \
 	else \
 	  echo "*** Building OA -- NON-EXISTENT ***" ; \
@@ -118,7 +120,7 @@ oa_build:
 oa_clean:
 	@if [ -d $(OPENANALYSIS_BASE) ]; then \
 	  echo "*** Cleaning OA ***" ; \
-	  cd $(OPENANALYSIS_BASE) && $(MAKE) -f Makefile.quick clean ; \
+	  cd $(OPENANALYSIS_BASE) && $(MAKE) $(OA_OPT) clean ; \
 	else \
 	  echo "*** Cleaning OA -- NON-EXISTENT ***" ; \
 	fi
@@ -129,13 +131,15 @@ oa_veryclean: oa_clean
 
 ############################################################
 
+XERCESC_OPT = CXX="$(CXX)" CC="$(CC)"
+
 xercesc_build:
 	@if [ -d $(XERCESC_BASE) ]; then \
 	  echo "*** Building xercesc ***" ; \
 	  if [ -d $(XERCESC_BASE)/xerces-c-src_2_6_0/obj/$(XERCESPLATFORM) ]; then \
-	    cd $(XERCESC_BASE) && $(MAKE) build install ; \
+	    cd $(XERCESC_BASE) && $(MAKE) $(XERCESC_OPT) build install ; \
 	  else \
-	    cd $(XERCESC_BASE) && $(MAKE) ; \
+	    cd $(XERCESC_BASE) && $(MAKE) $(XERCESC_OPT) ; \
 	  fi \
 	else \
 	  echo "*** Building xercesc -- NON-EXISTENT ***" ; \
@@ -144,7 +148,7 @@ xercesc_build:
 xercesc_clean:
 	@if [ -d $(XERCESC_BASE) ]; then \
 	  echo "*** Cleaning xercesc ***" ; \
-	  cd $(XERCESC_BASE) && $(MAKE) clean ; \
+	  cd $(XERCESC_BASE) && $(MAKE) $(XERCESC_OPT) clean ; \
 	else \
 	  echo "*** Cleaning xercesc -- NON-EXISTENT ***" ; \
 	fi
