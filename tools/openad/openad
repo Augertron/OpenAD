@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.5 2004-06-23 22:51:17 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.6 2004-06-24 22:28:10 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -291,10 +291,12 @@ sub undefEnvVarErr
     #print STDOUT "$XB\n";
     # Will have to do this after some preprocessing...
     my $x2w_opt = "";
+    my $pp_opt = "";
     if ($openad_mode == $xbModeType{BB} 
 	|| $openad_mode == $xbModeType{Linearization} 
 	|| $openad_mode == $xbModeType{MemOpsTradeoff}) {
       $x2w_opt .= " --mode=forward";
+      $pp_opt .= " -f";
     }
     elsif ($openad_mode == $xbModeType{BBReverse} 
 	   || $openad_mode == $xbModeType{BBTapeAdjoint}
@@ -316,12 +318,12 @@ sub undefEnvVarErr
     # Generate commands for pipeline.  Quote all files since these commands
     # will be passed to system().
     my $cmdDescVecRef = [ ];
-
+    
     my $desc = { %RunCmds::CmdDesc, }; 
     $desc->{cmd} = "$MFEF90 '${fortranfile}'";
     $desc->{desc} = "Fortran to WHIRL: '${fortranfile}' -> '${base}.B'";
     push @{$cmdDescVecRef}, $desc;
-
+    
     $desc = { %RunCmds::CmdDesc, }; 
     $desc->{cmd} = "$W2X '${base}.B' -o '${base}.xaif'";
     $desc->{desc} = "WHIRL to XAIF: '${base}.B' -> '${base}.xaif'";
@@ -357,7 +359,7 @@ sub undefEnvVarErr
     }
     
     $desc = { %RunCmds::CmdDesc, }; 
-    $desc->{cmd} = "$PP -f '${base}.xb.x2w.w2f.f'";
+    $desc->{cmd} = "$PP $pp_opt '${base}.xb.x2w.w2f.f'";
     $desc->{desc} = "Postprocess Fortran: '${base}.xb.x2w.w2f.f' -> '${base}.xb.x2w.w2f.pp.f'";
     push @{$cmdDescVecRef}, $desc;
     
@@ -441,7 +443,8 @@ sub undefEnvVarErr
     $f90_RE = '.f90$';
 
     ConfigSchema();
-
+    ConfigPPFiles();
+    
     $configured = 1;
   }
 
@@ -453,19 +456,39 @@ sub undefEnvVarErr
       return;
     }
     
-    # Link files
     @schemafiles = glob("${XAIFSCHEMAROOT}/schema/xaif*.xsd");
-    for my $path (@schemafiles) {
+    LinkFiles(\@schemafiles);
+  }
+
+  sub ConfigPPFiles
+  {
+    # Check if files already exist
+    if (-f './ad_inline.f' && -f './ad_template.f') {
+      return;
+    }
+    
+    my $pfx = "${XAIFBOOSTERROOT}/xaifBooster/testRoundTrip";
+    my @ppfiles = ("${pfx}/ad_inline.f", "${pfx}/ad_template.f");
+    LinkFiles(\@ppfiles);
+  }
+
+
+  sub LinkFiles
+  {
+    my ($pathnmsRef) = @_;
+    for my $path (@{$pathnmsRef}) {
       my ($vol,$dir,$file) = File::Spec->splitpath($path);
       if (${PLATFORM} eq "i686-Cygwin") {
 	link($path, "./$file") or die "Error: could not link $path";
       } else {
-	symlink($path, "./$file") or die "Error: could not link $path"
+	symlink($path, "./$file") or die "Error: could not link $path";
       }
     }
   }
 
 }
+
+
 
 # add a SHELL=/bin/sh
 
