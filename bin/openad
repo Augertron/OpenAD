@@ -1,0 +1,40 @@
+#! /usr/bin/env perl
+# -*-Mode: perl;-*-
+
+# make sure we execute perl
+#eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+#& eval 'exec perl -S $0 $argv:q'
+#if 0;
+
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/bin/openad,v 1.1 2004-05-19 15:47:36 eraxxon Exp $
+## * BeginCopyright *********************************************************
+## 
+## 
+## *********************************************************** EndCopyright *
+
+#############################################################################
+##
+## $Source: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/bin/openad,v $ 
+##
+##   Nathan Tallent.
+##
+#############################################################################
+
+use strict;
+use warnings;
+
+use FindBin qw($Script $RealBin);
+
+my $toolsdir = "$RealBin/../tools";
+my $realscript = "$toolsdir/$Script/$Script";
+
+# complain if target script is not present
+if ( ! -x $realscript ) {
+    die "$realscript does not exist or is not executable."
+}
+
+my @realcmd = ($realscript, @ARGV);
+#print("@realcmd\n");
+
+exec { $realcmd[0] } @realcmd;
+die "couldn't exec $realscript: $!"; 
