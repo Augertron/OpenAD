@@ -1,4 +1,4 @@
-$Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/README,v 1.2 2004-05-21 15:06:55 eraxxon Exp $
+$Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/README,v 1.3 2004-05-21 19:44:55 eraxxon Exp $
 
 =============================================================================
 ==
@@ -47,14 +47,46 @@ can be customized to support many disparate repositories and
 non-standard local installations of the same, but this feature will
 typically only be used by developers who need repository write access
 or the ability to switch betweeen different versions of a local
-repository.  The default configuration file is ./openad_config.pm.)
+repository.)
+
+Developers should at check the configuration file, openad_config.pm,
+and at least verify the setting of 
+  riceUser
+  $OPENAD_REPO_RICECVS->{rsh}
+  anlUser
 
   ./bin/goad
 
+*** Make sure you have your private ANL SSH key.
+
 2. Set the environment
+
+  (The environment settings are built dynamically using the
+  configuration file, openad_config.pm.  No need to tinker.)
 
   source setenv.sh -or- source setenv.csh
   
-3. 
+3. Build
 
+*** WARNING *** 
+At the moment this make doesn't properly handle partial rebuilds for
+repositories like OpenAnalysis.  Instead OpenAnalysis will be
+completely rebuilt each time.  I'll fix this in the future.
+*** WARNING *** 
+
+For some reason Open64 breaks when built recursively from make. How lame.
+
+   cd ${OPEN64ROOT}/crayf90/sgi
+   make
+
+   cd ${OPEN64ROOT}/whirl2f 
+   make
+
+   cd ${OPEN64ROOT}/ir_tools
+   make
+
+Build other things with a sane build system
+
+  cd ${OPENADROOT}
+  make
 
