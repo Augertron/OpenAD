@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.13 2004-09-28 20:19:33 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.14 2004-09-28 22:08:10 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -31,7 +31,7 @@ use Getopt::Long;
 use POSIX qw(strftime);
 
 use lib "$RealBin/../libperltk";
-use RunCmds qw(%CmdDesc RunCmds RunCmd);
+use RepositoryTools qw(RunRepositoryUpdate);
 
 use lib "$RealBin/../..";
 use openad_config;
@@ -124,17 +124,19 @@ parseOptions($0);
 # ----------------------------------------------------------
 
 my $config = openad_config->new();
+my $repositories = $config->getRepos();
 my $opts = { 
-  selfonly   => $opt_selfonly,
-  skipupdate => $opt_skipupdate,
-  verbose    => $opt_verbose - $mode_verb_terse, # normal goes to 1
-  logfnm     => prepareLogFile(),
-  debug      => $opt_debug,
+  selfonly    => $opt_selfonly,
+  skipupdate  => $opt_skipupdate,
+  interactive => $opt_interactive,
+  verbose     => $opt_verbose - $mode_verb_terse, # normal goes to 1
+  logfnm      => prepareLogFile(),
+  debug       => $opt_debug,
 };
 
 print STDOUT "Sending output to '" . $opts->{logfnm} . "'\n";
 
-RunRepositoryUpdate($OpenADRoot, $cvsSelfRepo, $config, $opts);
+RunRepositoryUpdate($OpenADRoot, $cvsSelfRepo, $repositories, $opts);
 
 exit(0);
 
@@ -231,121 +233,6 @@ sub prepareLogFile
   
   return $logfnm;
 }
-
-
-# RunRepositoryUpdate: Given several arguments, perform a get or
-# update on a repository that itself contains other cvs or bitkeeper
-# repositories.
-#   selfRoot     - the root of the shell CVS repository
-#   selfCVSFiles - list of shell globs representing the shell CVS repository
-#   otherConfig  - config file defining other repository info
-#   opts         - a hash of options
-#     'selfonly'   - update only the shell repository (boolean)
-#     'skipupdate' - do not update an existing repository (boolean)
-#     'verbose'    - 0 (no), 1 (moderate) or 2 (extreme)
-#     'logfnm'     - if defined, the name of a log file to which all output
-#                    should be sent
-#     'debug'      - if defined, a debug level from 0 - 9
-sub RunRepositoryUpdate 
-{
-  my($selfRoot, $selfCVSFiles, $otherConfig, $opts) = @_;
-  
-  my $cmdDescVecRef = [ ];
-  my $desc = undef;
-  
-  my $selfonly   = (defined($opts->{selfonly})) ? $opts->{selfonly} : 0;
-  my $skipupdate = (defined($opts->{skipupdate})) ? $opts->{skipupdate} : 0;
-  my $verbose    = (defined($opts->{verbose})) ? $opts->{verbose} : 0;
-  my $debug      = (defined($opts->{debug})) ? $opts->{debug} : 0;
-
-  # --------------------------------------------------------
-  # Generate commands for self (always a cvs update)
-  # --------------------------------------------------------
-
-  if ($selfonly) {
-    my $selfFiles = '';
-    for my $x (@{$selfCVSFiles}) {
-      $selfFiles .= ' ' . $x;
-    }
-    
-    $desc = { %RunCmds::CmdDesc, };  
-    $desc->{cmd} = "cd ${selfRoot} ; cvs update ${selfFiles}";
-    $desc->{desc} = "cvs update ${selfRoot}";
-    push(@{$cmdDescVecRef}, $desc); 
-  }
-
-  # --------------------------------------------------------
-  # Generate commands for sub repositories
-  # --------------------------------------------------------
-  
-  if (!$selfonly) {
-    my $OpenADRepos = $otherConfig->getRepos();
-  
-    for my $repo (@{$OpenADRepos}) {
-      
-      # if we don't have repository info, then this is external to us
-      next if (!defined($repo->{repos}));
-      
-      my $repoPath = $repo->{path} . '/' . $repo->{name};
-      my $repoExists = (-d $repoPath);
-      my $repoTag = (defined($repo->{tag})) ? $repo->{tag} : "default";
-      #print("--> $repoPath\n");
-      
-      next if ($repoExists && $skipupdate);
-      
-      # Either checkout or update the repository
-      $desc = { %RunCmds::CmdDesc, };
-      
-      if (defined($repo->{repos}->{iscvs})) {
-	# A CVS repository
-	my $nm = $repo->{name};
-	my $env = 'CVS_RSH="' . $repo->{repos}->{rsh} . '"';
-	my $opt = '-z5 -d ' . $repo->{repos}->{root};
-	my $tag = $repoTag;
-	
-	if ($repoExists) {
-	  $desc->{cmd} = "cd ${repoPath} ; ${env} cvs ${opt} update";
-	  $desc->{desc} = "cvs update ${repoPath} (${tag})";
-	}
-	else {
-	  my $coopt = (defined($repo->{tag})) ? "-r " . $tag : "";
-	  $desc->{cmd} = "cd $repo->{path} ; ${env} cvs ${opt} co ${coopt} ${nm}";
-	  $desc->{desc} = "cvs checkout ${repoPath} (${tag})";
-	}
-      } 
-      elsif (defined($repo->{repos}->{isbk})) {
-	# A BitKeeper repository
-	my $nm = $repo->{name};
-	my $arg = $repo->{repos}->{root};
-	my $tag = $repoTag;
-	
-	if ($repoExists) {
-	  $desc->{cmd} = "cd ${repoPath} ; bk pull";
-	  $desc->{desc} = "bk pull ${repoPath} (${tag})";
-	}
-	else {
-	  $desc->{cmd} = "cd $repo->{path} ; bk clone ${arg}";
-	  $desc->{desc} = "bk clone ${repoPath} (${tag})";
-	}
-      }
-      else {
-	die "Programming Error!";
-      }
-      
-      push(@{$cmdDescVecRef}, $desc);
-    }
-  }
-  
-  # --------------------------------------------------------
-  # Run commands
-  # --------------------------------------------------------
-  if ($debug) {
-    print STDOUT "--> ", $opts->{logfnm}, "\n";
-  }
-
-  RunCmds($cmdDescVecRef, $verbose, $opt_interactive, $opts->{logfnm});
-}
-
 
 #############################################################################
 
