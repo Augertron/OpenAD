@@ -1,4 +1,4 @@
-$Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/README,v 1.7 2004-06-23 17:34:36 eraxxon Exp $
+$Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/README,v 1.8 2004-07-16 16:31:44 eraxxon Exp $
 
 =============================================================================
 ==
@@ -37,7 +37,7 @@ See README.Index in this directory.
 
 =============================================================================
 
-2. For More Information:
+2. Temporary Getting and Building Instructions:
 --------------------
 
 1. Get the rest of the repository using 'goad'.  
