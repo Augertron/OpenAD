@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.4 2004-05-20 15:36:04 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.5 2004-05-20 21:36:13 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -31,8 +31,13 @@ use Getopt::Long;
 use lib "$RealBin/../libperl";
 use RunCmds qw(%CmdDesc RunCmds RunCmd);
 
+use lib "$RealBin/../..";
+use openad_config;
+
 
 STDOUT->autoflush(1); 
+
+#############################################################################
 
 my $the_program = $Script;
 my $the_usage = 
@@ -41,11 +46,9 @@ my $the_usage =
 Get (or update) OpenAD repositories.  Requires cvs and bitkeeper.
 
 Plans: 
-  - create a conf file to support abnormal (development) checkouts.
   - save all output into one log file
   
 Options:
-  --useranl=<ANL user name> [temporary]
   --skip-update  -- do not update existing repositories; only get new ones
 
   -v [lvl], --verbose [lvl]
@@ -62,8 +65,7 @@ Development options:
     prompt user to authorize each command
 \n";
 
-my @the_options = ('useranl=s',
-		   'skip-update',
+my @the_options = ('skip-update',
 		   
 		   'verbose|v:i',
 		   'help|h', 
@@ -79,11 +81,6 @@ my ($mode_verb_silent,
     $mode_verb_teengirls) =
     (0, 1, 2, 3, 4);
 
-# CmdDesc: a pipeline command and associated metadata
-my %CVSDesc = (rsh          => undef,
-	       root         => undef, );
-my %BKDesc = (user          => undef, );
-
 #############################################################################
 ## main/driver
 #############################################################################
@@ -93,11 +90,6 @@ my $opt_interactive = undef;
 #my $opt_debug = 0;
 
 my $opt_skipupdate = 0;
-
-# references to a 'CVSDesc' and 'BKDesc'
-my ($opt_cvsRice, $opt_cvsANL, $opt_cvsSF, $opt_bkANL) = 
-    (undef, undef, undef, undef);
-my $opt_userArgonne = undef;
 
 # ----------------------------------------------------------
 # Parse the command line
@@ -141,10 +133,7 @@ sub parseOptions
     $opt_interactive = 1;
   } 
 
-  # Get optional arguments: useranl, skip-update
-  if (defined($opts{'useranl'})) {
-    $opt_userArgonne = $opts{'useranl'};
-  } 
+  # Get optional arguments: skip-update
   if (defined($opts{'skip-update'})) {
     $opt_skipupdate = 1;
   } 
@@ -155,29 +144,6 @@ sub parseOptions
   if ($numArgs != 0) { 
     printErrorAndExit("Invalid number of required arguments!\n"); 
   }
-  
-  
-  # Set CVS stuff
-  my $user = $ENV{'USER'};
-  if (defined($opt_userArgonne)) {
-    $user = $opt_userArgonne;
-  }
-  
-  $opt_cvsRice         = { %CVSDesc, }; 
-  $opt_cvsRice->{rsh}  = "$RealBin/../sshcvs/sshcvs-hipersoft-anon";
-  $opt_cvsRice->{root} = 
-      ':ext:anoncvs@koolkat2.cs.rice.edu:/Volumes/cvsrep/developer';
-  
-  $opt_cvsANL         = { %CVSDesc, }; 
-  $opt_cvsANL->{rsh}  = 'ssh';
-  $opt_cvsANL->{root} = ':ext:' . $user . '@terra.mcs.anl.gov:/homes/utke/***';
-  
-  $opt_cvsSF         = { %CVSDesc, }; 
-  $opt_cvsSF->{rsh}  = "''";
-  $opt_cvsSF->{root} = ':pserver:anonymous@cvs.sourceforge.net:/cvsroot';
-  
-  $opt_bkANL         = { %BKDesc, }; 
-  $opt_bkANL->{user} = $user . '@terra.mcs.anl.gov';
 }
 
 
@@ -219,101 +185,73 @@ sub RunGetOpenAD
 {
   #my($mode) = @_;
   
-  my @CVSSelf = ('bin', 'doc', 'test', 'tools', 'README.*', 'xercesc');
-  
-  my @CVSReposRice = ('Open64', 'OpenADFortTk', 'OpenAnalysis', 'xercesc');
-  my $EnvRice = 'CVS_RSH=' . $opt_cvsRice->{rsh};
-  my $OptRice = '-z5 -d ' . $opt_cvsRice->{root};
-  
-  my $EnvSF = 'CVS_RSH=' . $opt_cvsSF->{rsh};
-  my $OptSF = '-z5 -d ' . $opt_cvsSF->{root};
-  
-  #my @BKReposANL = ('/home/utke/bk_tmpRep/xaifBooster_CFR/xaifBooster', 
-  #		    '/home/utke/BK_Reps/CODE/angel');
-  
-  # $opt_cvsANL
-  
-  # --------------------------------------------------------
-  # Generate commands
-  # --------------------------------------------------------
   my $cmdDescVecRef = [ ];
   my $desc = undef;
+
+  # --------------------------------------------------------
+  # Generate commands for self
+  # --------------------------------------------------------
   
   # FIXME: generate commands to update OpenAD directories and files
   # (cannot just run cvs update)
+  my @CVSSelf = ('bin', 'doc', 'test', 'tools', 'README.*', 'xercesc');
 
-  # Rice Hipersoft repositories
-  for my $repo (@CVSReposRice) {
+  
+  # --------------------------------------------------------
+  # Generate commands for sub repositories
+  # --------------------------------------------------------
+  my $config = openad_config->new();
+  my $OpenADRepos = $config->getRepos();
+  
+  for my $repo (@{$OpenADRepos}) {
+
+    # if we don't have repository info, then this is external to us
+    next if (!defined($repo->{repos}));
+    
+    my $repoPath = $repo->{path} . '/' . $repo->{name};
+    my $repoExists = (-d $repoPath);
+    #print("--> $repoPath\n");
+    
+    next if ($repoExists && $opt_skipupdate);
+
+    # Either checkout or update the repository
     $desc = { %RunCmds::CmdDesc, };
-    if (-d "./${repo}") {
-      if (!$opt_skipupdate) {
-	$desc->{cmd} = "${EnvRice} cvs ${OptRice} update ${repo}";
-	$desc->{desc} = "cvs update ${repo} (Rice)";
+    
+    if (defined($repo->{repos}->{iscvs})) {
+      # A CVS repository
+      my $nm = $repo->{name};
+      my $env = 'CVS_RSH=' . $repo->{repos}->{rsh};
+      my $opt = '-z5 -d ' . $repo->{repos}->{root};
+
+      if ($repoExists) {
+	$desc->{cmd} = "cd ${repoPath} ; ${env} cvs ${opt} update";
+	$desc->{desc} = "cvs update ${repoPath}";
+      }
+      else {
+	$desc->{cmd} = "cd $repo->{path} ; ${env} cvs ${opt} co ${nm}";
+	$desc->{desc} = "cvs checkout ${repoPath}";
+      }
+    } 
+    elsif (defined($repo->{repos}->{isbk})) {
+      # A BitKeeper repository
+      my $nm = $repo->{name};
+      my $arg = $repo->{repos}->{root};
+      
+      if ($repoExists) {
+	$desc->{cmd} = "cd ${repoPath} ; bk pull";
+	$desc->{desc} = "bk pull ${repoPath}";
+      }
+      else {
+	$desc->{cmd} = "cd $repo->{path} ; bk clone ${arg}";
+	$desc->{desc} = "bk clone ${repoPath}";
       }
     }
     else {
-      $desc->{cmd} = "${EnvRice} cvs ${OptRice} co ${repo}";
-      $desc->{desc} = "cvs co ${repo} (Rice)";
+      die "Programming Error!";
     }
-    push(@{$cmdDescVecRef}, $desc) if (defined($desc->{cmd}));
+    
+    push(@{$cmdDescVecRef}, $desc);
   }
-  
-  # xaifBooster
-  $desc = { %RunCmds::CmdDesc, }; 
-  if (-d './xaifBooster') {
-    if (!$opt_skipupdate) {
-      $desc->{cmd} = 'cd ./xaifBooster ; bk pull';
-      $desc->{desc} = 'bk pull xaifBooster (ANL)';
-    }
-  }
-  else {
-    $desc->{cmd} = 'bk clone ' . $opt_bkANL->{user} . 
-	':/home/utke/bk_tmpRep/xaifBooster_CFR/xaifBooster';
-    $desc->{desc} = 'bk clone xaifBooster (ANL)';
-  }
-  push(@{$cmdDescVecRef}, $desc) if (defined($desc->{cmd}));
-  
-  # angel
-  $desc = { %RunCmds::CmdDesc, }; 
-  if (-d './angel') { 
-    if (!$opt_skipupdate) {
-      $desc->{cmd} = 'cd ./angel ; bk pull';
-      $desc->{desc} = 'bk pull angel (ANL)';
-    }
-  }
-  else {
-    $desc->{cmd} = 'bk clone ' . $opt_bkANL->{user} . 
-	':/home/utke/BK_Reps/CODE/angel';
-    $desc->{desc} = 'bk clone angel (ANL)';
-  }
-  push(@{$cmdDescVecRef}, $desc) if (defined($desc->{cmd}));
-  
-  # boost
-  $desc = { %RunCmds::CmdDesc, }; 
-  if (-d './boost') { 
-    # FIXME: skip this for now
-  }
-  else {
-    $desc->{cmd} = "${EnvSF} cvs ${OptSF}/boost login ; cvs ${OptSF}/boost co boost";
-    $desc->{desc} = 'cvs co boost (sourceforge.net)' . "\n" .
-	'  ---> Press <Enter> at anonymous CVS password prompt.';
-  }
-  push(@{$cmdDescVecRef}, $desc) if (defined($desc->{cmd}));
-  
-  # xaif-1.0
-  $desc = { %RunCmds::CmdDesc, }; 
-  if (-d './xaif-1.0') { 
-    if (!$opt_skipupdate) {
-      $desc->{cmd} = 'cd ./xaif-1.0 ; bk pull';
-      $desc->{desc} = 'bk pull xaif-1.0 (bkbits.net)';
-    }
-  }
-  else {
-    $desc->{cmd} = 'bk clone http://xaif.bkbits.net/xaif-1.0';
-    $desc->{desc} = 'bk clone xaif-1.0 (bkbits.net)';
-  }
-  push(@{$cmdDescVecRef}, $desc) if (defined($desc->{cmd}));
-  
   
   # --------------------------------------------------------
   # Execute commands
