@@ -7,7 +7,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.7 2004-06-28 20:37:42 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.8 2004-07-06 15:59:43 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -172,6 +172,11 @@ sub GenEnvSettings
   }
   print STDOUT genSetVar('o64targ', $o64targ, $shell);
   
+
+  # FIXME: Currently we define all base vars, because we
+  # indiscriminantly use them later.  Can we be smarter and selective
+  # do this?
+
   # --------------------------------------------------------
   # Generate BASE vars for sub repositories
   # --------------------------------------------------------
@@ -184,12 +189,13 @@ sub GenEnvSettings
   
   for my $repo (@{$OpenADRepos}) {
     my $repoPath = $repo->{path} . '/' . $repo->{name};
-    if (-d $repoPath) {
+#    Please define all base vars, even if dir is non-existant
+#    if (-d $repoPath) {
       my $var = $repo->{var};
       my $val = $repoPath;
       print STDOUT genSetEnvVar($var, $val, $shell);
       #print STDOUT genPrintEnvVar($var, $shell);
-    }
+#    }
   }
   
   # --------------------------------------------------------
