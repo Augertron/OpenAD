@@ -1,4 +1,4 @@
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.2 2004-06-01 21:10:23 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.3 2004-06-23 17:34:36 eraxxon Exp $
 # -*-makefile-*-
 ## * BeginCopyright *********************************************************
 ## 
@@ -39,11 +39,11 @@ endif
 
 #############################################################################
 
-# used by make and configure (from GNU Autoconf)
-export CC
-export CXX
-export CFLAGS
-export CXXFLAGS
+# WARNING: exporting these causes problems with the Open64 build system
+#export CC
+#export CXX
+#export CFLAGS
+#export CXXFLAGS
 
 #############################################################################
 
@@ -73,10 +73,9 @@ veryclean: open64_veryclean oa_veryclean xercesc_veryclean \
 
 open64_build:
 	@echo "*** Building Open64 ***"
-# FIXME: build dies when launched from this makefile!?
-#	cd $(OPEN64ROOT)/crayf90/sgi ; $(MAKE)
-#	cd $(OPEN64ROOT)/whirl2f ; $(MAKE)
-#	cd $(OPEN64ROOT)/ir_tools ; $(MAKE)
+	cd $(OPEN64ROOT)/crayf90/sgi && $(MAKE)
+	cd $(OPEN64ROOT)/whirl2f && $(MAKE)
+	cd $(OPEN64ROOT)/ir_tools && $(MAKE)
 
 open64_clean:
 	@echo "*** Cleaning Open64 ***"
