@@ -7,7 +7,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.5 2004-05-21 17:47:02 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.6 2004-06-08 14:36:40 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -24,7 +24,7 @@
 use strict;
 use warnings;
 
-use FindBin qw($RealBin);
+use FindBin qw($Script $RealBin);
 use Cwd qw(abs_path);
 use IO::File;
 use Getopt::Long;
@@ -44,7 +44,7 @@ STDOUT->autoflush(1);
 
 #############################################################################
 
-my $the_program = "setenv.pl";
+my $the_program = $Script;
 my $the_usage = 
 "usage: ${the_program} [options] <shell>
 
@@ -216,10 +216,10 @@ sub GenEnvSettings
 
   print STDOUT "\n";  
   if (is_sh($shell)) {
-    print STDOUT 'source ${OPENADFORTTK}/Sourceme-sh', "\n";
+    print STDOUT 'source ${OPENADFORTTK}/Sourceme-sh', ";\n";
   }
   else {
-    print STDOUT 'source ${OPENADFORTTK}/Sourceme-csh', "\n";
+    print STDOUT 'source ${OPENADFORTTK}/Sourceme-csh', ";\n";
   }
   
   print STDOUT genAppendEnvVar('PATH', '${OPENADROOT}/bin', $shell);
