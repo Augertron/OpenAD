@@ -1,4 +1,4 @@
-$Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/README,v 1.3 2004-05-21 19:44:55 eraxxon Exp $
+$Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/README,v 1.4 2004-06-01 14:03:23 eraxxon Exp $
 
 =============================================================================
 ==
@@ -64,7 +64,7 @@ and at least verify the setting of
   (The environment settings are built dynamically using the
   configuration file, openad_config.pm.  No need to tinker.)
 
-  source setenv.sh -or- source setenv.csh
+  source ./setenv.sh   -or-   source ./setenv.csh
   
 3. Build
 
@@ -79,7 +79,7 @@ For some reason Open64 breaks when built recursively from make. How lame.
    cd ${OPEN64ROOT}/crayf90/sgi
    make
 
-   cd ${OPEN64ROOT}/whirl2f 
+   cd ${OPEN64ROOT}/whirl2f
    make
 
    cd ${OPEN64ROOT}/ir_tools
