@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.8 2004-05-21 17:49:35 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.9 2004-05-21 19:44:41 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -231,14 +231,23 @@ sub RunGetOpenAD
 	$desc->{desc} = "cvs update ${repoPath}";
       }
       else {
-	$desc->{cmd} = "cd $repo->{path} ; ${env} cvs ${opt} co ${nm}";
-	$desc->{desc} = "cvs checkout ${repoPath}";
+	my $tag = "default"; # move out to apply to all (FIXME)
+	my $coopt = "";
+	if (defined($repo->{tag})) {
+	  $tag = $repo->{tag};
+	  $coopt = "-r " . $tag;
+	}
+	
+	$desc->{cmd} = "cd $repo->{path} ; ${env} cvs ${opt} co ${coopt} ${nm}";
+	$desc->{desc} = "cvs checkout ${repoPath} (${tag})";
       }
     } 
     elsif (defined($repo->{repos}->{isbk})) {
       # A BitKeeper repository
       my $nm = $repo->{name};
       my $arg = $repo->{repos}->{root};
+      
+      # FIXME: bitkeeper tags?
       
       if ($repoExists) {
 	$desc->{cmd} = "cd ${repoPath} ; bk pull";
