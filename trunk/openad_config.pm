@@ -1,5 +1,5 @@
 # -*-Mode: perl;-*-
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.10 2004-10-18 15:23:54 utke Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.11 2004-12-01 16:37:49 eraxxon Exp $
 
 #############################################################################
 ##
@@ -102,7 +102,7 @@ my $OPENAD_OPEN64 = { %RepositoryTools::RepositoryDesc, };
 $OPENAD_OPEN64->{name}  = 'Open64';
 $OPENAD_OPEN64->{path}  = "$TheRealBin";
 $OPENAD_OPEN64->{repos} = $OPENAD_REPO_RICECVS;
-$OPENAD_OPEN64->{tag}   = 'OpenAD';
+#$OPENAD_OPEN64->{tag}   = 'OpenAD';
 $OPENAD_OPEN64->{var}   = 'OPEN64_BASE';
 
 my $OPENAD_OPENADFORTTK = { %RepositoryTools::RepositoryDesc, };
