@@ -7,7 +7,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.2 2004-05-21 13:54:10 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.3 2004-05-21 15:03:52 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -108,6 +108,7 @@ BEGIN {
   @RootEnvVars =
       (
        ['OPEN64ROOT',       '${OPEN64_BASE}/osprey1.0/${o64targ}'],
+       ['OPENADFORTTKROOT', '${OPENADFORTTK_BASE}'],
        ['OPENANALYSISROOT', '${OPENANALYSIS_BASE}/${PLATFORM}'],
        ['XERCESCROOT',      '${XERCESC_BASE}/${PLATFORM}'],
        ['XAIFBOOSTERROOT',  '${XAIFBOOSTER_BASE}'],
@@ -119,6 +120,7 @@ BEGIN {
   
   @OtherEnvVars =
       (
+       ['OPENADFORTTK',            '${OPENADFORTTKROOT}'],
        ['OPENADFORTTK_OPEN64BASE', '${OPEN64_BASE}/osprey1.0'],
        ['OPENADFORTTK_OPEN64',     '${OPEN64ROOT}'],
        ['OPENADFORTTK_OA',         '${OPENANALYSISROOT}'],
@@ -137,6 +139,15 @@ BEGIN {
        ['whirl2f90', '${OPEN64ROOT}/whirl2f/whirl2f90'],
        ['ir_b2a',    '${OPEN64ROOT}/ir_tools/ir_b2a' ],
        ['ir_size',   '${OPEN64ROOT}/ir_tools/ir_size'],
+       [ undef,      undef],
+       
+       ['xboostread', '${xbase}/system/test/t -c ${ii_xaif}'],
+       ['xboost_l',   '${xbase}/algorithms/Linearization/test/t -c ${ii_xaif}'],
+       ['xboost_bb',  '${xbase}/algorithms/BasicBlockPreaccumulation/test/t -c ${ii_xaif}'],
+       ['xboost_bbt', '${xbase}/algorithms/BasicBlockPreaccumulationTape/test/t -c ${ii_xaif}'],
+       ['xboost_bbr', '${xbase}/algorithms/BasicBlockPreaccumulationReverse/test/t -c ${ii_xaif}'],
+       ['xboost_cfr', '${xbase}/algorithms/ControlFlowReversal/test/t -c ${ii_xaif}'],
+       [ undef,       undef],
        );
 }
 
@@ -151,23 +162,24 @@ sub GenEnvSettings
   # --------------------------------------------------------
   # Generate canonical platform
   # --------------------------------------------------------
-  my $platform = 'i686-Linux'; # `cd ${OpenADRoot}/config; ./hpcplatform`;
+  my $platform = `cd ${OpenADRoot}/config; ./hpcplatform`;
+  chomp($platform);
   print STDOUT genSetVar('PLATFORM', $platform, $shell);
-
+  
   my $o64targ = $platformToOpen64TargTable{$platform};
   if (!defined($o64targ)) {
     die "Programming error: Unknown platform!\n";
   }
   print STDOUT genSetVar('o64targ', $o64targ, $shell);
-
+  
   # --------------------------------------------------------
   # Generate BASE vars for sub repositories
   # --------------------------------------------------------
   print STDOUT "\n";
-
+  
   my $config = openad_config->new();
   my $OpenADRepos = $config->getRepos();
-
+  
   for my $repo (@{$OpenADRepos}) {
     my $repoPath = $repo->{path} . '/' . $repo->{name};
     if (-d $repoPath) {
@@ -177,12 +189,12 @@ sub GenEnvSettings
       #print STDOUT genPrintEnvVar($var, $shell);
     }
   }
-
+  
   # --------------------------------------------------------
   # Generate environment vars for sub repositories
   # --------------------------------------------------------
   print STDOUT "\n";
-
+  
   my @EnvVars = (@RootEnvVars, @OtherEnvVars);
   for my $pair (@EnvVars) {
     my $var = $pair->[$varidx{var}];
@@ -193,11 +205,20 @@ sub GenEnvSettings
       print STDOUT "\n";
     }
   }
-
+  
   # --------------------------------------------------------
   # Generate other environment stuff
   # --------------------------------------------------------
-  
+
+  print STDOUT "\n";  
+  if (is_sh($shell)) {
+    print STDOUT 'source ${OPENADFORTTK}/Sourceme-sh', "\n";
+  }
+  else {
+    print STDOUT 'source ${OPENADFORTTK}/Sourceme-csh', "\n";
+  }
+
+  print STDOUT "\n";  
   if ($platform eq 'i686-Cygwin') {
     my $path = '${XERCESCROOT}/bin:${XERCESCROOT}/lib:${OPEN64ROOT}/be:${OPEN64ROOT}/whirl2f:${PATH}';
     print STDOUT genAppendEnvVar('PATH', $path, $shell);
@@ -206,6 +227,12 @@ sub GenEnvSettings
     print STDOUT genAppendEnvVar('LD_LIBRARY_PATH', $ldlib, $shell);
   }    
   
+  print STDOUT "\n";  
+  print STDOUT genSetVar('xbase', '${XAIFBOOSTERROOT}/xaifBooster', $shell);
+  print STDOUT genSetVar('ii_xaif', '${XAIFSCHEMAROOT}/schema/examples/inlinable_intrinsics.xaif', $shell);
+  if ($platform eq 'i686-Cygwin') {
+    print STDOUT genSetVar('ii_xaif', '\`cygpath -w ${ii_xaif}\`', $shell);
+  }
   
   # --------------------------------------------------------
   # Generate aliases
@@ -215,15 +242,20 @@ sub GenEnvSettings
   for my $pair (@Aliases) {
     my $var = $pair->[$varidx{var}];
     my $val = $pair->[$varidx{val}];
-    print STDOUT genSetAlias($var, $val, $shell);
+    if (defined($var)) {
+      print STDOUT genSetAlias($var, $val, $shell);
+    } else {
+      print STDOUT "\n";
+    }
   }
   
   # --------------------------------------------------------
-
+  
   print STDOUT "\n";
   print STDOUT genUnSetVar('PLATFORM', $shell);
   print STDOUT genUnSetVar('o64targ', $shell);
-
+  print STDOUT genUnSetVar('xbase', $shell);
+  print STDOUT genUnSetVar('ii_xaif', $shell);
 
 }
 
