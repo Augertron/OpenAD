@@ -1,4 +1,4 @@
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.8 2005-03-25 14:58:18 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.9 2005-03-31 03:55:22 utke Exp $
 # -*-makefile-*-
 ## * BeginCopyright *********************************************************
 ## 
@@ -32,6 +32,9 @@ ifeq ($(PLATFORM),ia64-Linux)
 endif
 ifeq ($(PLATFORM),opteron-Linux)
   XERCESPLATFORM = LINUX
+endif
+ifeq ($(PLATFORM),sparc-SunOS)
+  XERCESPLATFORM = SOLARIS
 endif
 ifndef XERCESPLATFORM
   $(error "Error: XERCESPLATFORM not set!")
