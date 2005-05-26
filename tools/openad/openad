@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.13 2005-05-26 19:39:21 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.14 2005-05-26 21:07:01 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -48,6 +48,11 @@ Mode:
   --linear          Linearization
   --memopstradeoff  MemOpsTradeoffPreaccumulation
 
+  -d [order], --derivative [order]
+                    The order of derivatives to compute, e.g. 1, 2.  
+                    Defaults to 1 (first order).
+                    *NOTE*: not fully automatic above 1.
+
 xaif2whirl [Temporary options]
   --x2w-structured    Use structured-CFG algorithm [Default]
   --x2w-unstructured  Use unstructured CFG algorithm
@@ -78,6 +83,8 @@ my @the_options = ('bb-rev',
 		   'cfr',
 		   'linear',
 		   'memopstradeoff',
+
+		   'derivative|d:i',
 		   
 		   'x2w-structured',
 		   'x2w-unstructured',
@@ -125,6 +132,7 @@ my $opt_interactive = undef;
 #my $opt_debug = 0;
 
 my $openad_mode = undef;
+my $openad_derivorder = undef;
 my $openad_x2w_mode = undef;
 my $openad_input = undef;
 
@@ -191,6 +199,12 @@ sub parseCmdLine
   if (!defined($openad_mode)) {
     printUsageAndExit($the_program);
   }
+  
+  # Get optional arguments: OpenAD derivative order
+  $openad_derivorder = 1;
+  if (defined($opts{'derivative'})) {
+    $openad_derivorder = $opts{'derivative'};
+  } 
   
   # Get optional arguments: OpenAD xaif2whirl mode
   $openad_x2w_mode = $x2wModeType{structured}; # default
@@ -290,6 +304,7 @@ sub undefEnvVarErr
 
     #print STDOUT "$XB\n";
     # Will have to do this after some preprocessing...
+    my $w2x_opt = "--prefix OpenAD" . $openad_derivorder .  "_";
     my $x2w_opt = "";
     my $post_opt = "";
     if ($openad_mode == $xbModeType{BB} 
@@ -331,7 +346,7 @@ sub undefEnvVarErr
     push @{$cmdDescVecRef}, $desc;
     
     $desc = { %RunCmds::CmdDesc, }; 
-    $desc->{cmd} = "$W2X '${base}.pre.B' -o '${base}.xaif'";
+    $desc->{cmd} = "$W2X $w2x_opt '${base}.pre.B' -o '${base}.xaif'";
     $desc->{desc} = "WHIRL to XAIF: '${base}.pre.B' -> '${base}.xaif'";
     push @{$cmdDescVecRef}, $desc;
 
