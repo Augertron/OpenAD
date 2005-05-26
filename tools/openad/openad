@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.12 2004-09-30 16:49:13 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.13 2005-05-26 19:39:21 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -260,7 +260,7 @@ sub undefEnvVarErr
 {
   my $configured = undef;
   my ($MFEF90, $WHIRL2F) = (undef, undef);
-  my ($W2X, $X2W, $NORM, $PP) = (undef, undef, undef, undef);
+  my ($W2X, $X2W, $NORM, $PRE, $POST) = (undef, undef, undef, undef, undef);
   my ($XB) = (undef);
   
   my ($OPENADFORTTK, $PLATFORM, $OPEN64) = (undef, undef, undef);
@@ -291,12 +291,12 @@ sub undefEnvVarErr
     #print STDOUT "$XB\n";
     # Will have to do this after some preprocessing...
     my $x2w_opt = "";
-    my $pp_opt = "";
+    my $post_opt = "";
     if ($openad_mode == $xbModeType{BB} 
 	|| $openad_mode == $xbModeType{Linearization} 
 	|| $openad_mode == $xbModeType{MemOpsTradeoff}) {
       $x2w_opt .= " --mode=forward";
-      $pp_opt .= " -f";
+      $post_opt .= " -f";
     }
     elsif ($openad_mode == $xbModeType{BBReverse} 
 	   || $openad_mode == $xbModeType{BBTapeAdjoint}
@@ -318,15 +318,21 @@ sub undefEnvVarErr
     # Generate commands for pipeline.  Quote all files since these commands
     # will be passed to system().
     my $cmdDescVecRef = [ ];
-    
-    my $desc = { %RunCmds::CmdDesc, }; 
-    $desc->{cmd} = "$MFEF90 -F -N132 '${fortranfile}'";
-    $desc->{desc} = "Fortran to WHIRL: '${fortranfile}' -> '${base}.B'";
+    my $desc = undef;
+
+    $desc = { %RunCmds::CmdDesc, }; 
+    $desc->{cmd} = "$PRE '${fortranfile}'";
+    $desc->{desc} = "Preprocess Fortran: '${fortranfile}' -> '${base}.pre.f'";
+    push @{$cmdDescVecRef}, $desc;
+
+    $desc = { %RunCmds::CmdDesc, }; 
+    $desc->{cmd} = "$MFEF90 -F -N132 '${base}.pre.f'";
+    $desc->{desc} = "Fortran to WHIRL: '${base}.pre.f' -> '${base}.pre.B'";
     push @{$cmdDescVecRef}, $desc;
     
     $desc = { %RunCmds::CmdDesc, }; 
-    $desc->{cmd} = "$W2X '${base}.B' -o '${base}.xaif'";
-    $desc->{desc} = "WHIRL to XAIF: '${base}.B' -> '${base}.xaif'";
+    $desc->{cmd} = "$W2X '${base}.pre.B' -o '${base}.xaif'";
+    $desc->{desc} = "WHIRL to XAIF: '${base}.pre.B' -> '${base}.xaif'";
     push @{$cmdDescVecRef}, $desc;
 
     if ($opt_normalize) {
@@ -342,8 +348,8 @@ sub undefEnvVarErr
     push @{$cmdDescVecRef}, $desc;
     
     $desc = { %RunCmds::CmdDesc, }; 
-    $desc->{cmd} = "$X2W $x2w_opt '${base}.B' '${base}.xb.xaif' -o '${base}.xb.x2w.B'";
-    $desc->{desc} = "XAIF to WHIRL: ('${base}.B' '${base}.xb.xaif') -> '${base}.xb.x2w.B'";
+    $desc->{cmd} = "$X2W $x2w_opt '${base}.pre.B' '${base}.xb.xaif' -o '${base}.xb.x2w.B'";
+    $desc->{desc} = "XAIF to WHIRL: ('${base}.pre.B' '${base}.xb.xaif') -> '${base}.xb.x2w.B'";
     push @{$cmdDescVecRef}, $desc;
 
     $desc = { %RunCmds::CmdDesc, }; 
@@ -359,7 +365,7 @@ sub undefEnvVarErr
     }
     
     $desc = { %RunCmds::CmdDesc, }; 
-    $desc->{cmd} = "$PP $pp_opt '${base}.xb.x2w.w2f.f'";
+    $desc->{cmd} = "$POST $post_opt '${base}.xb.x2w.w2f.f'";
     $desc->{desc} = "Postprocess Fortran: '${base}.xb.x2w.w2f.f' -> '${base}.xb.x2w.w2f.pp.f'";
     push @{$cmdDescVecRef}, $desc;
     
@@ -401,7 +407,8 @@ sub undefEnvVarErr
     $W2X  = "${OPENADFORTTK}/obj/${PLATFORM}/obj/whirl2xaif";
     $X2W  = "${OPENADFORTTK}/obj/${PLATFORM}/obj/xaif2whirl";
     $NORM = "${OPENADFORTTK}/test/util/normalize";
-    $PP   = "perl ${OPENADFORTTK}/postprocess/pp.pl";
+    $PRE  = "perl ${OPENADFORTTK}/postprocess/pre.pl";
+    $POST = "perl ${OPENADFORTTK}/postprocess/pp.pl";
     
     my $XB_alg_path = "${XAIFBOOSTERROOT}/xaifBooster/algorithms";
     my $XB_alg = undef;
