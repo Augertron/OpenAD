@@ -1,4 +1,4 @@
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.9 2005-03-31 03:55:22 utke Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.10 2005-06-10 18:07:39 eraxxon Exp $
 # -*-makefile-*-
 ## * BeginCopyright *********************************************************
 ## 
@@ -162,28 +162,29 @@ xercesc_veryclean: xercesc_clean
 
 ############################################################
 
+FORTTK_OPT = -f Makefile.quick CXX="$(CXX)" CC="$(CC)" 
+
 openadforttk_build:
-	@if [ -d $(OPENADFORTTK) ]; then \
+	@if [ -d $(OPENADFORTTK_BASE) ]; then \
 	  echo "*** Building OpenADFortTk ***" ; \
-	  cd $(OPENADFORTTK)/src && $(MAKE) ; \
+	  if [ -d $(OPENADFORTTK_BASE)/build-$(PLATFORM) ]; then \
+	    cd $(OPENADFORTTK_BASE) && $(MAKE) $(FORTTK_OPT) install ; \
+	  else \
+	    cd $(OPENADFORTTK_BASE) && $(MAKE) $(FORTTK_OPT) all; \
+	  fi \
 	else \
 	  echo "*** Building OpenADFortTk -- NON-EXISTENT ***" ; \
 	fi
 
 openadforttk_clean:
-	@if [ -d $(OPENADFORTTK) ]; then \
-	  echo "*** Cleaning OpenADFortTk (skipping) ***" ; \
+	@if [ -d $(OPENADFORTTK_BASE) ]; then \
+	  echo "*** Cleaning OpenADFortTk ***" ; \
+	  cd $(OPENADFORTTK_BASE) && $(MAKE) $(FORTTK_OPT) clean ; \
 	else \
 	  echo "*** Cleaning OpenADFortTk -- NON-EXISTENT ***" ; \
 	fi
 
-openadforttk_veryclean:
-	@if [ -d $(OPENADFORTTK) ]; then \
-	  echo "*** Very-Cleaning OpenADFortTk ***" ; \
-	  cd $(OPENADFORTTK)/src && $(MAKE) veryclean ; \
-	else \
-	  echo "*** Very-Cleaning OpenADFortTk -- NON-EXISTENT ***" ; \
-	fi
+openadforttk_veryclean: openadforttk_clean
 
 .PHONY : openadforttk_build openadforttk_clean openadforttk_veryclean 
 
