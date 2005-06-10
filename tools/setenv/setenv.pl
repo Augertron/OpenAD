@@ -7,7 +7,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.10 2005-06-10 18:07:39 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.11 2005-06-10 18:32:04 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -221,12 +221,14 @@ sub GenEnvSettings
   # --------------------------------------------------------
 
   print STDOUT "\n";  
-  if (is_sh($shell)) {
-    print STDOUT 'source ${OPENADFORTTK}/Sourceme-sh', ";\n";
-  }
-  else {
-    print STDOUT 'source ${OPENADFORTTK}/Sourceme-csh', ";\n";
-  }
+
+  #if (is_sh($shell)) {
+  #  print STDOUT 'source ${OPENADFORTTK}/Sourceme-sh', ";\n";
+  #}
+  #else {
+  #  print STDOUT 'source ${OPENADFORTTK}/Sourceme-csh', ";\n";
+  #}
+  print STDOUT genAppendEnvVar('PATH', '${OPENADFORTTK}/bin', $shell);
   
   print STDOUT genAppendEnvVar('PATH', '${OPENADROOT}/bin', $shell);
   
