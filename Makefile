@@ -1,4 +1,4 @@
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.10 2005-06-10 18:07:39 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.11 2005-06-10 19:05:09 eraxxon Exp $
 # -*-makefile-*-
 ## * BeginCopyright *********************************************************
 ## 
@@ -167,11 +167,7 @@ FORTTK_OPT = -f Makefile.quick CXX="$(CXX)" CC="$(CC)"
 openadforttk_build:
 	@if [ -d $(OPENADFORTTK_BASE) ]; then \
 	  echo "*** Building OpenADFortTk ***" ; \
-	  if [ -d $(OPENADFORTTK_BASE)/build-$(PLATFORM) ]; then \
-	    cd $(OPENADFORTTK_BASE) && $(MAKE) $(FORTTK_OPT) install ; \
-	  else \
-	    cd $(OPENADFORTTK_BASE) && $(MAKE) $(FORTTK_OPT) all; \
-	  fi \
+	  cd $(OPENADFORTTK_BASE) && $(MAKE) $(FORTTK_OPT) all; \
 	else \
 	  echo "*** Building OpenADFortTk -- NON-EXISTENT ***" ; \
 	fi
