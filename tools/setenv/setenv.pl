@@ -7,7 +7,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.9 2004-09-28 20:19:33 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.10 2005-06-10 18:07:39 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -120,7 +120,7 @@ BEGIN {
   
   @OtherEnvVars =
       (
-       ['OPENADFORTTK',            '${OPENADFORTTKROOT}'],
+       ['OPENADFORTTK',        '${OPENADFORTTKROOT}/OpenADFortTk-${PLATFORM}'],
        ['OPENADFORTTK_OPEN64BASE', '${OPEN64_BASE}/osprey1.0'],
        ['OPENADFORTTK_OPEN64',     '${OPEN64ROOT}'],
        ['OPENADFORTTK_OA',         '${OPENANALYSISROOT}'],
@@ -162,7 +162,7 @@ sub GenEnvSettings
   # --------------------------------------------------------
   # Generate canonical platform
   # --------------------------------------------------------
-  my $platform = `cd ${OpenADRoot}/config; ./hpcplatform`;
+  my $platform = `cd ${OpenADRoot}/config && ./hpcplatform`;
   chomp($platform);
   print STDOUT genSetVar('PLATFORM', $platform, $shell);
   

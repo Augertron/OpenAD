@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.14 2005-05-26 21:07:01 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.15 2005-06-10 18:07:39 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -24,12 +24,15 @@ use strict;
 use warnings;
 
 use FindBin qw($Script $RealBin);
+use Cwd qw(abs_path);
 use File::Spec;
 use IO::File;
 use Getopt::Long;
 
 use lib "$RealBin/../libperltk";
 use RunCmds qw(%CmdDesc RunCmds RunCmd);
+
+my $OpenADRoot = abs_path("$RealBin/../..");
 
 STDOUT->autoflush(1); 
 
@@ -401,11 +404,11 @@ sub undefEnvVarErr
   {
     my($mode) = @_;
     
+    $PLATFORM = `cd ${OpenADRoot}/config && ./hpcplatform`;
+    chomp($PLATFORM);
+
     $OPENADFORTTK = $ENV{OPENADFORTTK};
     if (!defined($OPENADFORTTK)) { undefEnvVarErr('OPENADFORTTK'); }
-    
-    $PLATFORM = $ENV{OPENADFORTTK_PLATFORM};
-    if (!defined($PLATFORM)) { undefEnvVarErr('OPENADFORTTK_PLATFORM'); }
     
     $OPEN64 = $ENV{OPENADFORTTK_OPEN64};
     if (!defined($OPEN64)) { undefEnvVarErr('OPENADFORTTK_OPEN64'); }
@@ -419,11 +422,11 @@ sub undefEnvVarErr
     $MFEF90  = "${OPEN64}/crayf90/sgi/mfef90";
     $WHIRL2F = "${OPEN64}/whirl2f/whirl2f";
     
-    $W2X  = "${OPENADFORTTK}/obj/${PLATFORM}/obj/whirl2xaif";
-    $X2W  = "${OPENADFORTTK}/obj/${PLATFORM}/obj/xaif2whirl";
-    $NORM = "${OPENADFORTTK}/test/util/normalize";
-    $PRE  = "perl ${OPENADFORTTK}/postprocess/pre.pl";
-    $POST = "perl ${OPENADFORTTK}/postprocess/pp.pl";
+    $W2X  = "${OPENADFORTTK}/bin/whirl2xaif";
+    $X2W  = "${OPENADFORTTK}/bin/xaif2whirl";
+    $NORM = "${OPENADFORTTK}/bin/normalize";
+    $PRE  = "perl ${OPENADFORTTK}/bin/pre.pl";
+    $POST = "perl ${OPENADFORTTK}/bin/pp.pl";
     
     my $XB_alg_path = "${XAIFBOOSTERROOT}/xaifBooster/algorithms";
     my $XB_alg = undef;
