@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.15 2005-06-10 18:07:39 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.16 2005-06-15 15:45:27 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -26,6 +26,7 @@ use warnings;
 use FindBin qw($Script $RealBin);
 use Cwd qw(abs_path);
 use File::Spec;
+use File::Basename;
 use IO::File;
 use Getopt::Long;
 
@@ -283,10 +284,8 @@ sub undefEnvVarErr
   my ($OPENADFORTTK, $PLATFORM, $OPEN64) = (undef, undef, undef);
   my $XAIFBOOSTERROOT = undef;
   my $XAIFSCHEMAROOT = undef;
-  
-  my $f_RE = undef;
-  my $F_RE = undef;
-  my $f90_RE = undef;
+
+  my $fortran_ext_RE = undef;
 
   sub RunOpenADPipeline 
   {
@@ -297,10 +296,10 @@ sub undefEnvVarErr
       ConfigRunOpenADPipeline($mode);
     }
     
-    # Find base name of file. Support following extensions: .f90, .f, .F
-    my $base = $fortranfile;
-    my $num = ($base =~ s/(?:$f90_RE)|(?:$f_RE)|(?:$F_RE)//); 
-    if ($num == 0) {
+    # Find base name of file. Support following extensions: .f90, .f, .F, etc.
+    my($base, $dir, $ext) = fileparse($fortranfile, $fortran_ext_RE);
+    $ext =~ s/^\.//; # remove the dot
+    if (!$ext) {
       print STDOUT "Unknown file type: ${fortranfile}\n";
       exit(-1);
     }
@@ -340,12 +339,12 @@ sub undefEnvVarErr
 
     $desc = { %RunCmds::CmdDesc, }; 
     $desc->{cmd} = "$PRE '${fortranfile}'";
-    $desc->{desc} = "Preprocess Fortran: '${fortranfile}' -> '${base}.pre.f'";
+    $desc->{desc} = "Preprocess Fortran: '${fortranfile}' -> '${base}.pre.${ext}'";
     push @{$cmdDescVecRef}, $desc;
 
     $desc = { %RunCmds::CmdDesc, }; 
-    $desc->{cmd} = "$MFEF90 -F -N132 '${base}.pre.f'";
-    $desc->{desc} = "Fortran to WHIRL: '${base}.pre.f' -> '${base}.pre.B'";
+    $desc->{cmd} = "$MFEF90 -F -N132 '${base}.pre.${ext}'";
+    $desc->{desc} = "Fortran to WHIRL: '${base}.pre.${ext}' -> '${base}.pre.B'";
     push @{$cmdDescVecRef}, $desc;
     
     $desc = { %RunCmds::CmdDesc, }; 
@@ -462,10 +461,8 @@ sub undefEnvVarErr
     } 
     
     $XB = "${XB_alg} -c ${ii_xaif}";
-    
-    $f_RE = '.f$';
-    $F_RE = '.F$';
-    $f90_RE = '.f90$';
+
+    $fortran_ext_RE = '\.[Ff][0-9]*';
 
     ConfigSchema();
     ConfigPPFiles();
