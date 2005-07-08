@@ -1,5 +1,5 @@
 # -*-Mode: perl;-*-
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.12 2005-03-23 14:27:53 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.13 2005-07-08 20:08:45 utke Exp $
 
 #############################################################################
 ##
@@ -75,10 +75,10 @@ $OPENAD_REPO_RICECVS->{root} =
 ##################################################
 
 my $OPENAD_REPO_BK_XB = { %RepositoryTools::BKReposDesc, }; 
-$OPENAD_REPO_BK_XB->{root} = 'http://xaifbooster.bkbits.net/xaifBooster';
+$OPENAD_REPO_BK_XB->{root} = 'bk://xaifbooster.bkbits.net/xaifBooster';
 
 my $OPENAD_REPO_BK_XAIF = { %RepositoryTools::BKReposDesc, }; 
-$OPENAD_REPO_BK_XAIF->{root} = 'http://xaif.bkbits.net/xaif-1.0';
+$OPENAD_REPO_BK_XAIF->{root} = 'bk://xaif.bkbits.net/xaif-1.0';
 
 ##################################################
 # SourceForge CVS Repositories
