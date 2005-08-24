@@ -1,5 +1,5 @@
 # -*-Mode: perl;-*-
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.13 2005-07-08 20:08:45 utke Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.14 2005-08-24 21:14:21 utke Exp $
 
 #############################################################################
 ##
@@ -74,11 +74,11 @@ $OPENAD_REPO_RICECVS->{root} =
 # Bkbits Bitkeeper Repositories
 ##################################################
 
-my $OPENAD_REPO_BK_XB = { %RepositoryTools::BKReposDesc, }; 
-$OPENAD_REPO_BK_XB->{root} = 'bk://xaifbooster.bkbits.net/xaifBooster';
+#my $OPENAD_REPO_BK_XB = { %RepositoryTools::BKReposDesc, }; 
+#$OPENAD_REPO_BK_XB->{root} = 'bk://xaifbooster.bkbits.net/xaifBooster';
 
-my $OPENAD_REPO_BK_XAIF = { %RepositoryTools::BKReposDesc, }; 
-$OPENAD_REPO_BK_XAIF->{root} = 'bk://xaif.bkbits.net/xaif-1.0';
+#my $OPENAD_REPO_BK_XAIF = { %RepositoryTools::BKReposDesc, }; 
+#$OPENAD_REPO_BK_XAIF->{root} = 'bk://xaif.bkbits.net/xaif-1.0';
 
 ##################################################
 # SourceForge CVS Repositories
@@ -126,7 +126,8 @@ $OPENAD_XERCESC->{var}   = 'XERCESC_BASE';
 my $OPENAD_XAIFBOOSTER = { %RepositoryTools::RepositoryDesc, };
 $OPENAD_XAIFBOOSTER->{name}  = 'xaifBooster';
 $OPENAD_XAIFBOOSTER->{path}  = "$TheRealBin";
-$OPENAD_XAIFBOOSTER->{repos} = $OPENAD_REPO_BK_XB;
+#$OPENAD_XAIFBOOSTER->{repos} = $OPENAD_REPO_BK_XB;
+$OPENAD_XAIFBOOSTER->{repos} = $OPENAD_REPO_RICECVS;
 $OPENAD_XAIFBOOSTER->{var}   = 'XAIFBOOSTER_BASE';
 
 my $OPENAD_ANGEL = { %RepositoryTools::RepositoryDesc, };
@@ -143,9 +144,10 @@ $OPENAD_BOOST->{tag}   = '{date}2005/03/21';
 $OPENAD_BOOST->{var}   = 'BOOST_BASE';
 
 my $OPENAD_XAIF = { %RepositoryTools::RepositoryDesc, };
-$OPENAD_XAIF->{name}  = 'xaif-1.0';
+$OPENAD_XAIF->{name}  = 'xaif';
 $OPENAD_XAIF->{path}  = "$TheRealBin";
-$OPENAD_XAIF->{repos} = $OPENAD_REPO_BK_XAIF;
+#$OPENAD_XAIF->{repos} = $OPENAD_REPO_BK_XAIF;
+$OPENAD_XAIF->{repos} = $OPENAD_REPO_RICECVS;
 $OPENAD_XAIF->{var}  = 'XAIFSCHEMA_BASE';
 
 #############################################################################
