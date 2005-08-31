@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.16 2005-06-15 15:45:27 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.17 2005-08-31 19:55:41 utke Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -45,11 +45,7 @@ my $the_usage =
 
 Mode:
   --bb-rev          BasicBlockPreaccumulationReverse [Default]
-  --bb-tapeadj      BasicBlockPreaccumulationTapeAdjoint
-  --bb-tape         BasicBlockPreaccumulationTape
   --bb              BasicBlockPreaccumulation
-  --cfr             ControlFlowReversal
-  --linear          Linearization
   --memopstradeoff  MemOpsTradeoffPreaccumulation
 
   -d [order], --derivative [order]
@@ -81,11 +77,7 @@ Development options:
 \n";
 
 my @the_options = ('bb-rev',
-		   'bb-tapeadj',
-		   'bb-tape',
 		   'bb',
-		   'cfr',
-		   'linear',
 		   'memopstradeoff',
 
 		   'derivative|d:i',
@@ -104,11 +96,7 @@ my @the_options = ('bb-rev',
 #############################################################################
 
 my %xbModeType = ('BBReverse'      => 1,
-		  'BBTapeAdjoint'  => 2,
-		  'BBTape'         => 3,
 		  'BB'             => 4,
-		  'CFR'            => 5,
-		  'Linearization'  => 6,
 		  'MemOpsTradeoff' => 7,
 		  );
 
@@ -182,20 +170,8 @@ sub parseCmdLine
   if (defined($opts{'bb-rev'})) {
     $openad_mode = $xbModeType{BBReverse};
   } 
-  if (defined($opts{'bb-tapeadj'})) {
-    $openad_mode = $xbModeType{BBTapeAdjoint};
-  } 
-  if (defined($opts{'bb-tape'})) {
-    $openad_mode = $xbModeType{BBTape};
-  } 
   if (defined($opts{'bb'})) {
     $openad_mode = $xbModeType{BB};
-  } 
-  if (defined($opts{'cfr'})) {
-    $openad_mode = $xbModeType{CFR};
-  } 
-  if (defined($opts{'linear'})) {
-    $openad_mode = $xbModeType{Linearization};
   } 
   if (defined($opts{'memopstradeoff'})) {
     $openad_mode = $xbModeType{MemOpsTradeoff};
@@ -308,18 +284,16 @@ sub undefEnvVarErr
     # Will have to do this after some preprocessing...
     my $w2x_opt = "--prefix OpenAD" . $openad_derivorder .  "_";
     my $x2w_opt = "";
+    my $xb_opt = "";
     my $post_opt = "";
     if ($openad_mode == $xbModeType{BB} 
-	|| $openad_mode == $xbModeType{Linearization} 
 	|| $openad_mode == $xbModeType{MemOpsTradeoff}) {
       $x2w_opt .= " --mode=forward";
       $post_opt .= " -f";
     }
-    elsif ($openad_mode == $xbModeType{BBReverse} 
-	   || $openad_mode == $xbModeType{BBTapeAdjoint}
-	   || $openad_mode == $xbModeType{BBTape} 
-	   || $openad_mode == $xbModeType{CFR}) {
+    elsif ($openad_mode == $xbModeType{BBReverse}) { 
       $x2w_opt .= " --mode=reverse";
+      $xb_opt  .= " -I";
     }
     
     if ($openad_x2w_mode == $x2wModeType{structured}) {
@@ -360,7 +334,7 @@ sub undefEnvVarErr
     }
     
     $desc = { %RunCmds::CmdDesc, }; 
-    $desc->{cmd} = "$XB -i '${base}.xaif' -o '${base}.xb.xaif'";
+    $desc->{cmd} = "$XB -i '${base}.xaif' -o '${base}.xb.xaif' $xb_opt";
     $desc->{desc} = "xaifBooster: '${base}.xaif' -> '${base}.xb.xaif'";
     push @{$cmdDescVecRef}, $desc;
     
@@ -432,20 +406,8 @@ sub undefEnvVarErr
     if ($mode == $xbModeType{BBReverse}) {
       $XB_alg = "${XB_alg_path}/BasicBlockPreaccumulationReverse/test/t";
     } 
-    elsif ($mode == $xbModeType{BBTapeAdjoint}) {
-      $XB_alg = "${XB_alg_path}/BasicBlockPreaccumulationTapeAdjoint/test/t";
-    } 
-    elsif ($mode == $xbModeType{BBTape}) {
-      $XB_alg = "${XB_alg_path}/BasicBlockPreaccumulationTape/test/t";
-    }
     elsif ($mode == $xbModeType{BB}) {
       $XB_alg = "${XB_alg_path}/BasicBlockPreaccumulation/test/t";
-    }
-    elsif ($mode == $xbModeType{CFR}) {
-      $XB_alg = "${XB_alg_path}/ControlFlowReversal/test/t";
-    }
-    elsif ($mode == $xbModeType{Linearization}) {
-      $XB_alg = "${XB_alg_path}/Linearization/test/t";
     }
     elsif ($mode == $xbModeType{MemOpsTradeoff}) {
       $XB_alg = "${XB_alg_path}/MemOpsTradeoffPreaccumulation/test/t";
