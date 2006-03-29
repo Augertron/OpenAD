@@ -52,7 +52,7 @@
 ! ========== end copyright notice ==============
 module OpenAD_checkpoints
 
-  use active_module
+  use OpenAD_active
 
   implicit none
 
