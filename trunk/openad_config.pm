@@ -1,5 +1,5 @@
 # -*-Mode: perl;-*-
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.14 2005-08-24 21:14:21 utke Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.15 2006-07-06 00:28:28 utke Exp $
 
 #############################################################################
 ##
@@ -87,12 +87,12 @@ $OPENAD_REPO_RICECVS->{root} =
 my $OPENAD_REPO_SF_ANGEL = { %RepositoryTools::CVSReposDesc, }; 
 $OPENAD_REPO_SF_ANGEL->{rsh} = 'pserver';
 $OPENAD_REPO_SF_ANGEL->{root} = 
-    ':pserver:anonymous@cvs.sourceforge.net:/cvsroot/angellib';
+    ':pserver:anonymous@angellib.cvs.sourceforge.net:/cvsroot/angellib';
 
 my $OPENAD_REPO_SF_BOOST = { %RepositoryTools::CVSReposDesc, }; 
 $OPENAD_REPO_SF_BOOST->{rsh} = 'pserver';
 $OPENAD_REPO_SF_BOOST->{root} = 
-    ':pserver:anonymous@cvs.sourceforge.net:/cvsroot/boost';
+    ':pserver:anonymous@boost.cvs.sourceforge.net:/cvsroot/boost';
 
 ######################################################################
 # OpenAD Repositories, Local Instances
