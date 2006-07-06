@@ -7,7 +7,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.13 2006-07-05 23:41:51 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.14 2006-07-06 00:33:01 utke Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -96,8 +96,8 @@ BEGIN {
   %platformToOpen64TargTable =
       (
        'alpha-OSF1'  => 'targ_alpha_tru64', 
-       'x86-Linux'  => 'targ_ia32_ia64_linux',
-       'x86-Cygwin' => 'targ_ia32_ia64_linux',
+       'x86-Linux'   => 'targ_ia32_ia64_linux',
+       'x86-Cygwin'  => 'targ_ia32_ia64_linux',
        'ia64-Linux'  => 'targ_ia64_ia64_linux',
        'mips-IRIX64' => 'targ_mips_irix',
        'sparc-SunOS' => 'targ_sparc_solaris',
