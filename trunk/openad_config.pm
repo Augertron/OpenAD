@@ -1,5 +1,5 @@
 # -*-Mode: perl;-*-
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.15 2006-07-06 00:28:28 utke Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.16 2006-11-15 22:45:58 utke Exp $
 
 #############################################################################
 ##
@@ -136,19 +136,19 @@ $OPENAD_ANGEL->{path}  = "$TheRealBin";
 $OPENAD_ANGEL->{repos} = $OPENAD_REPO_SF_ANGEL;
 $OPENAD_ANGEL->{var}   = 'ANGEL_BASE';
 
-my $OPENAD_BOOST = { %RepositoryTools::RepositoryDesc, };
-$OPENAD_BOOST->{name}  = 'boost';
-$OPENAD_BOOST->{path}  = "$TheRealBin";
-$OPENAD_BOOST->{repos} = $OPENAD_REPO_SF_BOOST;
-$OPENAD_BOOST->{tag}   = '{date}2005/03/21';
-$OPENAD_BOOST->{var}   = 'BOOST_BASE';
-
 my $OPENAD_XAIF = { %RepositoryTools::RepositoryDesc, };
 $OPENAD_XAIF->{name}  = 'xaif';
 $OPENAD_XAIF->{path}  = "$TheRealBin";
 #$OPENAD_XAIF->{repos} = $OPENAD_REPO_BK_XAIF;
 $OPENAD_XAIF->{repos} = $OPENAD_REPO_RICECVS;
 $OPENAD_XAIF->{var}  = 'XAIFSCHEMA_BASE';
+
+my $OPENAD_BOOST = { %RepositoryTools::RepositoryDesc, };
+$OPENAD_BOOST->{name}  = 'boost';
+$OPENAD_BOOST->{path}  = "$TheRealBin";
+$OPENAD_BOOST->{repos} = $OPENAD_REPO_SF_BOOST;
+$OPENAD_BOOST->{tag}   = '{date}2005/03/21';
+$OPENAD_BOOST->{var}   = 'BOOST_BASE';
 
 #############################################################################
 ## Methods
