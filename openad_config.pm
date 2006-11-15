@@ -1,5 +1,5 @@
 # -*-Mode: perl;-*-
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.16 2006-11-15 22:45:58 utke Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.17 2006-11-15 22:50:34 utke Exp $
 
 #############################################################################
 ##
@@ -181,8 +181,8 @@ sub initialize {
   push(@{$self->{OpenADRepos}}, $OPENAD_XERCESC);
   push(@{$self->{OpenADRepos}}, $OPENAD_XAIFBOOSTER);
   push(@{$self->{OpenADRepos}}, $OPENAD_ANGEL);
-  push(@{$self->{OpenADRepos}}, $OPENAD_BOOST);
   push(@{$self->{OpenADRepos}}, $OPENAD_XAIF);
+  push(@{$self->{OpenADRepos}}, $OPENAD_BOOST);
 }
 
 1;
