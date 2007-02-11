@@ -7,7 +7,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.14 2006-07-06 00:33:01 utke Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.15 2007-02-11 19:12:47 utke Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -127,8 +127,6 @@ BEGIN {
        ['OPENADFORTTK_XERCESC',    '${XERCESCROOT}'],
        ['OPENADFORTTK_BOOST',      '${BOOSTROOT}'],
        [ undef,                    undef],
-       [ 'XAIF_DIR',               '${XAIFBOOSTERROOT}' ],
-       [ 'BOOST_DIR',              '${BOOSTROOT}' ],
        [ undef,                    undef],
        [ 'OPENAD_BUILD',              'yes' ],
        [ undef,                    undef],
