@@ -1,5 +1,5 @@
 # -*-Mode: perl;-*-
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.17 2006-11-15 22:50:34 utke Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.18 2007-03-06 16:07:11 utke Exp $
 
 #############################################################################
 ##
@@ -55,30 +55,6 @@ $OPENAD_REPO_RICECVS->{rsh} =
     "$TheRealBin/tools/sshcvs/sshcvs-hipersoft-anon";
 $OPENAD_REPO_RICECVS->{root} = 
     ':ext:' . $riceUser . '@koolkat2.cs.rice.edu:/Volumes/cvsrep/developer';
-
-##################################################
-# Argonne Bitkeeper
-##################################################
-
-#my $anlUser = $defaultUser;
-
-#my $OPENAD_REPO_ANLBK_XB = { %RepositoryTools::BKReposDesc, }; 
-#$OPENAD_REPO_ANLBK_XB->{root} =
-#   $anlUser . '@terra.mcs.anl.gov:/home/derivs/share/xaifBooster';
-
-#my $OPENAD_REPO_ANLBK_ANGEL = { %RepositoryTools::BKReposDesc, }; 
-#$OPENAD_REPO_ANLBK_ANGEL->{root} = $anlUser . 
-#    '@terra.mcs.anl.gov:/home/utke/BK_Reps/CODE/angel';
-
-##################################################
-# Bkbits Bitkeeper Repositories
-##################################################
-
-#my $OPENAD_REPO_BK_XB = { %RepositoryTools::BKReposDesc, }; 
-#$OPENAD_REPO_BK_XB->{root} = 'bk://xaifbooster.bkbits.net/xaifBooster';
-
-#my $OPENAD_REPO_BK_XAIF = { %RepositoryTools::BKReposDesc, }; 
-#$OPENAD_REPO_BK_XAIF->{root} = 'bk://xaif.bkbits.net/xaif-1.0';
 
 ##################################################
 # SourceForge CVS Repositories
@@ -144,7 +120,8 @@ $OPENAD_XAIF->{repos} = $OPENAD_REPO_RICECVS;
 $OPENAD_XAIF->{var}  = 'XAIFSCHEMA_BASE';
 
 my $OPENAD_BOOST = { %RepositoryTools::RepositoryDesc, };
-$OPENAD_BOOST->{name}  = 'boost';
+# we are just getting the source path because we hang too often on the rest
+$OPENAD_BOOST->{name}  = 'boost/boost';
 $OPENAD_BOOST->{path}  = "$TheRealBin";
 $OPENAD_BOOST->{repos} = $OPENAD_REPO_SF_BOOST;
 $OPENAD_BOOST->{tag}   = '{date}2005/03/21';
