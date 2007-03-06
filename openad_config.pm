@@ -1,5 +1,5 @@
 # -*-Mode: perl;-*-
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.18 2007-03-06 16:07:11 utke Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.19 2007-03-06 23:18:48 utke Exp $
 
 #############################################################################
 ##
@@ -120,9 +120,9 @@ $OPENAD_XAIF->{repos} = $OPENAD_REPO_RICECVS;
 $OPENAD_XAIF->{var}  = 'XAIFSCHEMA_BASE';
 
 my $OPENAD_BOOST = { %RepositoryTools::RepositoryDesc, };
-# we are just getting the source path because we hang too often on the rest
-$OPENAD_BOOST->{name}  = 'boost/boost';
+$OPENAD_BOOST->{name}  = 'boost';
 $OPENAD_BOOST->{path}  = "$TheRealBin";
+$OPENAD_BOOST->{subdir}= "boost";
 $OPENAD_BOOST->{repos} = $OPENAD_REPO_SF_BOOST;
 $OPENAD_BOOST->{tag}   = '{date}2005/03/21';
 $OPENAD_BOOST->{var}   = 'BOOST_BASE';
