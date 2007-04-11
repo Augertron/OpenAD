@@ -1,4 +1,4 @@
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.12 2006-07-06 00:30:45 utke Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.13 2007-04-11 13:28:12 utke Exp $
 # -*-makefile-*-
 ## * BeginCopyright *********************************************************
 ## 
@@ -25,6 +25,9 @@ ifeq ($(PLATFORM),x86-Cygwin)
   XERCESPLATFORM = CYGWIN
 endif
 ifeq ($(PLATFORM),x86-Linux)
+  XERCESPLATFORM = LINUX
+endif
+ifeq ($(PLATFORM),x86_64-Linux)
   XERCESPLATFORM = LINUX
 endif
 ifeq ($(PLATFORM),ia64-Linux)

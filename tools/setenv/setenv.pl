@@ -7,7 +7,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.15 2007-02-11 19:12:47 utke Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.16 2007-04-11 13:32:36 utke Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -97,6 +97,7 @@ BEGIN {
       (
        'alpha-OSF1'  => 'targ_alpha_tru64', 
        'x86-Linux'   => 'targ_ia32_ia64_linux',
+       'x86_64-Linux'=> 'targ_ia32_ia64_linux',
        'x86-Cygwin'  => 'targ_ia32_ia64_linux',
        'ia64-Linux'  => 'targ_ia64_ia64_linux',
        'mips-IRIX64' => 'targ_mips_irix',
