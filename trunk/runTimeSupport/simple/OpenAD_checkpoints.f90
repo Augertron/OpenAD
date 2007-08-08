@@ -233,11 +233,11 @@ contains
   subroutine cp_store_string_scalar_impl(x,s,c,a)
     ! store x in stack s of allocated size a in current position c
     implicit none
-    character(80), intent(in) :: x
+    character(*), intent(in) :: x
     integer :: c,a
-    character(80), dimension(:), allocatable :: s
+    character(*), dimension(:), allocatable :: s
     ! temp array for potential reallocation
-    character(80), dimension(:), allocatable :: temp
+    character(len(x)), dimension(:), allocatable :: temp
     if(a<c+1) then 
        if (a>0) then 
           allocate(temp(a))

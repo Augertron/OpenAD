@@ -74,6 +74,27 @@ C $OpenAD$ END DECLS
           x=double_tape(double_tape_pointer)
         end subroutine
 
+        subroutine apush(x)
+C $OpenAD$ INLINE DECLS
+          use OpenAD_tape
+          implicit none
+          type(active) :: x
+C $OpenAD$ END DECLS
+          double_tape(double_tape_pointer)=x%v
+          double_tape_pointer=double_tape_pointer+1
+        end subroutine 
+
+
+        subroutine apop(x)
+C $OpenAD$ INLINE DECLS
+          use OpenAD_tape
+          implicit none
+          type(active)  :: x
+C $OpenAD$ END DECLS
+          double_tape_pointer=double_tape_pointer-1
+          x%v=double_tape(double_tape_pointer)
+        end subroutine
+
 
         subroutine push_i(x)
 C $OpenAD$ INLINE DECLS
@@ -94,6 +115,57 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
           integer_tape_pointer=integer_tape_pointer-1
           x=integer_tape(integer_tape_pointer)
+        end subroutine
+
+
+
+        subroutine push_b(x)
+C $OpenAD$ INLINE DECLS
+          use OpenAD_tape
+          implicit none
+          logical :: x
+C $OpenAD$ END DECLS
+          logical_tape(logical_tape_pointer)=x
+          logical_tape_pointer=logical_tape_pointer+1
+        end subroutine 
+
+
+        subroutine pop_b(x)
+C $OpenAD$ INLINE DECLS
+          use OpenAD_tape
+          implicit none
+          logical :: x
+C $OpenAD$ END DECLS
+          logical_tape_pointer=logical_tape_pointer-1
+          x=logical_tape(logical_tape_pointer)
+        end subroutine
+
+        subroutine push_s(s)
+C $OpenAD$ INLINE DECLS
+          use OpenAD_tape
+          implicit none
+          character(*) :: s
+C $OpenAD$ END DECLS
+          stringlength_tape(stringlength_tape_pointer)=len(s)
+          stringlength_tape_pointer=stringlength_tape_pointer+1
+          character_tape(character_tape_pointer:
+     +character_tape_pointer+len(s))=s(1:len(s))
+          character_tape_pointer=character_tape_pointer+len(s)
+        end subroutine 
+
+
+        subroutine pop_s(s)
+C $OpenAD$ INLINE DECLS
+          use OpenAD_tape
+          implicit none
+          character(*) :: s
+C $OpenAD$ END DECLS
+          stringlength_tape_pointer=stringlength_tape_pointer-1
+          character_tape_pointer=character_tape_pointer-
+     +stringlength_tape(stringlength_tape_pointer)
+          s(1:len(s))=character_tape(character_tape_pointer:
+     +character_tape_pointer+
+     +stringlength_tape(stringlength_tape_pointer))
         end subroutine
 
 
@@ -751,6 +823,59 @@ C $OpenAD$ END DECLS
           theResIStackoffset=theResIStackoffset+1
         end subroutine 
 
+        subroutine cp_arg_store_integer_vector(i,cp_loop_variable_1)
+C $OpenAD$ INLINE DECLS
+          implicit none
+          integer, dimension(:) :: i
+C $OpenAD$ END DECLS
+          call cp_store_int_vector(i,size(i),
+     +theArgIStack,theArgIStackoffset,
+     +theArgIStackSize)
+        end subroutine 
+
+
+        subroutine cp_arg_restore_integer_vector(i,cp_loop_variable_1)
+C $OpenAD$ INLINE DECLS
+          implicit none
+          integer, dimension(:) :: i
+C $OpenAD$ END DECLS
+          do cp_loop_variable_1=ubound(i,1),lbound(i,1),-1
+             i(cp_loop_variable_1)=theArgIStack(theArgIStackoffset)
+             theArgIStackoffset=theArgIStackoffset-1
+C          write(*,'(A,EN26.16E3)') "restore(v)  ", 
+C     +i(cp_loop_variable_1)
+          end do
+        end subroutine 
+
+
+        subroutine cp_arg_store_integer_matrix(i,cp_loop_variable_1,
+     +cp_loop_variable_2)
+C $OpenAD$ INLINE DECLS
+          implicit none
+          integer, dimension(::) :: i
+C $OpenAD$ END DECLS
+          do cp_loop_variable_2=lbound(i,2),ubound(i,2)
+          call cp_store_int_vector(i(:,cp_loop_variable_2),
+     +size(i(:,cp_loop_variable_2)),theArgIStack,theArgIStackoffset,
+     +theArgIStackSize)
+          end do
+        end subroutine 
+
+
+        subroutine cp_arg_restore_integer_matrix(i,cp_loop_variable_1,
+     +cp_loop_variable_2)
+C $OpenAD$ INLINE DECLS
+          implicit none
+          integer, dimension(::) :: i
+C $OpenAD$ END DECLS
+          do cp_loop_variable_2=ubound(i,2),lbound(i,2),-1
+             do cp_loop_variable_1=ubound(i,1),lbound(i,1),-1
+                i(cp_loop_variable_1,cp_loop_variable_2)=
+     +theArgIStack(theArgIStackoffset)
+                theArgIStackoffset=theArgIStackoffset-1
+             end do
+          end do
+        end subroutine 
 
 C strings  -----------------------------------------------------
         subroutine cp_arg_store_string_scalar(s)
