@@ -56,13 +56,28 @@ module OpenAD_tape
   private
   public :: double_tape, double_tape_pointer, &
 &           integer_tape, integer_tape_pointer, &
+&           logical_tape, logical_tape_pointer, &
+&           character_tape, character_tape_pointer, &
+&           stringlength_tape, stringlength_tape_pointer, &
 &           tape_init, tape_dump
 
-  integer, parameter :: max_double_tape_size=10000000
-  integer, parameter :: max_integer_tape_size=10000000
-  double precision :: double_tape(max_double_tape_size)
-  integer :: integer_tape(max_integer_tape_size)
-  integer double_tape_pointer, integer_tape_pointer
+  integer, parameter :: max_double_tape_size  =10000000
+  integer, parameter :: max_integer_tape_size =10000000
+  integer, parameter :: max_logical_tape_size =10000
+  integer, parameter :: max_character_tape_size =1000000
+  integer, parameter :: max_stringlength_tape_size =1000
+
+  real(8)   :: double_tape (max_double_tape_size)
+  integer   :: integer_tape(max_integer_tape_size)
+  logical   :: logical_tape(max_logical_tape_size)
+  character(max_character_tape_size) :: character_tape
+  integer   :: stringlength_tape(max_stringlength_tape_size)
+
+  integer double_tape_pointer,     &
+&         integer_tape_pointer,    &
+&         logical_tape_pointer,    &
+&         character_tape_pointer,  & 
+&         stringlength_tape_pointer 
 
   interface tape_init
     module procedure init
@@ -75,8 +90,11 @@ module OpenAD_tape
 contains
 
   subroutine init
-    double_tape_pointer=1
-    integer_tape_pointer=1
+    double_tape_pointer       = 1
+    integer_tape_pointer      = 1
+    logical_tape_pointer      = 1
+    character_tape_pointer    = 1
+    stringlength_tape_pointer = 1
   end subroutine init
 
   subroutine dump
@@ -88,6 +106,16 @@ contains
     print*, "integer tape"
     do i=1,integer_tape_pointer-1
       print*, integer_tape(i)
+    enddo
+    print*, "logical tape"
+    do i=1,logical_tape_pointer-1
+      print*, logical_tape(i)
+    enddo
+    print*, "character tape"
+    print*, character_tape
+    print*, "stringlength tape"
+    do i=1,stringlength_tape_pointer-1
+      print*, stringlength_tape(i)
     enddo
   end subroutine dump
 
