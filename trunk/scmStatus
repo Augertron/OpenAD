@@ -92,27 +92,34 @@ def hgChanged(rep):
 
 def hgPending(rep):
     fName=tempfile.mktemp()
-    os.system('hg outgoing > '+fName)
+    ret=os.system('hg outgoing > '+fName)
+    haveRemote=True
+    if (ret!=0 and ret!=256): 
+      haveRemote=False
     infoFile=open(fName)
     outgoing=infoFile.readlines()
     infoFile.close()    
-    os.system('hg incoming > '+fName)
-    infoFile=open(fName)
-    incoming=infoFile.readlines()
-    infoFile.close()
-    status=""
-    if (re.search('no changes found',outgoing[2]) is None):
-        status="O"
-    if (re.search('no changes found',incoming[2]) is None):
-        if (status == "0") :  
-            status="P"
-        else:    
-            status="I"
+    ret=os.system('hg incoming > '+fName)
+    if (ret!=0 and ret!=256): 
+      haveRemote=False
+    if (haveRemote):   
+        infoFile=open(fName)
+        incoming=infoFile.readlines()
+        infoFile.close()
+        status=""
+        if (re.search('no changes found',outgoing[2]) is None):
+            status="O"
+        if (re.search('no changes found',incoming[2]) is None):
+            if (status == "0") :  
+                status="P"
+            else:    
+                status="I"
+    else:
+        status="?"
     sys.stdout.write('\t'+status)
 
 def main():
-  usage = '%prog [options]'
-  opt = OptionParser(usage=usage)
+  opt = OptionParser()
   opt.add_option('-q','--quick',dest='quick',
                  help="don't check for uncommited changes or pending pushes",
                  action='store_true',default=False)
@@ -122,7 +129,7 @@ def main():
     doQuick=True
   cwd=os.getcwd()
   if (os.path.basename(cwd) != 'OpenAD'):
-      print 'the current working directory has to the the OpenAD root directory'
+      opt.error('the current working directory has to the the OpenAD root directory')
       return -1
   repList=['../OpenAD','angel','boost','OpenADFortTk','OpenAnalysis','xaif','xaifBooster','Open64','xercesc']
   maxNameLength=max([len(r) for r in repList])
