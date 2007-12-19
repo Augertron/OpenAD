@@ -1,18 +1,6 @@
 #! /usr/bin/env perl
 # -*-Mode: perl;-*-
 
-# -*-Mode: perl;-*-
-# make sure we execute perl
-#eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
-#& eval 'exec perl -S $0 $argv:q'
-#if 0;
-
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v 1.16 2007-04-11 13:32:36 utke Exp $
-## * BeginCopyright *********************************************************
-## 
-## 
-## *********************************************************** EndCopyright *
-
 #############################################################################
 ##
 ## $Source: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/setenv/setenv.pl,v $ 
@@ -97,7 +85,7 @@ BEGIN {
       (
        'alpha-OSF1'  => 'targ_alpha_tru64', 
        'x86-Linux'   => 'targ_ia32_ia64_linux',
-       'x86_64-Linux'=> 'targ_ia32_ia64_linux',
+       'x86_64-Linux'=> 'targ_ia64_ia64_linux',
        'x86-Cygwin'  => 'targ_ia32_ia64_linux',
        'ia64-Linux'  => 'targ_ia64_ia64_linux',
        'mips-IRIX64' => 'targ_mips_irix',
@@ -109,28 +97,15 @@ BEGIN {
   @RootEnvVars =
       (
        ['OPEN64ROOT',       '${OPEN64_BASE}/osprey1.0/${o64targ}'],
-       ['OPENADFORTTKROOT', '${OPENADFORTTK_BASE}'],
+       ['OPENADFORTTKROOT', '${OPENADFORTTK_BASE}/OpenADFortTk-${PLATFORM}'],
        ['OPENANALYSISROOT', '${OPENANALYSIS_BASE}/${PLATFORM}'],
        ['XERCESCROOT',      '${XERCESC_BASE}/${PLATFORM}'],
        ['XAIFBOOSTERROOT',  '${XAIFBOOSTER_BASE}/..'],
        ['BOOSTROOT',        '${BOOST_BASE}'],
        ['ANGELROOT',        '${ANGEL_BASE}'],
        ['XAIFSCHEMAROOT',   '${XAIFSCHEMA_BASE}'],
+       ['OPENADFORTTK',     '${OPENADFORTTKROOT}'],
        [ undef,             undef ],
-       );
-  
-  @OtherEnvVars =
-      (
-       ['OPENADFORTTK',        '${OPENADFORTTKROOT}/OpenADFortTk-${PLATFORM}'],
-       ['OPENADFORTTK_OPEN64BASE', '${OPEN64_BASE}/osprey1.0'],
-       ['OPENADFORTTK_OPEN64',     '${OPEN64ROOT}'],
-       ['OPENADFORTTK_OA',         '${OPENANALYSISROOT}'],
-       ['OPENADFORTTK_XERCESC',    '${XERCESCROOT}'],
-       ['OPENADFORTTK_BOOST',      '${BOOSTROOT}'],
-       [ undef,                    undef],
-       [ undef,                    undef],
-       [ 'OPENAD_BUILD',              'yes' ],
-       [ undef,                    undef],
        );
   
   @Aliases =
@@ -206,8 +181,7 @@ sub GenEnvSettings
   
   print STDOUT genSetEnvVar('OPENADROOT', $OpenADRoot, $shell);
   
-  my @EnvVars = (@RootEnvVars, @OtherEnvVars);
-  for my $pair (@EnvVars) {
+  for my $pair (@RootEnvVars) {
     my $var = $pair->[$varidx{var}];
     my $val = $pair->[$varidx{val}];
     if (defined($var)) {
