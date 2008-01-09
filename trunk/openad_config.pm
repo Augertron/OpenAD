@@ -1,5 +1,5 @@
 # -*-Mode: perl;-*-
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.19 2007-03-06 23:18:48 utke Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.20 2008-01-09 06:15:21 utke Exp $
 
 #############################################################################
 ##
@@ -124,7 +124,7 @@ $OPENAD_BOOST->{name}  = 'boost';
 $OPENAD_BOOST->{path}  = "$TheRealBin";
 $OPENAD_BOOST->{subdir}= "boost";
 $OPENAD_BOOST->{repos} = $OPENAD_REPO_SF_BOOST;
-$OPENAD_BOOST->{tag}   = '{date}2005/03/21';
+$OPENAD_BOOST->{tag}   = 'Version_1_34_1';
 $OPENAD_BOOST->{var}   = 'BOOST_BASE';
 
 #############################################################################
