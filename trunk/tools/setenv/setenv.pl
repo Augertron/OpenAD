@@ -76,7 +76,6 @@ GenEnvSettings($opt_shell);
 my %platformToOpen64TargTable;
 my %varidx;
 my @RootEnvVars;
-my @OtherEnvVars;
 my @Aliases;
 
 BEGIN {
@@ -91,7 +90,6 @@ BEGIN {
        'mips-IRIX64' => 'targ_mips_irix',
        'sparc-SunOS' => 'targ_sparc_solaris',
        );
-  
   %varidx = ( 'var' => 0, 'val' => 1, );
   
   @RootEnvVars =
@@ -134,21 +132,17 @@ BEGIN {
 sub GenEnvSettings
 {
   my($shell) = @_;
-  
   # --------------------------------------------------------
   # Generate canonical platform
   # --------------------------------------------------------
   my $platform = `cd ${OpenADRoot}/config && ./hpcplatform`;
   chomp($platform);
   print STDOUT genSetVar('PLATFORM', $platform, $shell);
-  
   my $o64targ = $platformToOpen64TargTable{$platform};
   if (!defined($o64targ)) {
     die "Programming error: Unknown platform!\n";
   }
   print STDOUT genSetVar('o64targ', $o64targ, $shell);
-  
-
   # FIXME: Currently we define all base vars, because we
   # indiscriminantly use them later.  Can we be smarter and selective
   # do this?
@@ -197,12 +191,6 @@ sub GenEnvSettings
 
   print STDOUT "\n";  
 
-  #if (is_sh($shell)) {
-  #  print STDOUT 'source ${OPENADFORTTK}/Sourceme-sh', ";\n";
-  #}
-  #else {
-  #  print STDOUT 'source ${OPENADFORTTK}/Sourceme-csh', ";\n";
-  #}
   print STDOUT genAppendEnvVar('PATH', '${OPENADFORTTK}/bin', $shell);
   
   print STDOUT genAppendEnvVar('PATH', '${OPENADROOT}/bin', $shell);
@@ -214,15 +202,13 @@ sub GenEnvSettings
   } else {
     my $ldlib = '${XERCESCROOT}/lib:${OPEN64ROOT}/whirl2f';
     print STDOUT genAppendEnvVar('LD_LIBRARY_PATH', $ldlib, $shell);
-  }    
-  
-  print STDOUT "\n";  
+  }
+  print STDOUT "\n";
   print STDOUT genSetVar('xbase', '${XAIFBOOSTERROOT}/xaifBooster', $shell);
   print STDOUT genSetVar('ii_xaif', '${XAIFSCHEMAROOT}/schema/examples/inlinable_intrinsics.xaif', $shell);
   if ($platform eq 'i686-Cygwin') {
     print STDOUT genSetVar('ii_xaif', '\`cygpath -w ${ii_xaif}\`', $shell);
   }
-  
   # --------------------------------------------------------
   # Generate aliases
   # --------------------------------------------------------
@@ -237,41 +223,30 @@ sub GenEnvSettings
       print STDOUT "\n";
     }
   }
-  
   # --------------------------------------------------------
-  
   print STDOUT "\n";
   print STDOUT genUnSetVar('PLATFORM', $shell);
   print STDOUT genUnSetVar('o64targ', $shell);
   print STDOUT genUnSetVar('xbase', $shell);
   print STDOUT genUnSetVar('ii_xaif', $shell);
-
 }
-
-#############################################################################
-## parseCmdLine
-#############################################################################
 
 sub parseCmdLine
 {
   my ($command) = @_;
-  
   # Get optional arguments
   my %opts = ();
   my $ret = GetOptions(\%opts, @the_options);
-  if (!$ret) { 
-    printErrorAndExit(); 
+  if (!$ret) {
+    printErrorAndExit();
   }
-  
   # Get optional arguments: help
   if (defined( $opts{'help'} )) {
     printUsageAndExit($command);
   }
-  
   # ----------------------------------------------------------
   # Required arguments
   # ----------------------------------------------------------
-
   # Shell type
   if (defined($opts{'shell'})) {
     $opt_shell = $opts{'shell'};
@@ -279,19 +254,16 @@ sub parseCmdLine
     printErrorAndExit("Shell option missing.\n");
   }
   if (! (is_sh($opt_shell) || is_csh($opt_shell)) ) {
-    printErrorAndExit("Invalid shell '$opt_shell'.\n");
+    printErrorAndExit("Shell '$opt_shell' is not a sh or csh type shell.\n");
   }
-  
-  ## Make sure called with minimum number of required arguments
+  ## the GetOptions remove options from ARGV and by now
+  ## there should be nothing left.
   my $numArgs = scalar(@ARGV);
-  if ($numArgs != 0) { 
+  if ($numArgs != 0) {
     printErrorAndExit("Invalid number of required arguments!\n");
   }
-  
-  #print STDOUT "shell:           $opt_shell\n";
 }
 
-# printUsageAndExit
 sub printUsageAndExit 
 {
   my ($command) = @_; # not used now
@@ -299,8 +271,7 @@ sub printUsageAndExit
   exit(-1);
 }
 
-# printErrorAndExit
-sub printErrorAndExit 
+sub printErrorAndExit
 {
   my ($msg) = @_;
   if (defined($msg)) {
@@ -310,8 +281,5 @@ sub printErrorAndExit
   exit(-1);
 }
 
-#############################################################################
 
-# Local Variables:
-# perl-indent-level: 2
-# End:
+
