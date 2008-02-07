@@ -171,7 +171,7 @@ def main():
           patchedName=i+"".join([' ' for s in range(len(i),maxNameLength)])
           sys.stdout.write('%s\t%s\t' % (patchedName,repK))
           sys.stdout.flush()
-          if (re.search('anon',info) is None):
+          if ((re.search('anonymous',info) is None) and (re.search('anoncvs', info) is None)):
               sys.stdout.write('W')
               sys.stdout.flush()
               if (not doQuick) :
