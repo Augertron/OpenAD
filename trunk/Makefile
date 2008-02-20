@@ -1,4 +1,4 @@
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.15 2007-09-24 14:56:24 utke Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.16 2008-02-20 21:44:29 utke Exp $
 
 SHELL = /bin/sh
 WD := $(shell pwd)
@@ -127,7 +127,7 @@ XERCESC_OPT = CXX="$(CXX)" CC="$(CC)"
 xercesc_build:
 	@if [ -d $(XERCESC_BASE) ]; then \
 	  echo "*** Building xercesc ***" ; \
-	  if [ -d $(XERCESC_BASE)/xerces-c-src_2_6_0/obj/$(XERCESPLATFORM) ]; then \
+	  if [ -d $(XERCESC_BASE)/xerces-c-src/obj/$(XERCESPLATFORM) ]; then \
 	    cd $(XERCESC_BASE) && $(MAKE) $(XERCESC_OPT) build install ; \
 	  else \
 	    cd $(XERCESC_BASE) && $(MAKE) $(XERCESC_OPT) ; \
