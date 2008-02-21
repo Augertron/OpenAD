@@ -200,7 +200,7 @@ sub GenEnvSettings
     my $path = '${XERCESCROOT}/bin:${XERCESCROOT}/lib:${OPEN64ROOT}/be:${OPEN64ROOT}/whirl2f:${PATH}';
     print STDOUT genAppendEnvVar('PATH', $path, $shell);
   } else {
-    my $ldlib = '${XERCESCROOT}/lib:${OPEN64ROOT}/whirl2f';
+    my $ldlib = '${OPEN64ROOT}/whirl2f';
     print STDOUT genAppendEnvVar('LD_LIBRARY_PATH', $ldlib, $shell);
   }
   print STDOUT "\n";
