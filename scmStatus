@@ -130,9 +130,9 @@ def hgPending(rep):
         incoming=infoFile.readlines()
         infoFile.close()
         status=""
-        if (re.search('no changes found',outgoing[2]) is None):
+        if (re.search('no changes found',outgoing[-1]) is None):
             status="O"
-        if (re.search('no changes found',incoming[2]) is None):
+        if (re.search('no changes found',incoming[-1]) is None):
             if (status == "0") :  
                 status="P"
             else:    
