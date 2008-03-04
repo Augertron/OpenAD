@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.17 2005-08-31 19:55:41 utke Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/openad/openad,v 1.18 2008-03-04 16:46:05 utke Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -317,7 +317,7 @@ sub undefEnvVarErr
     push @{$cmdDescVecRef}, $desc;
 
     $desc = { %RunCmds::CmdDesc, }; 
-    $desc->{cmd} = "$MFEF90 -F -N132 '${base}.pre.${ext}'";
+    $desc->{cmd} = "$MFEF90 -z -F -N132 '${base}.pre.${ext}'";
     $desc->{desc} = "Fortran to WHIRL: '${base}.pre.${ext}' -> '${base}.pre.B'";
     push @{$cmdDescVecRef}, $desc;
     
