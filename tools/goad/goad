@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.15 2008-03-06 22:35:15 utke Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.16 2008-03-06 22:52:42 utke Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -92,7 +92,7 @@ my ($mode_verb_silent,
     (0, 1, 2, 3, 4);
 
 my $cvsSelfRepo = 
-    [ 'bin', 'config', 'doc', 'test', 'tools',
+    [ 'bin', 'config', 'doc', 'test', 'tools', 'Regression', 
       'Makefile*', 'openad_config.pm', 'README*', 'setenv.*' ];
 
 
