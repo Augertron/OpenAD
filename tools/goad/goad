@@ -6,7 +6,7 @@
 #& eval 'exec perl -S $0 $argv:q'
 #if 0;
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.14 2004-09-28 22:08:10 eraxxon Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.15 2008-03-06 22:35:15 utke Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -50,9 +50,6 @@ Get (or update) OpenAD repositories.  Requires cvs and bitkeeper.
   
 Options:
   --skip-update  : do not update existing repositories; only get new ones
-  --self-only    : update only OpenAD files; CVS environment must be set. 
-                   This is useful when the OpenAD child repositories are
-                   located within the OpenAD repository.
 
   -v [lvl], --verbose [lvl]
     Set verbosity level.  If no level is supplied, defaults to 2.
@@ -71,8 +68,6 @@ Development options:
 # -d, --debug [lvl]  Debug level
 
 my @the_options = ('skip-update',
-		   'self-only',
-		   
 		   'verbose|v:i',
 		   'help|h', 
 		   'interactive|i',
@@ -110,7 +105,6 @@ my $opt_interactive = undef;
 my $opt_debug = 0;
 
 my $opt_skipupdate = 0;
-my $opt_selfonly = 0;
 
 
 # ----------------------------------------------------------
@@ -126,7 +120,6 @@ parseOptions($0);
 my $config = openad_config->new();
 my $repositories = $config->getRepos();
 my $opts = { 
-  selfonly    => $opt_selfonly,
   skipupdate  => $opt_skipupdate,
   interactive => $opt_interactive,
   verbose     => $opt_verbose - $mode_verb_terse, # normal goes to 1
@@ -176,10 +169,6 @@ sub parseOptions
   if (defined($opts{'skip-update'})) {
     $opt_skipupdate = 1;
   } 
-  if (defined($opts{'self-only'})) {
-    $opt_selfonly = 1;
-  } 
-
   
   # Get required arguments
   my $numArgs = scalar(@ARGV);
