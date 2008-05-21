@@ -1,6 +1,4 @@
 # -*-Mode: perl;-*-
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.22 2008-05-21 15:20:48 utke Exp $
-
 #############################################################################
 ##
 ## OpenAD configuration information for subpackages.
