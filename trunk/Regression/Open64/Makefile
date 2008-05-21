@@ -1,5 +1,5 @@
 ifndef F90C
-  $(error "Error:  need to set F90C")
+F90C=gfortran
 endif
 
 SOURCES=$(wildcard *.f90)

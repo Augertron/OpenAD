@@ -47,6 +47,7 @@ def svnParent(rep):
         if (infoString[:5]=='URL: ' or len(infoString)==0):
             break
     infoFile.close()
+    os.remove(fName)
     if (infoString[:5]!='URL: '): 
         raise RuntimeError, "cannot find url for "+rep   
     return infoString[5:]
@@ -62,6 +63,7 @@ def hgParent(rep):
         if (infoString[:len(headAttribute)]==headAttribute or len(infoString)==0):
             break
     infoFile.close()
+    os.remove(fName)
     if (infoString[:len(headAttribute)]!=headAttribute):
         raise RuntimeError, "cannot find url for "+rep   
     return infoString[len(headAttribute):]
@@ -86,6 +88,7 @@ def cvsChanged(rep):
     else:
         sys.stdout.write('\t')
         sys.stdout.flush()
+    os.remove(fName)
 
 def svnChanged(rep):
     fName=tempfile.mktemp()
@@ -97,6 +100,7 @@ def svnChanged(rep):
     else:
         sys.stdout.write('\t')
         sys.stdout.flush()
+    os.remove(fName)
 
 def hgChanged(rep):
     fName=tempfile.mktemp()
@@ -108,6 +112,7 @@ def hgChanged(rep):
     else:
         sys.stdout.write('\t')
         sys.stdout.flush()        
+    os.remove(fName)
 
 def hgPending(rep):
     if (not netAvail()) :
@@ -141,6 +146,7 @@ def hgPending(rep):
         status="?"
     sys.stdout.write('\t'+status)
     sys.stdout.flush()
+    os.remove(fName)
           
 def main():
   opt = OptionParser()
