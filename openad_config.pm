@@ -1,5 +1,5 @@
 # -*-Mode: perl;-*-
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.21 2008-03-06 21:48:09 utke Exp $
+# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/openad_config.pm,v 1.22 2008-05-21 15:20:48 utke Exp $
 
 #############################################################################
 ##
@@ -110,7 +110,6 @@ my $OPENAD_ANGEL = { %RepositoryTools::RepositoryDesc, };
 $OPENAD_ANGEL->{name}  = 'angel';
 $OPENAD_ANGEL->{path}  = "$TheRealBin";
 $OPENAD_ANGEL->{repos} = $OPENAD_REPO_SF_ANGEL;
-$OPENAD_ANGEL->{tag}   = '{date}2008/02/27';
 $OPENAD_ANGEL->{var}   = 'ANGEL_BASE';
 
 my $OPENAD_XAIF = { %RepositoryTools::RepositoryDesc, };
