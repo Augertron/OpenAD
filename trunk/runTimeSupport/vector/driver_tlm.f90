@@ -50,73 +50,76 @@
 ! This work is partially supported by:
 ! 	NSF-ITR grant OCE-0205590
 ! ========== end copyright notice ==============
-module OpenAD_tape
+program driver
+
+  use OAD_active
   implicit none
 
-  private
-  public :: double_tape, double_tape_pointer, &
-&           integer_tape, integer_tape_pointer, &
-&           logical_tape, logical_tape_pointer, &
-&           character_tape, character_tape_pointer, &
-&           stringlength_tape, stringlength_tape_pointer, &
-&           tape_init, tape_dump
+  external head
 
-  integer, parameter :: max_double_tape_size  =10000000
-  integer, parameter :: max_integer_tape_size =10000000
-  integer, parameter :: max_logical_tape_size =10000
-  integer, parameter :: max_character_tape_size =1000000
-  integer, parameter :: max_stringlength_tape_size =1000
+  double precision, dimension(:), allocatable :: x0
+  type(active), dimension(:), allocatable :: x,y,y0 
+  real h
+  integer n,m
+  integer i,j,k
 
-  real(8)   :: double_tape (max_double_tape_size)
-  integer   :: integer_tape(max_integer_tape_size)
-  logical   :: logical_tape(max_logical_tape_size)
-  character(max_character_tape_size) :: character_tape
-  integer   :: stringlength_tape(max_stringlength_tape_size)
+  open(2,action='read',file='params.conf')
+  read(2,'(I5,/,I5,/,F8.1)') n,m,h
+  close(2)
 
-  integer double_tape_pointer,     &
-&         integer_tape_pointer,    &
-&         logical_tape_pointer,    &
-&         character_tape_pointer,  & 
-&         stringlength_tape_pointer 
+  allocate(x(n))
+  allocate(x0(n))
+  allocate(y(m))
+  allocate(y0(m))
 
-  interface tape_init
-    module procedure init
-  end interface tape_init
+  do i=1,n
+     x0(i)=i/2.
+  end do
 
-  interface tape_dump
-    module procedure dump
-  end interface tape_dump
+  open(2,file='tmpOutput/dd.out')
+  write(2,*) "DD"
+  do j=1,n
+     x(j)%v=x0(j)
+  end do
+  call head(x,y0)
+  do i=1,n
+     do j=1,n
+        x(j)%v=x0(j)
+        if (i==j) then
+           x(j)%v=x0(j)+h
+        end if
+     end do
+     call head(x,y)
+     do k=1,m
+        write(2,'(A,I3,A,I3,A,EN26.16E3)') "F(",k,",",i,")=",(y(k)%v-y0(k)%v)/h
+     end do
+  end do
+  close(2)
 
-contains
+  open(2,file='tmpOutput/ad.out')
+  write(2,*) "AD"
+  do i=1,n
+    x(i)%v=x0(i)
+    do j=1,n
+      if (i==j) then
+        x(i)%d(j)=1.0
+      else
+        x(i)%d(j)=0.0
+      end if
+    end do
+  end do
+  call head(x,y)
+  do i=1,n
+    do k=1,m
+      write(2,'(A,I3,A,I3,A,EN26.16E3)') "F(",k,",",i,")=",y(k)%d(i)
+    end do
+  end do
+  close(2)
 
-  subroutine init
-    double_tape_pointer       = 1
-    integer_tape_pointer      = 1
-    logical_tape_pointer      = 1
-    character_tape_pointer    = 1
-    stringlength_tape_pointer = 1
-  end subroutine init
+  deallocate(x)
+  deallocate(x0)
+  deallocate(y)
+  deallocate(y0)
 
-  subroutine dump
-    integer i
-    print*, "double tape"
-    do i=1,double_tape_pointer-1
-      print*, double_tape(i)
-    enddo
-    print*, "integer tape"
-    do i=1,integer_tape_pointer-1
-      print*, integer_tape(i)
-    enddo
-    print*, "logical tape"
-    do i=1,logical_tape_pointer-1
-      print*, logical_tape(i)
-    enddo
-    print*, "character tape"
-    print*, character_tape
-    print*, "stringlength tape"
-    do i=1,stringlength_tape_pointer-1
-      print*, stringlength_tape(i)
-    enddo
-  end subroutine dump
+end program driver
 
-end module OpenAD_tape

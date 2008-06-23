@@ -1,3 +1,3 @@
-int iaddr_(void* my_active) {
-  return (int) my_active;
+long iaddr_(void* my_active) {
+  return (long) my_active;
 }

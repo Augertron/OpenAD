@@ -50,6 +50,45 @@ C
 C This work is partially supported by:
 C 	NSF-ITR grant OCE-0205590
 C ========== end copyright notice ==============
+
+C Checkpoint counter functions---------------------
+
+         subroutine countcheckpoint()
+C $OpenAD$ INLINE DECLS
+           implicit none
+C $OpenAD$ END DECLS
+           if(theSwitch.eq.0) then
+             print *,"Checkpoint storage"
+             print *, "Floating point: ", theArgFStackoffset
+             print *, "Integer: ", theArgIStackoffset
+             print *, "Boolean: ", theArgBStackoffset
+             print *, "String: ", theArgSStackoffset
+             theSwitch = 1
+           end if
+         end subroutine
+          
+
+C Counter functions -------------------------------
+
+         subroutine countmult(x)
+C $OpenAD$ INLINE DECLS
+           implicit none
+           integer x
+C $OpenAD$ END DECLS
+           count_mult = count_mult + x
+         end subroutine
+
+         subroutine countadd(x)
+C $OpenAD$ INLINE DECLS
+           implicit none
+           integer x
+C $OpenAD$ END DECLS
+           count_add = count_add + x
+         end subroutine
+
+
+
+
 C taping --------------------------------------------
 
 
@@ -799,8 +838,8 @@ C $OpenAD$ INLINE DECLS
           integer :: i
 C $OpenAD$ END DECLS
           i=theArgIStack(theArgIStackoffset)
+C          write(*,'(A,I5,I5)') "restore(s)  ", i, theArgIStackOffset
           theArgIStackoffset=theArgIStackoffset-1
-C          write(*,'(A,I5)') "restore(s)  ", i
         end subroutine 
 
 

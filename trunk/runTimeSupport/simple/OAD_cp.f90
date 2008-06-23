@@ -50,15 +50,16 @@
 ! This work is partially supported by:
 ! 	NSF-ITR grant OCE-0205590
 ! ========== end copyright notice ==============
-module OpenAD_checkpoints
+module OAD_cp
 
-  use OpenAD_active
+  use OAD_active
 
   implicit none
 
   private
 
   integer, parameter :: store_increase=20000
+  integer, parameter :: string_length=80
 
   public ::  cp_store_real_scalar, cp_store_real_vector, &
 & cp_store_int_scalar, cp_store_int_vector, &
@@ -201,7 +202,7 @@ contains
     end if
     c=c+1
     s(c)=x
-!    write(*,'(A,I5)') "store(s)  ", x
+!    write(*,'(A,I5,I5)') "store(s)  ", x,c
   end subroutine cp_store_int_scalar_impl
 
   subroutine cp_store_int_vector_impl(x,n,s,c,a)
@@ -235,9 +236,9 @@ contains
     implicit none
     character(*), intent(in) :: x
     integer :: c,a
-    character(*), dimension(:), allocatable :: s
+    character(string_length), dimension(:), allocatable :: s
     ! temp array for potential reallocation
-    character(len(x)), dimension(:), allocatable :: temp
+    character(string_length), dimension(:), allocatable :: temp
     if(a<c+1) then 
        if (a>0) then 
           allocate(temp(a))
@@ -280,4 +281,4 @@ contains
     s(c)=x
   end subroutine cp_store_bool_scalar_impl
 
-end module OpenAD_checkpoints
+end module OAD_cp
