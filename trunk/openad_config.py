@@ -109,14 +109,14 @@ class openad_config:
 # set OpenAD Repositories
 ###################################################################### 
 
-    self.OPENAD_OPEN64.setAll('Open64',OpenADRoot,"none","OpenAD","OPEN64_BASE",OPENAD_REPO_RICESVN_ROOT+'open64/trunk/')
-    self.OPENAD_OPENADFORTTK.setAll('OpenADFortTk',OpenADRoot,"none","none",'OPENADFORTTK_BASE',OPENAD_REPO_RICESVN_ROOT+'OpenADFortTK/trunk')
-    self.OPENAD_OPENANALYSIS.setAll('OpenAnalysis',OpenADRoot,"none","none",'OPENANALYSIS_BASE',OPENAD_REPO_RICESVN_ROOT+'open-analysis/tags/version-openad')
-    self.OPENAD_XERCESC.setAll('xercesc', OpenADRoot,"none","none",'XERCESC_BASE',OPENAD_REPO_RICESVN_ROOT+'xercesc/tags/version-openad')
-    self.OPENAD_XAIFBOOSTER.setAll('xaifBooster',OpenADRoot,"none","none",'XAIFBOOSTER_BASE',OPENAD_REPO_RICESVN_ROOT+'xaifBooster/trunk')
-    self.OPENAD_ANGEL.setAll('angel',OpenADRoot,"none","none",'ANGEL_BASE',OPENAD_REPO_SF_ANGEL_rsh,OPENAD_REPO_SF_ANGEL_Root)
-    self.OPENAD_XAIF.setAll('xaif',OpenADRoot,"none","none",'XAIFSCHEMA_BASE',OPENAD_REPO_RICESVN_ROOT+'xaif/trunk')
-    self.OPENAD_BOOST.setAll(' -r Version_1_34_1 boost/boost',OpenADRoot,"boost",'Version_1_34_1','BOOST_BASE',OPENAD_REPO_SF_BOOST_rsh,OPENAD_REPO_SF_BOOST_Root)
+    self.OPENAD_OPEN64.setAll('Open64',OpenADRoot,None,"OpenAD","OPEN64_BASE",OPENAD_REPO_RICESVN_ROOT+'open64/trunk/')
+    self.OPENAD_OPENADFORTTK.setAll('OpenADFortTk',OpenADRoot,None,None,'OPENADFORTTK_BASE',OPENAD_REPO_RICESVN_ROOT+'OpenADFortTK/trunk')
+    self.OPENAD_OPENANALYSIS.setAll('OpenAnalysis',OpenADRoot,None,None,'OPENANALYSIS_BASE',OPENAD_REPO_RICESVN_ROOT+'open-analysis/tags/version-openad')
+    self.OPENAD_XERCESC.setAll('xercesc', OpenADRoot,None,None,'XERCESC_BASE',OPENAD_REPO_RICESVN_ROOT+'xercesc/tags/version-openad')
+    self.OPENAD_XAIFBOOSTER.setAll('xaifBooster',OpenADRoot,None,None,'XAIFBOOSTER_BASE',OPENAD_REPO_RICESVN_ROOT+'xaifBooster/trunk')
+    self.OPENAD_ANGEL.setAll('angel',OpenADRoot,None,None,'ANGEL_BASE',OPENAD_REPO_SF_ANGEL_rsh,OPENAD_REPO_SF_ANGEL_Root)
+    self.OPENAD_XAIF.setAll('xaif',OpenADRoot,None,None,'XAIFSCHEMA_BASE',OPENAD_REPO_RICESVN_ROOT+'xaif/trunk')
+    self.OPENAD_BOOST.setAll('boost/',OpenADRoot,"boost",'Version_1_34_1','BOOST_BASE',OPENAD_REPO_SF_BOOST_rsh,OPENAD_REPO_SF_BOOST_Root)
 ######################################################################
 # set OpenAD Environment Variables
 ######################################################################

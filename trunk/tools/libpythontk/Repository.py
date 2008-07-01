@@ -47,7 +47,7 @@ class Repository:
     localRepoPath = os.path.join(self.getComponentPath(),self.getName())
     if self.getSubdir() is not None:
       localRepoPath = os.path.join(localRepoPath,self.getSubdir())
-    return "-d "+localRepoPath
+    return os.path.exists(localRepoPath)
   
 class CVSRepository(Repository):
 
@@ -58,8 +58,10 @@ class CVSRepository(Repository):
 
   def setRSH(self, rsh):
     self.rsh = rsh
+    self.env = 'CVS_RSH="' + self.getRSH() + '"'
   def setRoot(self, root):
     self.root = root
+    self.opt = '-z3 -d' + self.getRoot()
   def setAll(self,name,path,subdir,tag,var,rsh, root):
     Repository.setAll(self,name,path,subdir,tag,var)
     self.setRSH(rsh)
@@ -74,33 +76,34 @@ class CVSRepository(Repository):
 # getCVSTagOpt: 
   def getCVSTagOpt(self):
     opt=""
-    if self.getTag:
+    if self.getTag():
       date = ""
       re = '^{date}(.*)'
-      if ((date) == self.getTag.find('/'+re+'/')): 
+      if ((date) == self.getTag().find('/'+re+'/')): 
         opt = '-D '+date
       else:
-        opt = "-r "+self.getTag
+        opt = "-r "+self.getTag()
     return opt
 
 
 # set command description to update repository
-  def setCmdDesc(self):
-    env = 'CVS_RSH="' + self.getRSH() + '"'
-    opt = '-z3 -d ' + self.getRoot()
+  def update(self):
     localRepoPath = os.path.join(self.getComponentPath(),self.getName())
-    self.cmdDesc.setCmd("cd "+localRepoPath+" && "+env+" cvs "+opt+" update -d")
+    self.cmdDesc.setCmd("cd "+localRepoPath+" && "+self.env+"  cvs "+self.opt+" update -d")
     self.cmdDesc.setDesc(self.cmdDesc.getCmd())
 
-# set command description to update subdir
-  def setCmdDescSubdir(self):
-    env = 'CVS_RSH="' + self.getRSH() + '"'
-    opt = '-z3 -d ' + self.getRoot()
-    nm = os.path.join(nm,repo.getSubdir())
+# set command to check out repository
+  def checkout(self):
     topt = self.getCVSTagOpt()
-    self.cmdDesc.setCmd("cd "+repo.getComponentPath()+" && "+env+" cvs "+opt+" co "+topt+" "+nm)
+    self.cmdDesc.setCmd(self.env+" cvs "+self.opt+" co "+topt+" "+self.getName())
     self.cmdDesc.setDesc(self.cmdDesc.getCmd())
 
+# set command description to check out subdirectory
+  def checkoutSubdir(self):
+    nm = os.path.join(self.getName(),self.getSubdir())
+    topt = self.getCVSTagOpt()
+    self.cmdDesc.setCmd(self.env+" cvs "+self.opt+" co "+topt+" "+nm)
+    self.cmdDesc.setDesc(self.cmdDesc.getCmd())
 
 class SVNRepository(Repository):
 
@@ -118,13 +121,17 @@ class SVNRepository(Repository):
     return self.root
 
 # set command description to update repository
-  def setCmdDesc(self):
+  def update(self):
     localRepoPath = os.path.join(self.getComponentPath(),self.getName())
-    self.cmdDesc.setCmd("cd "+localRepoPath+" && svn co "+self.getRoot()+" "+self.getName())
+    self.cmdDesc.setCmd("cd "+localRepoPath+" && svn update")
     self.cmdDesc.setDesc(self.cmdDesc.getCmd())
 
-# set command description to update subdir
-  def setCmdDescSubdir(self):
-    nm = os.path.join(nm,repo.getSubdir())
-    self.desc.setCmd("cd "+repo.getComponentPath()+" && svn co "+self.getRoot()+" "+nm)
-    self.cmdDesc.setDesc(CmdDesc.getCmd())
+# set command description to checkout repository
+  def checkout(self):
+    self.cmdDesc.setCmd("svn co "+self.getRoot()+" "+self.getName())
+    self.cmdDesc.setDesc(self.cmdDesc.getCmd())
+
+  def checkoutSubdir(self):
+    name = os.path.join(self.getName(),self.getSubdir())
+    self.cmdDesc.setCmd("svn co "+self.getRoot()+" "+name)
+    self.cmdDesc.setDesc(self.cmdDesc.getCmd())
