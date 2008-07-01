@@ -1,78 +1,42 @@
-#! /usr/bin/env perl
-# -*-Mode: perl;-*-
+#!/usr/bin/env python
+#-*-Mode: python;-*-
 
-# make sure we execute perl
-#eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
-#& eval 'exec perl -S $0 $argv:q'
-#if 0;
+import os
+import sys
+import time
+import getopt
+mydir = os.path.dirname(__file__)
+OpenADRoot = os.path.abspath(os.path.join(mydir,'../..'))
+libpythontk = os.path.join(OpenADRoot+"/tools/libpythontk")
+sys.path.append(libpythontk)
+import RepositoryTools
+sys.path.append(OpenADRoot)
+import openad_config
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v 1.17 2008-06-23 20:04:51 utke Exp $
-## * BeginCopyright *********************************************************
-## 
-## 
-## *********************************************************** EndCopyright *
+class goad:
+  def __init__(self):
+    self.the_program = os.path.basename(sys.argv[0])
+    self.the_usage = "usage: "+self.the_program+" [options] \
+\
+Get (or update) OpenAD repositories.  Requires cvs and bitkeeper.\
+  \
+Options:\
+  --skip-update  : do not update existing repositories; only get new ones\
+\
+  -v [lvl], --verbose [lvl]\
+    Set verbosity level.  If no level is supplied, defaults to 2.\
+    0: Play the silent game\
+    1: Pouty (terse message)\
+    2: Sanguine (standard activity messages) [Default]\
+    3: Chatty\
+    4: Talk your ear off\
+  -h, --help         print help\
+\
+Development options:\
+  -i, --interactive  \
+    prompt user to authorize each command\n"
 
-#############################################################################
-##
-## $Source: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/tools/goad/goad,v $ 
-##
-##   Nathan Tallent.
-##
-#############################################################################
-
-use strict;
-use warnings;
-
-use FindBin qw($Script $RealBin);
-use Cwd qw(cwd abs_path);
-use IO::File;
-use Getopt::Long;
-
-use POSIX qw(strftime);
-
-use lib "$RealBin/../libperltk";
-use RepositoryTools qw(RunRepositoryUpdate);
-
-use lib "$RealBin/../..";
-use openad_config;
-
-my $OpenADRoot = abs_path("$RealBin/../..");
-
-STDOUT->autoflush(1); 
-
-#############################################################################
-
-my $the_program = $Script;
-my $the_usage = 
-"usage: ${the_program} [options]
-
-Get (or update) OpenAD repositories.  Requires cvs and bitkeeper.
-  
-Options:
-  --skip-update  : do not update existing repositories; only get new ones
-
-  -v [lvl], --verbose [lvl]
-    Set verbosity level.  If no level is supplied, defaults to 2.
-    0: Play the silent game
-    1: Pouty (terse message)
-    2: Sanguine (standard activity messages) [Default]
-    3: Chatty
-    4: Talk your ear off
-  -h, --help         print help
-
-Development options:
-  -i, --interactive  
-    prompt user to authorize each command
-\n";
-
-# -d, --debug [lvl]  Debug level
-
-my @the_options = ('skip-update',
-		   'verbose|v:i',
-		   'help|h', 
-		   'interactive|i',
-		   'debug|d:i',
-		   );
+    self.help = "Try "+self.the_program+" --help' for more information.\n"
 
 #############################################################################
 
@@ -83,148 +47,108 @@ my @the_options = ('skip-update',
 #		    "chatty"    => 3,
 #		    "teengirls" => 4,
 #		    );
+    self.mode_verb_silent=0
+    self.mode_verb_terse=1
+    self.mode_verb_normal=2
+    self.mode_verb_chatty=3
+    self.mode_verb_teengirls=4
 
-my ($mode_verb_silent,
-    $mode_verb_terse,
-    $mode_verb_normal,
-    $mode_verb_chatty,
-    $mode_verb_teengirls) =
-    (0, 1, 2, 3, 4);
-
-my $cvsSelfRepo = 
-    [ 'bin', 'config', 'doc', 'test', 'tools', 
-      'Makefile*', 'openad_config.pm', 'README*', 'setenv.*' ];
-
+    self.cvsSelfRepo =['bin','config','doc','test','tools','Regression','Makefile*','openad_config.pm','README*','setenv.*' ]
 
 #############################################################################
 ## main/driver
 #############################################################################
 
-my $opt_verbose = undef;
-my $opt_interactive = undef;
-my $opt_debug = 0;
-
-my $opt_skipupdate = 0;
-
+    self.opt_verbose = 1
+    self.opt_interactive = 0
+    self.opt_debug = 0
+    self.opt_skipupdate = 0
 
 # ----------------------------------------------------------
 # Parse the command line
 # ----------------------------------------------------------
 
-parseOptions($0);
+    self.parseOptions(sys.argv)
 
 # ----------------------------------------------------------
-# Run
+# Run function
 # ----------------------------------------------------------
+  def Run(self):
+    config = openad_config.openad_config()
+    repositories =config.getRepos();
+    opts = { 
+      'skipupdate' : self.opt_skipupdate,
+      'interactive' : self.opt_interactive,
+      'verbose' : self.opt_verbose,
+      'logfnm' : self.prepareLogFile(),
+      'debug' : self.opt_debug}
 
-my $config = openad_config->new();
-my $repositories = $config->getRepos();
-my $opts = { 
-  skipupdate  => $opt_skipupdate,
-  interactive => $opt_interactive,
-  verbose     => $opt_verbose - $mode_verb_terse, # normal goes to 1
-  logfnm      => prepareLogFile(),
-  debug       => $opt_debug,
-};
-
-print STDOUT "Sending output to '" . $opts->{logfnm} . "'\n";
-
-RunRepositoryUpdate($OpenADRoot, $cvsSelfRepo, $repositories, $opts);
-
-exit(0);
+    print "Sending output to \"" + opts['logfnm'] + "\"\n";
+    
+    RepositoryTools.RepositoryTools().RunRepositoryUpdate(OpenADRoot,self.cvsSelfRepo,repositories, opts);
+    
+    sys.exit(0);
 
 #############################################################################
 ## parseOptions
 #############################################################################
 
-sub parseOptions
-{
-  my ($command) = @_;
+  def parseOptions(self, command):
+    # Get optional arguments
+    opts,ret = getopt.getopt(command[1:],'v:hid:',["skip-update","verbose=","help","interactive","debug="])
+    if len(ret) != 0:
+      self.printErrorAndExit()
   
-  # Get optional arguments
-  my %opts = ();
-  my $ret = GetOptions(\%opts, @the_options);
-  if (!$ret) { 
-    printErrorAndExit(); 
-  }
-  
-  # Get optional arguments: verbose, help
-  $opt_verbose = $mode_verb_normal; # default
-  if (defined($opts{'verbose'})) {
-    $opt_verbose = $opts{'verbose'};
-  } 
-  if (defined($opts{'help'})) {
-    printUsageAndExit($the_program);
-  }
-  if (defined($opts{'debug'})) {
-    $opt_debug = $opts{'debug'};
-  }
-  
-  # Get optional arguments: interactive
-  if (defined($opts{'interactive'})) {
-    $opt_interactive = 1;
-  } 
+    # Get optional arguments: verbose, help
+    self.opt_verbose = self.mode_verb_normal # default
+    for opt in opts:
+      arg, val = opt
+      if arg == "--verbose" or arg == "-v":
+        self.opt_verbose = val
+      if arg == "--help" or arg == "-h":
+        self.printUsageAndExit()
+      if arg == "--debug" or arg == "-d":
+        self.opt_debug = val
+      # Get optional arguments: interactive
+      if arg == "--interactive" or arg == "-i":
+        self.opt_interactive = 1 
+      # Get optional arguments: skip-update
+      if arg == "--skip-update":
+        self.opt_skipupdate = 1
 
-  # Get optional arguments: skip-update
-  if (defined($opts{'skip-update'})) {
-    $opt_skipupdate = 1;
-  } 
-  
-  # Get required arguments
-  my $numArgs = scalar(@ARGV);
-  if ($numArgs != 0) { 
-    printErrorAndExit("Invalid number of required arguments!\n"); 
-  }
-}
+  # printUsageAndExit
+  def printUsageAndExit(self):
+    print self.the_usage
+    sys.exit()
 
+  # printErrorAndExit
+  def printErrorAndExit(self, msg=help):
+    print msg
+    sys.exit()
 
-# printUsageAndExit
-sub printUsageAndExit 
-{
-  my ($command) = @_; # not used now
-  print STDOUT ${the_usage};
-  exit(-1);
-}
-
-# printErrorAndExit
-sub printErrorAndExit 
-{
-  my ($msg) = @_;
-  if (defined($msg)) {
-    print STDOUT "${msg}";
-  }
-  print STDOUT "Try `${the_program} --help' for more information.\n";
-  exit(-1);
-}
-
-# printUsageAndExit
-sub undefEnvVarErr 
-{
-  my ($var) = @_;
-  print STDOUT "Undefined environment variable '${var}'\n";
-  exit(-1);
-}
+  # printUsageAndExit
+  def undefEnvVarErr(self, var):
+    print "Undefined environment variable '"+var+"'\n"
+    sys.exit()
 
 
 #############################################################################
 ## Subroutines
 #############################################################################
 
-# Returns the name of a log file that has size 0 in the filesystem.
-sub prepareLogFile
-{
-  #my ($x) = @_;
-
-  my $dir = cwd();
-  my $stamp = strftime("%Y_%m_%d-%H_%M_%S", localtime(time()));
-  my $logfnm = "${dir}/goad.${stamp}.log~";
-  truncate($logfnm, 0);
+  # Returns the name of a log file that has size 0 in the filesystem.
+  def prepareLogFile(self):
+    dir = os.getcwd();
+    (y,mon,d,h,min,s,dow, doy, i) = time.localtime()
+    stamp = str(y)+"_"+str(mon)+"_"+str(d)+"_"+str(h)+"_"+str(min)+"_"+str(s)
+    logfnm = dir+"/goad."+stamp+".log~"
   
-  return $logfnm;
-}
+    return logfnm;
 
 #############################################################################
+# ----------------------------------------------------------
+# Run
+# ----------------------------------------------------------
 
-# Local Variables:
-# perl-indent-level: 2
-# End:
+goad = goad()
+goad.Run()

@@ -1,7 +1,7 @@
 # -*-Mode: sh;-*-
 # For sh variants
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/setenv.sh,v 1.3 2004-06-08 15:34:48 eraxxon Exp $
+# $Header: /Volumes/cvsrep/developer/OpenAD/setenv.sh,v 1.3 2004/06/08 15:34:48 eraxxon Exp $
 
 #echo "$0 $*"
 
@@ -15,7 +15,7 @@
 #    basename="/usr/bin/basename"
 #fi
 
-prog="./tools/setenv/setenv.pl"
+prog="./tools/setenv/setenv.py"
 shell="--shell=sh"
 
 #############################################################################

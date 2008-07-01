@@ -1,7 +1,7 @@
-# -*-Mode: sh;-*-
+#!/bin/csh
 # For csh variants
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/setenv.csh,v 1.3 2004-06-08 15:34:48 eraxxon Exp $
+# $Header: /Volumes/cvsrep/developer/OpenAD/setenv.csh,v 1.3 2004/06/08 15:34:48 eraxxon Exp $
 
 #echo "$0 $*"
 
@@ -15,7 +15,7 @@
 #    set basename = "/usr/bin/basename"
 #endif
 
-set prog = "./tools/setenv/setenv.pl"
+set prog = "./tools/setenv/setenv.py"
 set shell = "--shell=csh"
 
 #############################################################################
@@ -31,7 +31,6 @@ if ( $status != 0 ) then
     echo $out
     exit 1
 endif
-
 eval "$out"
 if ( $status != 0 ) then
     echo "*** Error eval'ing ***"

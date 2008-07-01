@@ -1,12 +1,7 @@
-#! /usr/bin/env perl
-# -*-Mode: perl;-*-
+#! /usr/bin/env python
+# -*-Mode: python;-*-
 
-# make sure we execute perl
-#eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
-#& eval 'exec perl -S $0 $argv:q'
-#if 0;
-
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/bin/goad,v 1.1 2004-05-20 02:28:35 eraxxon Exp $
+# $Header: /Volumes/cvsrep/developer/OpenAD/bin/goad,v 1.1 2004/05/20 02:28:35 eraxxon Exp $
 ## * BeginCopyright *********************************************************
 ## 
 ## 
@@ -14,27 +9,29 @@
 
 #############################################################################
 ##
-## $Source: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/bin/goad,v $ 
-##
-##   Nathan Tallent.
+## $Source: /Volumes/cvsrep/developer/OpenAD/bin/goad,v $ 
 ##
 #############################################################################
 
-use strict;
-use warnings;
+import os
+import sys
 
-use FindBin qw($Script $RealBin);
-
-my $toolsdir = "$RealBin/../tools";
-my $realscript = "$toolsdir/$Script/$Script";
+mydir = os.path.dirname(__file__)
+script_name = os.path.basename(__file__)
+toolsdir = os.path.abspath(os.path.join(mydir,'../tools'))
+realscript = os.path.join(toolsdir,script_name,script_name)
+os.chdir(os.path.dirname(realscript))
+realcmd = os.path.basename(realscript)
 
 # complain if target script is not present
-if ( ! -x $realscript ) {
-    die "$realscript does not exist or is not executable."
-}
+if not os.access(realcmd,os.X_OK):
+  sys.stderr.write(realscript+" does not exist or is not executable.\n")
+  sys.exit()
 
-my @realcmd = ($realscript, @ARGV);
-#print("@realcmd\n");
+for arg in sys.argv[1:]:
+  realcmd += " "+arg
 
-exec { $realcmd[0] } @realcmd;
-die "couldn't exec $realscript: $!"; 
+ret = os.system("./"+realcmd)
+if ret != 0:
+  sys.stderr.write("couldn't execute "+realscript+"\n")
+sys.exit()
