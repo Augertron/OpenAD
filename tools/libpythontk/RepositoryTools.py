@@ -52,10 +52,12 @@ class RepositoryTools:
       if (repo.repoExists() and optsKeys['skipupdate']):
         continue
       if repo.repoExists():
-        repo.setCmdDesc() # sets CmdDesc to update repository
+        repo.update() # sets CmdDesc to update repository
       else:
-        if repo.getSubdir is not None:
-          repo.setCmdDescSubdir() # sets CmdDesc to update subdir repository
+        if repo.getSubdir() is not None:
+          repo.checkoutSubdir() # sets CmdDesc to update subdir repository
+        else:
+          repo.checkout() # check out repository
       cmdDescVecRef.append(repo.cmdDesc)
 
   # --------------------------------------------------------

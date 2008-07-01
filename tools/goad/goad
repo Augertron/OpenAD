@@ -12,6 +12,7 @@ sys.path.append(libpythontk)
 import RepositoryTools
 sys.path.append(OpenADRoot)
 import openad_config
+os.chdir(OpenADRoot)
 
 class goad:
   def __init__(self):
