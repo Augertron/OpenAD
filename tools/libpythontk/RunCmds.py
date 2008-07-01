@@ -65,7 +65,7 @@ class RunCmds:
     if logfnm:
       # Append separator and command to log file
       try:
-        logfh = open(logfnm,"w")
+        logfh = open(logfnm,"a")
         logfh.write("*****************************************************************************\n\n")
         logfh.write(cmd+"\n")
         logfh.close()
@@ -77,7 +77,8 @@ class RunCmds:
       sys.stdout.write("Executing "+cmd+"\n")
 
     try:
-      os.system(cmd)
+      ret = os.system(cmd)
+      print cmd
     except Exception, e:
       print e
       self.AppendOutfileToLogfile(logfnm, outfnm)

@@ -110,7 +110,7 @@ class openad_config:
 ###################################################################### 
 
     self.OPENAD_OPEN64.setAll('Open64',OpenADRoot,None,"OpenAD","OPEN64_BASE",OPENAD_REPO_RICESVN_ROOT+'open64/trunk/')
-    self.OPENAD_OPENADFORTTK.setAll('OpenADFortTk',OpenADRoot,None,None,'OPENADFORTTK_BASE',OPENAD_REPO_RICESVN_ROOT+'OpenADFortTK/trunk')
+    self.OPENAD_OPENADFORTTK.setAll('OpenADFortTk',OpenADRoot,None,None,'OPENADFORTTK_BASE',OPENAD_REPO_RICESVN_ROOT+'OpenADFortTk/trunk')
     self.OPENAD_OPENANALYSIS.setAll('OpenAnalysis',OpenADRoot,None,None,'OPENANALYSIS_BASE',OPENAD_REPO_RICESVN_ROOT+'open-analysis/tags/version-openad')
     self.OPENAD_XERCESC.setAll('xercesc', OpenADRoot,None,None,'XERCESC_BASE',OPENAD_REPO_RICESVN_ROOT+'xercesc/tags/version-openad')
     self.OPENAD_XAIFBOOSTER.setAll('xaifBooster',OpenADRoot,None,None,'XAIFBOOSTER_BASE',OPENAD_REPO_RICESVN_ROOT+'xaifBooster/trunk')
