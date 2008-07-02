@@ -58,7 +58,7 @@ class RunCmds:
   
   def RunCmd(self, cmd, verbose, logfnm):
     dir = os.getcwd()
-    outfnm = dir+"RunCmd-out.tmp~"
+    outfnm = os.path.join(dir,"RunCmd-out.tmp~")
     f = open(outfnm,"w")
     f.close()
     cmd += " > "+outfnm+" 2>&1"

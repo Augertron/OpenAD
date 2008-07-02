@@ -63,7 +63,7 @@ class RepositoryTools:
   # --------------------------------------------------------
   # Run commands
   # --------------------------------------------------------
-    if opts['debug'] != "unknown":
+    if opts['debug'] != 0:
       sys.stdout.write("--> "+opts['logfnm']+"\n")
     RunCmds.RunCmds().RunCmds(cmdDescVecRef, opts['verbose'], opts['interactive'], opts['logfnm'])
 
