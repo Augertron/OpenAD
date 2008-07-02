@@ -77,8 +77,7 @@ class RunCmds:
       sys.stdout.write("Executing "+cmd+"\n")
 
     try:
-      ret = os.system(cmd)
-      print cmd
+      os.system(cmd)
     except Exception, e:
       print e
       self.AppendOutfileToLogfile(logfnm, outfnm)

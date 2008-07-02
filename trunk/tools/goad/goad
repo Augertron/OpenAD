@@ -11,7 +11,6 @@ libpythontk = os.path.join(OpenADRoot+"/tools/libpythontk")
 sys.path.append(libpythontk)
 import RepositoryTools
 sys.path.append(OpenADRoot)
-import openad_config
 os.chdir(OpenADRoot)
 
 class goad:
@@ -72,6 +71,25 @@ Development options:\
     self.parseOptions(sys.argv)
 
 # ----------------------------------------------------------
+# Update home repository
+# ----------------------------------------------------------
+
+  def updateOpenADRepository(self):
+    print "updating OpenAD repository"
+    dir = os.getcwd()
+    self.outfnm = dir+"RunCmd-out.tmp~"
+    self.logfnm = self.prepareLogFile()
+    f = open(self.logfnm,"a")
+    cmd = 'svn update > '+self.outfnm+" 2>&1"
+    f.write("*****************************************************************************\n\n")
+    f.write(cmd+'\n')
+    f.close()
+    os.system(cmd)
+    os.system("cat "+self.outfnm+" >> "+self.logfnm)
+    os.remove(self.outfnm)
+    
+
+# ----------------------------------------------------------
 # Run function
 # ----------------------------------------------------------
   def Run(self):
@@ -81,7 +99,7 @@ Development options:\
       'skipupdate' : self.opt_skipupdate,
       'interactive' : self.opt_interactive,
       'verbose' : self.opt_verbose,
-      'logfnm' : self.prepareLogFile(),
+      'logfnm' : self.logfnm,
       'debug' : self.opt_debug}
 
     print "Sending output to \"" + opts['logfnm'] + "\"\n";
@@ -152,4 +170,6 @@ Development options:\
 # ----------------------------------------------------------
 
 goad = goad()
+goad.updateOpenADRepository()
+import openad_config
 goad.Run()
