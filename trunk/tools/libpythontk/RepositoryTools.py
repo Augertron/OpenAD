@@ -11,7 +11,6 @@ from RunCmds import CmdDesc
 # update on a repository that itself contains other cvs or bitkeeper
 # repositories.
 #   selfRoot     - the root of the shell CVS repository
-#   selfCVSFiles - list of shell globs representing the shell CVS repository
 #   repositories - list of 'RepositoryDesc'
 #   opts         - a hash of options
 #     'skipupdate'  - do not update an existing repository (boolean)
@@ -27,7 +26,7 @@ class RepositoryTools:
   def __init__(self):
     None
 
-  def RunRepositoryUpdate(self, selfRoot, selfCVSFiles, repositories, opts):
+  def RunRepositoryUpdate(self, selfRoot, repositories, opts):
     cmdDescVecRef = []
     desc = 'undef'
     optsKeys = {'skipupdate': 0,
