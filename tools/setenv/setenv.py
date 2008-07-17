@@ -46,47 +46,31 @@ class setenv:
 
 # GenEnvSettings: Generate code to setup CVS repository variables
   def GenEnvSettings(self):
-    self.config=openad_config.openad_config()
-###############################################################################
-# Generate BASE variables for sub repositories
-###############################################################################
+    config=openad_config.openad_config()
+    OpenADRepos = config.getRepos()
+    # BASE environment variables
     print self.libsetenv_instance.genSetEnvVar('OPENAD_BASE',OpenADRoot)
-    OpenADRepos = self.config.getRepos()
-
     for key,repo in (OpenADRepos.items()):
-      repoPath = repo.getComponentPath()+'/'+repo.getName()
-#    Please define all base vars, even if dir is non-existant
-      var = repo.getVar()
-      val=repoPath
-      print self.libsetenv_instance.genSetEnvVar(var,val)
-      
-# --------------------------------------------------------
-# Generate environment vars for sub repositories
-# --------------------------------------------------------
+      print self.libsetenv_instance.genSetEnvVar(repo.getVar(),os.path.join(repo.getLocalPath(),repo.getLocalName()))
+    # ROOT environment variables
     print self.libsetenv_instance.genSetEnvVar('OPENADROOT', OpenADRoot)
-    for var,val in self.config.RootEnvVars.items():
+    for var,val in config.RootEnvVars.items():
       try:
         print self.libsetenv_instance.genSetEnvVar(var,val)
       except NameError, e:
         print e
         pass
-
-# --------------------------------------------------------
-# Generate other environment stuff
-# --------------------------------------------------------
+    # PATH and LD_LIBRARY_PATH
     print self.libsetenv_instance.genAppendEnvVar('PATH',os.path.join(os.environ['OPENADFORTTK']+'bin'))
     print self.libsetenv_instance.genAppendEnvVar('PATH',os.path.join(os.environ['OPENADROOT'],'bin'))
-    if(self.config.platform=='i686-Cygwin'):
+    if(config.platform=='i686-Cygwin'):
       path = os.environ['XERCESCROOT']+'/bin:'+os.environ['XERCESCROOT']+'/lib:'+os.environ['OPEN64ROOT']+'/be:'+os.environ['OPEN64ROOT']+'whirl2f:'+os.environ['PATH']
       print self.libsetenv_instance.genAppendEnvVar('PATH', path)
     else:
       ldlib=os.environ['OPEN64ROOT']+'/whirl2f'
       print self.libsetenv_instance.genAppendEnvVar('LD_LIBRARY_PATH', ldlib)
-    
-  # --------------------------------------------------------
-  # Generate aliases
-  # --------------------------------------------------------
-    for var,val in self.config.Aliases.items():
+    # aliases
+    for var,val in config.Aliases.items():
       try:
         command = self.libsetenv_instance.genSetAlias(var, val)
         print command

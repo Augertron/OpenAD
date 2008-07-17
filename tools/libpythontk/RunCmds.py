@@ -44,9 +44,9 @@ class RunCmds:
           ans = sys.stdin.read(1)
         if ans == 'n' or ans == 'N':
           break
-      self.RunCmd(desc.getCmd(), verbose, logfnm)
+      self.RunCmd(desc.getCmd(), desc.getDesc(), verbose, logfnm)
   
-  def RunCmd(self, cmd, verbose, logfnm):
+  def RunCmd(self, cmd, desc, verbose, logfnm):
     dir = os.getcwd()
     outfnm = os.path.join(dir,"RunCmd-out.tmp~")
     f = open(outfnm,"w")
@@ -62,6 +62,9 @@ class RunCmds:
       except IOError, e:
         print e
         sys.stderr.write("Unable to open logfh\n")
+
+    if verbose >= 1:
+      sys.stdout.write(desc+"\n")
 
     if verbose >= 2:
       sys.stdout.write("Executing "+cmd+"\n")

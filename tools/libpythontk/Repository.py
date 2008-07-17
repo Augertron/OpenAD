@@ -1,40 +1,25 @@
 #!usr/bin/env python
 import os
 import sys
-import RunCmds
 from RunCmds import CmdDesc
 
 class Repository:
 
-  def __init__(self):
-    self.name = None   # name
-    self.componentPath=None   # path to repository component
-    self.subdir=None    # subdirectory of repository (optional)
-    self.tag=None       # interpreted as a tag/branch by default;
-    self.var=None       # corresponding environment variable
+  def __init__(self,url, localPath, localName,  subdir, tag, var):
+    self.url=url        # the url of the repository
+    self.localPath=localPath # absolute path to the local directory in which the working directory 'localName' resides 
+    self.localName=localName # the local name
+    self.subdir=subdir  # subdirectory of repository (optional, used to speed up checkouts/updates)
+    self.tag=tag        # interpreted as a tag/branch by default;
+    self.var=var        # corresponding environment variable
     self.cmdDesc=CmdDesc() # command description for updates
 
-  def setName(self, name):
-    self.name = name
-  def setComponentPath(self, path):
-    self.path = path
-  def setSubdir(self, subdir):
-    self.subdir=subdir
-  def setTag(self, tag):
-    self.tag=tag
-  def setVar(self, var):
-    self.var=var
-  def setAll(self, name, path, subdir, tag, var):
-    self.setName(name)
-    self.setComponentPath(path)
-    self.setSubdir(subdir)
-    self.setTag(tag)
-    self.setVar(var)
-
-  def getName(self):
-    return self.name
-  def getComponentPath(self):
-    return self.path
+  def getUrl(self):
+    return self.url
+  def getLocalName(self):
+    return self.localName
+  def getLocalPath(self):
+    return self.localPath
   def getSubdir(self):
     return self.subdir
   def getTag(self):
@@ -42,96 +27,63 @@ class Repository:
   def getVar(self):
     return self.var
 
-
-  def repoExists(self):
-    localRepoPath = os.path.join(self.getComponentPath(),self.getName())
+  def getLocalRepoPath(self):
+    localRepoPath = os.path.join(self.getLocalPath(),self.getLocalName())
     if self.getSubdir() is not None:
       localRepoPath = os.path.join(localRepoPath,self.getSubdir())
-    return os.path.exists(localRepoPath)
+    return localRepoPath
+
+  def repoExists(self):
+    return os.path.exists(self.getLocalRepoPath())
   
 class CVSRepository(Repository):
 
-  def __init__(self):
-    Repository.__init__(self)
-    self.rsh = None
-    self.root=None
-
-  def setRSH(self, rsh):
-    self.rsh = rsh
-    self.env = 'CVS_RSH="' + self.getRSH() + '"'
-  def setRoot(self, root):
-    self.root = root
-    self.opt = '-z3 -d' + self.getRoot()
-  def setAll(self,name,path,subdir,tag,var,rsh, root):
-    Repository.setAll(self,name,path,subdir,tag,var)
-    self.setRSH(rsh)
-    self.setRoot(root)
-
+  def __init__(self,rsh,url,localPath,localName,subdir,tag,var):
+    Repository.__init__(self,url,localPath,localName,subdir,tag,var)
+    self.env = 'CVS_RSH="' + rsh + '"'
+    self.opt = '-z3 -d'
 
   def getRSH(self):
     return self.rsh
-  def getRoot(self):
-    return self.root
   
-# getCVSTagOpt: 
+  # getCVSTagOpt: 
   def getCVSTagOpt(self):
-    opt=""
+    tagOpts=""
     if self.getTag():
       date = ""
       re = '^{date}(.*)'
       if ((date) == self.getTag().find('/'+re+'/')): 
-        opt = '-D '+date
+        tagOpts = '-D '+date
       else:
-        opt = "-r "+self.getTag()
-    return opt
-
-
-# set command description to update repository
+        tagOpts = "-r "+self.getTag()
+    return tagOpts
+  
   def update(self):
-    localRepoPath = os.path.join(self.getComponentPath(),self.getName())
-    self.cmdDesc.setCmd("cd "+localRepoPath+" && "+self.env+"  cvs "+self.opt+" update -d")
-    self.cmdDesc.setDesc(self.cmdDesc.getCmd())
+    self.cmdDesc.setCmd("cd "+self.getLocalRepoPath()+" && "+self.env+"  cvs " + self.opt + " " + self.getUrl() + " update -d")
+    self.cmdDesc.setDesc("updating "+self.getLocalName())
 
-# set command to check out repository
   def checkout(self):
-    topt = self.getCVSTagOpt()
-    self.cmdDesc.setCmd(self.env+" cvs "+self.opt+" co "+topt+" "+self.getName())
-    self.cmdDesc.setDesc(self.cmdDesc.getCmd())
-
-# set command description to check out subdirectory
-  def checkoutSubdir(self):
-    nm = os.path.join(self.getName(),self.getSubdir())
-    topt = self.getCVSTagOpt()
-    self.cmdDesc.setCmd(self.env+" cvs "+self.opt+" co "+topt+" "+nm)
-    self.cmdDesc.setDesc(self.cmdDesc.getCmd())
+    if self.getSubdir() is not None:
+      name = os.path.join(self.getLocalName(),self.getSubdir())
+    else:
+      name=self.getLocalName()
+    self.cmdDesc.setCmd(self.env+" cvs " + self.opt + " " + self.getUrl() + " co "+self.getCVSTagOpt()+" "+name)
+    self.cmdDesc.setDesc("checking out "+self.getLocalName())
 
 class SVNRepository(Repository):
 
-  def __init__(self):
-    Repository.__init__(self)
-    self.root=None #root directory for repositories
+  def __init__(self,url,localPath, localName,subdir,tag,var):
+    Repository.__init__(self,url,localPath,localName,subdir,tag,var)
 
-  def setRoot(self, root):
-    self.root = root
-  def setAll(self,name,path,subdir,tag,var, root):
-    Repository.setAll(self,name,path,subdir,tag,var)
-    self.setRoot(root)
-
-  def getRoot(self):
-    return self.root
-
-# set command description to update repository
   def update(self):
-    localRepoPath = os.path.join(self.getComponentPath(),self.getName())
-    self.cmdDesc.setCmd("cd "+localRepoPath+" && svn update")
-    self.cmdDesc.setDesc(self.cmdDesc.getCmd())
+    self.cmdDesc.setCmd("cd "+self.getLocalRepoPath()+" && svn update")
+    self.cmdDesc.setDesc("updating "+self.getLocalName())
 
-# set command description to checkout repository
   def checkout(self):
-    self.cmdDesc.setCmd("svn co "+self.getRoot()+" "+self.getName())
-    self.cmdDesc.setDesc(self.cmdDesc.getCmd())
+    if self.getSubdir() is not None:
+      name = os.path.join(self.getLocalName(),self.getSubdir())
+    else:
+      name=self.getLocalName()
+    self.cmdDesc.setCmd("svn co "+self.getUrl()+" "+name)
+    self.cmdDesc.setDesc("checking out "+self.getLocalName())
 
-  def checkoutSubdir(self):
-    name = os.path.join(self.getName(),self.getSubdir())
-    self.cmdDesc.setCmd("svn co "+self.getRoot()+" "+name)
-    self.cmdDesc.setDesc(self.cmdDesc.getCmd())
