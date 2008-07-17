@@ -18,60 +18,27 @@ import string
 #Get path of file's directory (it should be called from the directory it's in)
 OpenADRoot=os.path.dirname(__file__)
 #Calling script should be located in OpenAD root directory
-libpythontk = os.path.join(OpenADRoot, 'tools/libpythontk')
+libpythontk = os.path.join(OpenADRoot,'tools','libpythontk')
 sys.path.append(libpythontk)
 import RunCmds
 import Repository
 import RepositoryTools
 
-#############################################################################
-## Subpackage configuration information
-#############################################################################
-
 ######################################################################
 # Repository information
 ######################################################################
 
-# USER is not available in some Cygwin environments
-try:
-  defaultUser = os.environ['USER']
-except NameError, e:
-  print e
-  defaultUser = os.environ['USERNAME']
-
-##################################################
-# Rice HiPerSoft CVS Repository
-##################################################
-
-riceUser = 'anoncvs'
-
-"""OPENAD_REPO_RICECVS_rsh = os.path.join(OpenADRoot,"tools/sshcvs/sshcvs-hipersoft-anon")
-OPENAD_REPO_RICECVS_Root = ':ext:'+riceUser+'@koolkat2.cs.rice.edu:/Volumes/cvsrep/developer'"""
-
+# Rice HiPerSoft SVN Repository
 OPENAD_REPO_RICESVN_ROOT = 'http://hpc.svn.rice.edu/r/'
 
-##################################################
 # SourceForge CVS Repositories
-##################################################
 OPENAD_REPO_SF_ANGEL_rsh = 'pserver'
 OPENAD_REPO_SF_ANGEL_Root = ':pserver:anonymous@angellib.cvs.sourceforge.net:/cvsroot/angellib'
-
 OPENAD_REPO_SF_BOOST_rsh = 'pserver'
 OPENAD_REPO_SF_BOOST_Root = ':pserver:anonymous@boost.cvs.sourceforge.net:/cvsroot/boost'
 
-######################################################################
-# OpenAD Repositories, Local Instances
-###################################################################### 
-
-#############################################################################
-## Methods
-#############################################################################
 class openad_config:
-
-# A list of all repositories in this configuation of OpenAD
-  """def __init__(self):
-    self.OpenADRepos= [OPENAD_OPEN64,OPENAD_OPENADFORTTK,OPENAD_OPENANALYSIS,OPENAD_XERCESC,OPENAD_XAIFBOOSTER,OPENAD_ANGEL,OPENAD_XAIF,OPENAD_BOOST]"""
-
+  ''' A list of all repositories in this configuation of OpenAD '''
   def __init__(self):
     platformToOpen64TargTable = {'alpha-OSFI': 'targ_alpha_tru64',
                                  'x86-Linux': 'targ_ia32_ia64_linux',
@@ -84,10 +51,8 @@ class openad_config:
     #Generate canonical platform
     get_platform = 'cd '+OpenADRoot+'/config && ./hpcplatform'
     p = subprocess.Popen(get_platform, shell=True,stdout=subprocess.PIPE)
-    platform=(p.stdout.read()).rstrip()
-    o64targ = platformToOpen64TargTable[platform]
-    os.environ['o64targ']=o64targ
-    os.environ['platform']=platform
+    self.platform=(p.stdout.read()).rstrip()
+    o64targ = platformToOpen64TargTable[self.platform]
 
     self.OPENAD_OPEN64 = Repository.SVNRepository()
     self.OPENAD_OPENADFORTTK = Repository.SVNRepository()
@@ -127,14 +92,14 @@ class openad_config:
 ######################################################################
 
     self.RootEnvVars = {'OPEN64ROOT':os.path.join(os.environ['OPEN64_BASE'],'osprey1.0',o64targ),
-       'OPENADFORTTKROOT':os.path.join(os.environ['OPENADFORTTK_BASE'],'OpenADFortTk-'+platform),
-       'OPENANALYSISROOT':os.path.join(os.environ['OPENANALYSIS_BASE'],platform),
-       'XERCESCROOT':os.path.join(os.environ['XERCESC_BASE'],platform),
+       'OPENADFORTTKROOT':os.path.join(os.environ['OPENADFORTTK_BASE'],'OpenADFortTk-'+self.platform),
+       'OPENANALYSISROOT':os.path.join(os.environ['OPENANALYSIS_BASE'],self.platform),
+       'XERCESCROOT':os.path.join(os.environ['XERCESC_BASE'],self.platform),
        'XAIFBOOSTERROOT':os.path.join(os.environ['XAIFBOOSTER_BASE'],'..'),
        'BOOSTROOT':os.environ['BOOST_BASE'],
        'ANGELROOT':os.environ['ANGEL_BASE'],
        'XAIFSCHEMAROOT':os.environ['XAIFSCHEMA_BASE'],
-       'OPENADFORTTK':os.path.join(os.environ['OPENADFORTTK_BASE'],'OpenADFortTk-'+platform)}
+       'OPENADFORTTK':os.path.join(os.environ['OPENADFORTTK_BASE'],'OpenADFortTk-'+self.platform)}
 
 ######################################################################
 # set RootEnvVars
@@ -146,7 +111,7 @@ class openad_config:
 ######################################################################
     xbase=os.path.join(os.environ['XAIFBOOSTERROOT'],'xaifBooster')
     ii_xaif=os.path.join(os.environ['XAIFSCHEMAROOT'],'schema/examples/inlinable_intrinsics.xaif')
-    if (os.environ['platform'] is 'i686-Cygwin'):
+    if (self.platform=='i686-Cygwin'):
       ii_xaif = '\`cygpath -w ${ii_xaif}\`'
     self.Aliases = {
        'mfef90':os.path.join(os.environ['OPEN64ROOT'],'crayf90/sgi/mfef90'),
@@ -178,7 +143,7 @@ class openad_config:
   def setPaths(self):
     sys.path.append(os.path.join(os.environ['OPENADFORTTK'],'bin'))
     sys.path.append(os.path.join(os.environ['OPENADROOT'],'bin'))
-    if(os.environ['platform'] is 'i686-Cygwin'):
+    if(self.platform == 'i686-Cygwin'):
       path = os.path.join(os.environ['XERCESCROOT'],'bin:',os.environ['XERCESCROOT'],'lib:',os.environ['OPEN64ROOT'],'be:',os.environ['OPEN64ROOT'],'whirl2f:',os.environ['PATH'])
       sys.path.append(path)
     else:
