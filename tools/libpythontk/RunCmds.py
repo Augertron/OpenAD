@@ -22,14 +22,6 @@ class CmdDesc:
     self.desc = desc
 
 
-# Note: initial thoughts on abstracting this functionality into
-#   something more make-like (where a Makefile could be generated and
-#   passed back to the caller; or also executed.).
-# target       => undef, # 
-# prereqs      => undef, # 
-# cmds         => undef, # list of CmdDesc
-
-#############################################################################
 
 # cmdDescVecRef: array of CmdDesc
 # verbose: 0 (no), 1 (moderate) or 2 (extreme)
@@ -44,8 +36,6 @@ class RunCmds:
 
   def RunCmds(self, cmdDescVecRef, verbose, interactive, logfnm):
     for desc in cmdDescVecRef:
-      if verbose >= 1:
-        sys.stdout.write(desc.getDesc()+'\n')
       if interactive >= 1:
         sys.stdout.write("Execute? "+desc.getCmd()+"\n")
         ans =""

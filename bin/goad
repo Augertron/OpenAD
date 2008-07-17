@@ -1,18 +1,6 @@
 #! /usr/bin/env python
 # -*-Mode: python;-*-
 
-# $Header: /Volumes/cvsrep/developer/OpenAD/bin/goad,v 1.1 2004/05/20 02:28:35 eraxxon Exp $
-## * BeginCopyright *********************************************************
-## 
-## 
-## *********************************************************** EndCopyright *
-
-#############################################################################
-##
-## $Source: /Volumes/cvsrep/developer/OpenAD/bin/goad,v $ 
-##
-#############################################################################
-
 import os
 import sys
 
