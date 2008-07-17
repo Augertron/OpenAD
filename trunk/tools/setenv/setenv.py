@@ -76,7 +76,7 @@ class setenv:
 # --------------------------------------------------------
     print self.libsetenv_instance.genAppendEnvVar('PATH',os.path.join(os.environ['OPENADFORTTK']+'bin'))
     print self.libsetenv_instance.genAppendEnvVar('PATH',os.path.join(os.environ['OPENADROOT'],'bin'))
-    if(os.environ['platform'] is 'i686-Cygwin'):
+    if(self.config.platform=='i686-Cygwin'):
       path = os.environ['XERCESCROOT']+'/bin:'+os.environ['XERCESCROOT']+'/lib:'+os.environ['OPEN64ROOT']+'/be:'+os.environ['OPEN64ROOT']+'whirl2f:'+os.environ['PATH']
       print self.libsetenv_instance.genAppendEnvVar('PATH', path)
     else:
