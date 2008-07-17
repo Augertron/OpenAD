@@ -9,7 +9,7 @@ mydir = os.path.dirname(__file__)
 OpenADRoot = os.path.abspath(os.path.join(mydir,'..','..'))
 libpythontk = os.path.join(OpenADRoot,"tools","libpythontk")
 sys.path.append(libpythontk)
-import RepositoryTools
+import RunCmds
 sys.path.append(OpenADRoot)
 os.chdir(OpenADRoot)
 
@@ -38,15 +38,6 @@ Development options:\
 
     self.help = "Try "+self.the_program+" --help' for more information.\n"
 
-#############################################################################
-
-#my %VerboseTypes = (
-#		    "silent"    => 0,
-#		    "terse"     => 1,
-#		    "normal"    => 2,
-#		    "chatty"    => 3,
-#		    "teengirls" => 4,
-#		    );
     self.mode_verb_silent=0
     self.mode_verb_terse=1
     self.mode_verb_normal=2
@@ -67,17 +58,17 @@ Development options:\
 # ----------------------------------------------------------
 
     self.parseOptions(sys.argv)
+    self.logfnm = self.prepareLogFile()
 
 # ----------------------------------------------------------
 # Update home repository
 # ----------------------------------------------------------
 
   def updateOpenADRepository(self):
-    print "updating OpenAD repository"
+    print "updating OpenAD"
     dir = os.getcwd()
-    self.outfnm = dir+"goad.tmp~"
-    self.logfnm = self.prepareLogFile()
-    f = open(self.logfnm,"a")
+    self.outfnm = os.path.join(dir,"goad.tmp~")
+    f = open(self.logfnm,"w")
     cmd = 'svn update > '+self.outfnm+" 2>&1"
     f.write("*****************************************************************************\n\n")
     f.write(cmd+'\n')
@@ -91,19 +82,18 @@ Development options:\
 # Run function
 # ----------------------------------------------------------
   def Run(self):
-    config = openad_config.openad_config()
-    repositories =config.getRepos();
-    opts = { 
-      'skipupdate' : self.opt_skipupdate,
-      'interactive' : self.opt_interactive,
-      'verbose' : self.opt_verbose,
-      'logfnm' : self.logfnm,
-      'debug' : self.opt_debug}
-
-    print "Sending output to \"" + opts['logfnm'] + "\"";
-    
-    RepositoryTools.RepositoryTools().RunRepositoryUpdate(OpenADRoot,repositories, opts);
-    
+    repositories =openad_config.openad_config().getRepos();
+    cmdDescVecRef = []
+    for repo in repositories.values():
+       # if we don't have repository info, then this is external to us
+      if repo.getUrl() == None:
+        continue
+      if repo.repoExists():
+        repo.update() # sets CmdDesc to update repository
+      else:
+        repo.checkout() # check out repository
+      cmdDescVecRef.append(repo.cmdDesc)
+    RunCmds.RunCmds().RunCmds(cmdDescVecRef, 1, 0, self.logfnm)
     sys.exit(0);
 
 #############################################################################
@@ -148,18 +138,14 @@ Development options:\
     print "Undefined environment variable '"+var+"'\n"
     sys.exit()
 
-
-#############################################################################
-## Subroutines
-#############################################################################
-
-  # Returns the name of a log file that has size 0 in the filesystem.
+  # Returns the name of a log file 
   def prepareLogFile(self):
     dir = os.getcwd();
     (y,mon,d,h,min,s,dow, doy, i) = time.localtime()
     stamp = str(y)+"_"+str(mon)+"_"+str(d)+"_"+str(h)+"_"+str(min)+"_"+str(s)
-    logfnm = os.path.join(dir,"goad."+stamp+".log~")
-  
+    snm="goad."+stamp+".log~"
+    print "goad log: "+ snm
+    logfnm = os.path.join(dir,snm)
     return logfnm;
 
 #############################################################################
