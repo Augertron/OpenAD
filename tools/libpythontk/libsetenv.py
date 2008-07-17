@@ -127,7 +127,7 @@ class libsetenv:
       if(self.is_sh()):
         str += "alias "+alias+"=\""+value+"\";"
       elif(self.is_csh()):
-        str += "alias "+alias+" \""+value+"\""
+        str += "alias "+alias+" \""+value+"\";"
       else:
         sys.stderr.write("Programming Error!")
         sys.exit()
