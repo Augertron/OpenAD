@@ -187,8 +187,8 @@ class libsetenv:
         pass
       str += '\nfi;' + "\n"
     elif(self.is_csh()):
-      str += 'if ( '+test+' ) '+ "eval '"+_then.rstrip()+"\n';\n"
-      str += 'if ( ! '+test+' ) '+"eval '"+_else.rstrip()+"\n';\n"
+      str += 'if ( '+test+' ) '+ "eval '"+_then.rstrip()+" ';\n"
+      str += 'if ( ! '+test+' ) '+"eval '"+_else.rstrip()+" ';\n"
     else:
       sys.stderr.write("Programming Error!")
       sys.exit()
