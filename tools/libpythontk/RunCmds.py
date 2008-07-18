@@ -3,9 +3,10 @@
 import os
 import sys
 
-#############################################################################
 
-# CmdDesc: a shell command and associated metadata
+class RunCmdsException(Exception):
+  def __init__(self,reason):
+    Exception.__init__(self,reason)
 
 class CmdDesc:
   def __init__(self):
@@ -22,13 +23,6 @@ class CmdDesc:
     self.desc = desc
 
 
-
-# cmdDescVecRef: array of CmdDesc
-# verbose: 0 (no), 1 (moderate) or 2 (extreme)
-# interactive: 0 or 1
-# logfnm: if defined, the name of a log file to which all output should be sent
-#
-# Note: For now we allow RunCmd to exit on an error.
 
 class RunCmds:
   def __init__(self):
@@ -72,12 +66,11 @@ class RunCmds:
     try:
       ret=os.system(cmd)
       if ret!=0 : 
-	raise Exception()
+	raise RunCmdsException()
     except Exception, e:
-      print e
       self.AppendOutfileToLogfile(logfnm, outfnm)
       os.system("cat "+outfnm)
-      sys.exit()
+      raise e
 
     self.AppendOutfileToLogfile(logfnm, outfnm)
     os.remove(outfnm)

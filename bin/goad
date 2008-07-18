@@ -1,25 +1,68 @@
-#! /usr/bin/env python
-# -*-Mode: python;-*-
+#!/usr/bin/env python
+#-*-Mode: python;-*-
 
 import os
 import sys
+import time
+OpenADRoot = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+sys.path.append(OpenADRoot)
+sys.path.append(os.path.join(OpenADRoot,"tools","libpythontk"))
+import RunCmds
+import Repository
 
-mydir = os.path.dirname(__file__)
-script_name = os.path.basename(__file__)
-toolsdir = os.path.abspath(os.path.join(mydir,'../tools'))
-realscript = os.path.join(toolsdir,script_name,script_name)
-os.chdir(os.path.dirname(realscript))
-realcmd = os.path.basename(realscript)
+class Goad:
+  def __init__(self,options):
+    dir = os.getcwd();
+    snm="goad."+time.strftime('%Y-%m-%d_%H:%Mi%S', time.localtime())+".log~"
+    print "goad log: "+ snm
+    self.logfnm = os.path.join(dir,snm)
+    self.runCmdsDebug=1
+    if options.debug :
+      self.runCmdsDebug=2
+    self.interactive=options.interactive
 
-# complain if target script is not present
-if not os.access(realcmd,os.X_OK):
-  sys.stderr.write(realscript+" does not exist or is not executable.\n")
-  sys.exit()
+  def updateOpenADRepository(self):
+    aCmdDesc=RunCmds.CmdDesc()
+    aCmdDesc.setDesc("updating OpenAD")
+    aCmdDesc.setCmd("svn update")
+    RunCmds.RunCmds().RunCmds([aCmdDesc], self.runCmdsDebug,self.interactive, self.logfnm)
+    
+  def Run(self):
+    import openad_config
+    repositories =openad_config.openad_config().getRepos();
+    cmdDescVecRef = []
+    for repo in repositories.values():
+       # if we don't have repository info, then this is external to us
+      if repo.getUrl() is None:
+        continue
+      if repo.repoExists():
+        repo.update() # sets CmdDesc to update repository
+      else:
+        repo.checkout() # check out repository
+      cmdDescVecRef.append(repo.cmdDesc)
+    RunCmds.RunCmds().RunCmds(cmdDescVecRef, self.runCmdsDebug, self.interactive, self.logfnm)
+    sys.exit(0);
 
-for arg in sys.argv[1:]:
-  realcmd += " "+arg
+def main():
+  os.chdir(OpenADRoot)
+  from optparse import OptionParser
+  usage = '%prog [options]'
+  opt = OptionParser(usage=usage)
+  opt.add_option('-i','--interactive',dest='interactive',
+                 help="requires to confirm each command",
+                 action='store_true',default=False)
+  opt.add_option('-d','--debug',dest='debug',
+                 help="extra information",
+                 action='store_true',default=False)
+  (options, args) = opt.parse_args()
+  try: 
+    goad = Goad(options)
+    goad.updateOpenADRepository()
+    goad.Run()
+  except (Repository.RepositoryException, RunCmds.RunCmdsException), e:
+    sys.stderr.write('ERROR: '+str(e)+'\n')
+    return 1
+  return 0
 
-ret = os.system("./"+realcmd)
-if ret != 0:
-  sys.stderr.write("couldn't execute "+realscript+"\n")
-sys.exit()
+if __name__ == "__main__":
+  sys.exit(main())
