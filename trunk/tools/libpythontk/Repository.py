@@ -3,6 +3,10 @@ import os
 import sys
 from RunCmds import CmdDesc
 
+class RepositoryException(Exception):
+  def __init__(self,reason):
+    Exception.__init__(self,reason)
+
 class Repository:
 
   def __init__(self,url, localPath, localName,  subdir, tag, var):
@@ -59,6 +63,8 @@ class CVSRepository(Repository):
     return tagOpts
   
   def update(self):
+    if not os.path.exists(os.path.join(self.getLocalRepoPath(),'CVS')):
+      raise RepositoryException("a directory "+self.getLocalRepoPath()+" exists but is not a CVS working directory")
     self.cmdDesc.setCmd("cd "+self.getLocalRepoPath()+" && "+self.env+"  cvs " + self.opt + " " + self.getUrl() + " update -d")
     self.cmdDesc.setDesc("updating "+self.getLocalName())
 
@@ -76,6 +82,8 @@ class SVNRepository(Repository):
     Repository.__init__(self,url,localPath,localName,subdir,tag,var)
 
   def update(self):
+    if not os.path.exists(os.path.join(self.getLocalRepoPath(),'.svn')):
+      raise RepositoryException("a directory "+self.getLocalRepoPath()+" exists but is not a SVN working directory")
     self.cmdDesc.setCmd("cd "+self.getLocalRepoPath()+" && svn update")
     self.cmdDesc.setDesc("updating "+self.getLocalName())
 
