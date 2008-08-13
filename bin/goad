@@ -13,7 +13,7 @@ import Repository
 class Goad:
   def __init__(self,options):
     dir = os.getcwd();
-    snm="goad."+time.strftime('%Y-%m-%d_%H:%Mi%S', time.localtime())+".log~"
+    snm="goad."+time.strftime('%Y-%m-%d_%H:%M:%S', time.localtime())+".log~"
     print "goad log: "+ snm
     self.logfnm = os.path.join(dir,snm)
     self.runCmdsDebug=1
