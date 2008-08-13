@@ -1,40 +1,183 @@
-#! /usr/bin/env perl
-# -*-Mode: perl;-*-
+#! /usr/bin/env python
+#-*-Mode: python;-*-
 
-# make sure we execute perl
-#eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
-#& eval 'exec perl -S $0 $argv:q'
-#if 0;
+import os
+import sys
+sys.path.append(os.environ["OPENADROOT"])
+sys.path.append(os.path.join(os.environ["OPENADROOT"],"tools","libpythontk"))
+import RunCmds
 
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/bin/openad,v 1.1 2004-05-19 15:47:36 eraxxon Exp $
-## * BeginCopyright *********************************************************
-## 
-## 
-## *********************************************************** EndCopyright *
+class RunOpenAD:
 
-#############################################################################
-##
-## $Source: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/bin/openad,v $ 
-##
-##   Nathan Tallent.
-##
-#############################################################################
+    def __init__(self,name,options):
+        import time
+        self.fileName=name
+        (self.baseName,self.extension)=os.path.splitext(name)
+        self.options=options
+        self.ii_xaif=os.path.join(os.environ['XAIFSCHEMAROOT'],
+                                  'schema',
+                                  'examples',
+                                  'inlinable_intrinsics.xaif')
+        self.commandDescriptions=[]
+        dir = os.getcwd();
+        snm="openad."+time.strftime('%Y-%m-%d_%H:%M:%S', time.localtime())+".log~"
+        print "openad log: "+ snm
+        self.logfnm = os.path.join(dir,snm)
+        if options.copy:
+            self.runTimeFileCmd="cp -f"
+        else:
+            self.runTimeFileCmd="ln -sf"
 
-use strict;
-use warnings;
+    def mfef90(self):
+        aCmdDesc=RunCmds.CmdDesc()
+        aCmdDesc.setCmd(os.path.join(os.environ['OPEN64ROOT'],
+                                     'crayf90',
+                                     'sgi',
+                                     'mfef90')+
+                        " -z -F -N132 "+self.fileName)
+        aCmdDesc.setDesc("parsing "+self.fileName)
+        self.commandDescriptions.append(aCmdDesc)
 
-use FindBin qw($Script $RealBin);
+    def whirl2xaif(self):
+        aCmdDesc=RunCmds.CmdDesc()
+        aCmdDesc.setCmd(os.path.join(os.environ['OPENADFORTTKROOT'],
+                                     'bin',
+                                     'whirl2xaif')+
+                        " -n -o "+self.baseName+".xaif "+self.baseName+".B")
+        aCmdDesc.setDesc("analyzing source code and translating to xaif")
+        self.commandDescriptions.append(aCmdDesc)
 
-my $toolsdir = "$RealBin/../tools";
-my $realscript = "$toolsdir/$Script/$Script";
+    def linkSchemaFiles(self):
+        import glob
+        schemaFilesPattern="*.xsd"
+        schemaFileList=glob.glob(os.path.join(os.environ["XAIFSCHEMAROOT"],
+                                              "schema",
+                                              schemaFilesPattern))
+        for file in schemaFileList:
+            aCmdDesc=RunCmds.CmdDesc()
+            aCmdDesc.setCmd(self.runTimeFileCmd+" "+file+" ./")
+            aCmdDesc.setDesc("getting schema file "+file)
+            self.commandDescriptions.append(aCmdDesc)
 
-# complain if target script is not present
-if ( ! -x $realscript ) {
-    die "$realscript does not exist or is not executable."
-}
+    def traceDiff(self):
+        aCmdDesc=RunCmds.CmdDesc()
+        aCmdDesc.setCmd(os.path.join(os.environ['XAIFBOOSTERROOT'],
+                                     'xaifBooster',
+                                     'algorithms',
+                                     'TraceDiff',
+                                     'test',
+                                     't')+
+                        " -c "+self.ii_xaif+
+                        " -s "+os.path.join(os.environ["XAIFSCHEMAROOT"],"schema")+
+                        " -i "+self.baseName+".xaif"+
+                        " -o "+self.baseName+".xb.xaif")
+        aCmdDesc.setDesc("tracing transformation")
+        self.commandDescriptions.append(aCmdDesc)
+        # link run time support files
+        import glob
+        fileList=[]
+        fileList.append(os.path.join(os.environ["OPENADROOT"],
+                                     "runTimeSupport",
+                                     "scalar",
+                                     "OAD_active.f90"))
+        fileList+=glob.glob(os.path.join(os.environ["OPENADROOT"],"runTimeSupport","all","*.f90"))
+        fileList+=glob.glob(os.path.join(os.environ["OPENADROOT"],"runTimeSupport","all","*.c"))
+        fileList.append(os.path.join(os.environ["OPENADROOT"],"runTimeSupport","simple","OAD_rev.f90"))
+        fileList.append(os.path.join(os.environ["OPENADROOT"],"runTimeSupport","simple","OAD_trace.f90"))
+        for file in fileList:
+            aCmdDesc=RunCmds.CmdDesc()
+            aCmdDesc.setCmd(self.runTimeFileCmd+" "+file+" ./")
+            aCmdDesc.setDesc(" getting runtime support file "+os.path.basename(file))
+            self.commandDescriptions.append(aCmdDesc)
+        # copy the template file
+        aCmdDesc=RunCmds.CmdDesc()
+        aCmdDesc.setCmd(self.runTimeFileCmd+" "+os.path.join(os.environ["OPENADROOT"],
+                                                             "runTimeSupport",
+                                                             "simple",
+                                                             "ad_template.trace.f")+
+                        " ad_template.f")
+        aCmdDesc.setDesc(" getting template file")
+        self.commandDescriptions.append(aCmdDesc)
 
-my @realcmd = ($realscript, @ARGV);
-#print("@realcmd\n");
+    def xaif2whirl(self):
+        aCmdDesc=RunCmds.CmdDesc()
+        aCmdDesc.setCmd(os.path.join(os.environ['OPENADFORTTKROOT'],
+                                     'bin',
+                                     'xaif2whirl')+
+                        " --structured "+self.baseName+".B "+self.baseName+".xb.xaif")
+        aCmdDesc.setDesc("translating transformed xaif to whirl")
+        self.commandDescriptions.append(aCmdDesc)
 
-exec { $realcmd[0] } @realcmd;
-die "couldn't exec $realscript: $!"; 
+    def whirl2f(self):
+        aCmdDesc=RunCmds.CmdDesc()
+        aCmdDesc.setCmd(os.path.join(os.environ['OPEN64ROOT'],
+                                     'whirl2f',
+                                     'whirl2f')+
+                        " -openad "+self.baseName+".xb.x2w.B")
+        aCmdDesc.setDesc("unparsing transformed whirl to fortran")
+        self.commandDescriptions.append(aCmdDesc)
+
+    def postProcess(self):
+        aCmdDesc=RunCmds.CmdDesc()
+        aCmdDesc.setCmd("perl "+os.path.join(os.environ['OPENADFORTTKROOT'],
+                                             'bin',
+                                             'multi-pp.pl')+
+                        " "+self.baseName+".xb.x2w.w2f.f")
+        aCmdDesc.setDesc("postprocessing transformed fortran")
+        self.commandDescriptions.append(aCmdDesc)
+        
+    def composePipeline(self):
+        self.mfef90()
+        self.whirl2xaif()
+        if self.options.mode=='t':
+            self.traceDiff()
+        self.xaif2whirl()
+        self.whirl2f()
+        self.postProcess()
+
+    def runPipeline(self):    
+        RunCmds.RunCmds().RunCmds(self.commandDescriptions,
+                                  self.options.debug+1,
+                                  self.options.interactive,
+                                  self.logfnm)
+
+def main():
+  from optparse import OptionParser
+  usage = '%prog [options] <fortran-file>'
+  modes={'f':'forward','r':'reverse','t':'tracing'}
+  modeChoices=modes.keys()
+  modeChoicesHelp=""
+  for k,v in modes.items():
+      modeChoicesHelp+=k+" = "+v+"; "
+  opt = OptionParser(usage=usage)
+  opt.add_option('-m','--mode',dest='mode',
+                 type='choice', choices=modeChoices,
+                 help="basic transformation mode: "+ modeChoicesHelp,
+                 default='f')
+  opt.add_option('-d', '--debug',dest='debug',
+                 type='int',
+                 help='the debugging level',
+                 action="store",default='0')
+  opt.add_option('-i','--interactive',dest='interactive',
+                 help="requires to confirm each command",
+                 action='store_true',default=False)
+  opt.add_option('-c','--copy',dest='copy',
+                 help="copy run time support files instead of linking them",
+                 action='store_true',default=False)
+  (options, args) = opt.parse_args()
+  if (len(args)!=1) :
+    opt.error("expect 1 input file name argument")
+  name=args[0]
+  try: 
+    ro  = RunOpenAD(name,options)
+    ro.composePipeline()
+    ro.runPipeline()
+  except (RunCmds.RunCmdsException), e:
+    sys.stderr.write('ERROR: '+str(e)+'\n')
+    return 1
+  return 0
+
+if __name__ == "__main__":
+  sys.exit(main())
+
+

@@ -66,7 +66,7 @@ class RunCmds:
     try:
       ret=os.system(cmd)
       if ret!=0 : 
-	raise RunCmdsException()
+	raise RunCmdsException(cmd+" return value "+str(ret))
     except Exception, e:
       self.AppendOutfileToLogfile(logfnm, outfnm)
       os.system("cat "+outfnm)
