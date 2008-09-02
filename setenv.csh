@@ -7,6 +7,7 @@ else
   source setenv.tmp~
   if ( $status != 0 ) then
     echo "Error executing: source setenv.tmp~"
+  else
+    rm -f setenv.tmp~
   endif
-  rm -f setenv.tmp~
 endif

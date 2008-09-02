@@ -28,7 +28,7 @@ class openad_config:
     self.OpenADRepos = {}
     riceSvnUrl = 'http://hpc.svn.rice.edu/r/'
     # Open64
-    self.OpenADRepos["Open64"]=Repository.SVNRepository(riceSvnUrl+'open64/trunk/',OpenADRoot,'Open64',None,None,"OPEN64_BASE")
+    self.OpenADRepos["Open64"]=Repository.SVNRepository(riceSvnUrl+'open64/tags/version-openad',OpenADRoot,'Open64',None,None,"OPEN64_BASE")
     # OpenADFortTk
     self.OpenADRepos["OpenAdFortTk"]=Repository.SVNRepository(riceSvnUrl+'OpenADFortTk/trunk',OpenADRoot,'OpenADFortTk',None,None,'OPENADFORTTK_BASE') 
     # OpenAnalysis
