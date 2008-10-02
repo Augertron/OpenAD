@@ -136,10 +136,10 @@ class RunOpenAD:
         self.postProcess()
 
     def runPipeline(self):    
-        RunCmds.RunCmds().RunCmds(self.commandDescriptions,
-                                  self.options.debug+1,
-                                  self.options.interactive,
-                                  self.logfnm)
+        RunCmds.Runner(self.options.debug+1,
+                        self.options.interactive,
+                        self.logfnm,
+                        self.options.keepGoing).doit(self.commandDescriptions)
 
 def main():
   from optparse import OptionParser
@@ -161,6 +161,9 @@ def main():
   opt.add_option('-i','--interactive',dest='interactive',
                  help="requires to confirm each command",
                  action='store_true',default=False)
+  opt.add_option('-k','--keepGoing',dest='keepGoing',
+                 help="keep going despite errors",
+                 action='store_true',default=False)
   opt.add_option('-c','--copy',dest='copy',
                  help="copy run time support files instead of linking them",
                  action='store_true',default=False)
@@ -172,7 +175,7 @@ def main():
     ro  = RunOpenAD(name,options)
     ro.composePipeline()
     ro.runPipeline()
-  except (RunCmds.RunCmdsException), e:
+  except (RunCmds.RunnerException), e:
     sys.stderr.write('ERROR: '+str(e)+'\n')
     return 1
   return 0
