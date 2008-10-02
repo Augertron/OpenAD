@@ -95,3 +95,22 @@ class SVNRepository(Repository):
     self.cmdDesc.setCmd("svn co "+self.getUrl()+" "+name)
     self.cmdDesc.setDesc("checking out "+self.getLocalName())
 
+class MercurialRepository(Repository):
+
+  def __init__(self,url,localPath, localName,subdir,tag,var):
+    Repository.__init__(self,url,localPath,localName,subdir,tag,var)
+
+  def update(self):
+    if not os.path.exists(os.path.join(self.getLocalRepoPath(),'.hg')):
+      raise RepositoryException("a directory "+self.getLocalRepoPath()+" exists but is not a Mercurial working directory")
+    self.cmdDesc.setCmd("cd "+self.getLocalRepoPath()+" && hg pull -q && hg update")
+    self.cmdDesc.setDesc("updating "+self.getLocalName())
+
+  def checkout(self):
+    if self.getSubdir() is not None:
+      raise RepositoryException("For a Mercurial repository one cannot specify a subdirectory to be cloned")
+    else:
+      name=self.getLocalName()
+    self.cmdDesc.setCmd("hg co "+self.getUrl()+" "+name)
+    self.cmdDesc.setDesc("cloning out "+self.getLocalName())
+

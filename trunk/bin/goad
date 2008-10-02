@@ -20,12 +20,13 @@ class Goad:
     if options.debug :
       self.runCmdsDebug=2
     self.interactive=options.interactive
+    self.keepGoing=options.keepGoing
 
   def updateOpenADRepository(self):
     aCmdDesc=RunCmds.CmdDesc()
     aCmdDesc.setDesc("updating OpenAD")
     aCmdDesc.setCmd("svn update")
-    RunCmds.RunCmds().RunCmds([aCmdDesc], self.runCmdsDebug,self.interactive, self.logfnm)
+    RunCmds.Runner(self.runCmdsDebug,self.interactive, self.logfnm, self.keepGoing).doit([aCmdDesc])
     
   def Run(self):
     import openad_config
@@ -36,11 +37,48 @@ class Goad:
       if repo.getUrl() is None:
         continue
       if repo.repoExists():
-        repo.update() # sets CmdDesc to update repository
+        try: 
+          repo.update() # sets CmdDesc to update repository
+        except (RunCmds.RunnerException), e:
+          if self.keepGoing:
+            sys.stderr.write('ERROR: '+str(e)+'... continuing\n')
+            continue
+          else:
+            raise e
+        except (Repository.RepositoryException), e:
+          if self.keepGoing:
+            sys.stderr.write('ERROR: '+str(e)+'... continue\n')
+            if isinstance(repo,Repository.CVSRepository) or isinstance(repo,Repository.SVNRepository):
+              sys.stderr.write('May be this is a Mercurial repository. Should I try an hg update (y)/n ? ')
+              ans = sys.stdin.read(1)
+              if ans == 'n' or ans == 'N':
+                continue
+              # see if this is a mercurial repo
+              mercRepo=Repository.MercurialRepository(repo.getUrl(),
+                                                      repo.getLocalPath(),
+                                                      repo.getLocalName(),
+                                                      repo.getSubdir(),
+                                                      repo.getTag(),
+                                                      repo.getVar())
+              try: 
+                mercRepo.update() 
+                cmdDescVecRef.append(mercRepo.cmdDesc)
+              except (Repository.RepositoryException), eInner:
+                sys.stderr.write('ERROR: '+str(eInner)+'... continue\n')
+            continue
+          else:
+            raise e
       else:
-        repo.checkout() # check out repository
+        try: 
+          repo.checkout() # check out repository
+        except (Repository.RepositoryException, RunCmds.RunnerException), e:
+          if self.keepGoing:
+            sys.stderr.write('ERROR: '+str(e)+'... continuing\n')
+            continue
+          else:
+            raise e
       cmdDescVecRef.append(repo.cmdDesc)
-    RunCmds.RunCmds().RunCmds(cmdDescVecRef, self.runCmdsDebug, self.interactive, self.logfnm)
+    RunCmds.Runner(self.runCmdsDebug,self.interactive, self.logfnm, self.keepGoing).doit(cmdDescVecRef)
     sys.exit(0);
 
 def main():
@@ -51,6 +89,9 @@ def main():
   opt.add_option('-i','--interactive',dest='interactive',
                  help="requires to confirm each command",
                  action='store_true',default=False)
+  opt.add_option('-k','--keepGoing',dest='keepGoing',
+                 help="keep going despite errors",
+                 action='store_true',default=False)
   opt.add_option('-d','--debug',dest='debug',
                  help="extra information",
                  action='store_true',default=False)
@@ -59,7 +100,7 @@ def main():
     goad = Goad(options)
     goad.updateOpenADRepository()
     goad.Run()
-  except (Repository.RepositoryException, RunCmds.RunCmdsException), e:
+  except (Repository.RepositoryException, RunCmds.RunnerException), e:
     sys.stderr.write('ERROR: '+str(e)+'\n')
     return 1
   return 0
