@@ -21,6 +21,7 @@ class Goad:
       self.runCmdsDebug=2
     self.interactive=options.interactive
     self.keepGoing=options.keepGoing
+    self.tests=options.tests
 
   def updateOpenADRepository(self):
     aCmdDesc=RunCmds.CmdDesc()
@@ -30,7 +31,7 @@ class Goad:
     
   def Run(self):
     import openad_config
-    repositories =openad_config.openad_config().getRepos();
+    repositories =openad_config.openad_config(self.tests).getRepos();
     cmdDescVecRef = []
     for repo in repositories.values():
        # if we don't have repository info, then this is external to us
@@ -49,9 +50,8 @@ class Goad:
           if self.keepGoing:
             sys.stderr.write('ERROR: '+str(e)+'... continue\n')
             if isinstance(repo,Repository.CVSRepository) or isinstance(repo,Repository.SVNRepository):
-              sys.stderr.write('May be this is a Mercurial repository. Should I try an hg update (y)/n ? ')
-              ans = sys.stdin.read(1)
-              if ans == 'n' or ans == 'N':
+              if (raw_input("May be this is a Mercurial repository. Should I try an hg update? (y)/n: ")) == "n" :
+                sys.stdout.flush()
                 continue
               # see if this is a mercurial repo
               mercRepo=Repository.MercurialRepository(repo.getUrl(),
@@ -84,13 +84,16 @@ class Goad:
 def main():
   os.chdir(OpenADRoot)
   from optparse import OptionParser
-  usage = '%prog [options]'
+  usage = '%prog [options]\n\t get or update OpenAD repositories'
   opt = OptionParser(usage=usage)
   opt.add_option('-i','--interactive',dest='interactive',
                  help="requires to confirm each command",
                  action='store_true',default=False)
   opt.add_option('-k','--keepGoing',dest='keepGoing',
                  help="keep going despite errors",
+                 action='store_true',default=False)
+  opt.add_option('-t','--tests',dest='tests',
+                 help="include repositories with test cases (requires Mercurial)",
                  action='store_true',default=False)
   opt.add_option('-d','--debug',dest='debug',
                  help="extra information",

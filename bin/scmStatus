@@ -1,0 +1,86 @@
+#!/usr/bin/python
+
+import os
+import sys
+from optparse import OptionParser
+OpenADRoot = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+sys.path.append(os.path.join(OpenADRoot,'tools','libpythontk'))
+import Repository
+
+def netAvail() :
+    ret=os.system("ping -c 1 -q terra.mcs.anl.gov > /dev/null 2>&1")
+    if (ret == 0) : 
+	return True
+    else :
+	return False	
+
+def changed(repo):
+    if (not netAvail()) :
+    	sys.stdout.write('\t?')
+        sys.stdout.flush()
+        return
+    if repo.locallyModified() :
+        sys.stdout.write('\tC')
+        sys.stdout.flush()
+    else:
+        sys.stdout.write('\t')
+        sys.stdout.flush()
+
+def inOut(repo):
+    if (not netAvail()) :
+    	sys.stdout.write('\t?')
+        sys.stdout.flush()
+        return
+    status=""
+    if repo.incoming() :
+        status+="I"
+    if repo.outgoing() :
+        status+="O"
+    sys.stdout.write('\t'+status)
+    sys.stdout.flush()
+
+def main():
+  usage = '%prog [options]\n\t display OpenAD repository status'
+  opt = OptionParser(usage=usage)
+  opt.add_option('-q','--quick',dest='quick',
+                 help="don't check for uncommited changes or pending pushes",
+                 action='store_true',default=False)
+  (options, args) = opt.parse_args()
+  doQuick=False
+  if (options.quick):
+    doQuick=True
+  cwd=os.getcwd()
+  if (os.path.basename(cwd) != 'OpenAD'):
+      opt.error('the current working directory has to the the OpenAD root directory')
+      return -1
+  repList=['../OpenAD','angel','boost','OpenADFortTk','OpenAnalysis','xaif','xaifBooster','Open64','xercesc']
+  maxNameLength=max([len(r) for r in repList])
+  sys.stdout.write('Repo\t\tKind\tR/W\tStatus\tI/O\tPath\n')
+  sys.stdout.flush()
+  try:
+      for i in repList:
+          repo=Repository.Detect.makeRepo(os.path.join(OpenADRoot,i))
+          patchedName=i+"".join([' ' for s in range(len(i),maxNameLength)])
+          sys.stdout.write('%s\t%s\t' % (patchedName,repo.kind()))
+          sys.stdout.flush()
+          if repo.writeable():
+              sys.stdout.write('W')
+              sys.stdout.flush()
+              if (not doQuick) :
+                  changed(repo)
+                  inOut(repo)
+          else:
+              sys.stdout.write('R')
+              sys.stdout.flush()
+              if (not doQuick) :
+                  sys.stdout.write('\t\t')
+                  sys.stdout.flush()
+          sys.stdout.write('\t%s\n' % repo.getUrl().strip())
+          sys.stdout.flush()
+          os.chdir(cwd)
+  except RuntimeError, e:
+      print 'caught excetion: ',e
+      return -1
+
+if __name__ == "__main__":
+  sys.exit(main())

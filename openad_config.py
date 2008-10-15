@@ -24,7 +24,7 @@ import Repository
 
 class openad_config:
   ''' A list of all repositories in this configuation of OpenAD '''
-  def __init__(self):
+  def __init__(self, includeTests=False):
     self.OpenADRepos = {}
     riceSvnUrl = 'http://hpc.svn.rice.edu/r/'
     # Open64
@@ -43,6 +43,11 @@ class openad_config:
     self.OpenADRepos["angel"]=Repository.CVSRepository('pserver',':pserver:anonymous@angellib.cvs.sourceforge.net:/cvsroot/angellib',OpenADRoot,'angel',None,None,'ANGEL_BASE')
     # boost
     self.OpenADRepos["boost"]=Repository.CVSRepository('pserver',':pserver:anonymous@boost.cvs.sourceforge.net:/cvsroot/boost',OpenADRoot,'boost','boost','Version_1_34_1','BOOST_BASE')
+    if includeTests:
+      ANLMercurialUrl = 'http://mercurial.mcs.anl.gov//ad/'
+      self.OpenADRepos["RegressionOpenAD"]=Repository.MercurialRepository(ANLMercurialUrl+'RegressionOpenAD',OpenADRoot,'Regression',None,None,None)
+      self.OpenADRepos["RegressionOpenADFortTk"]=Repository.MercurialRepository(ANLMercurialUrl+'RegressionOpenADFortTk',os.path.join(OpenADRoot,'OpenADFortTk'),'Regression',None,None,None)
+      
 
     self.setPythonOpenADEnvVars()
     
@@ -96,7 +101,8 @@ class openad_config:
     # set OpenAD environment variables in python environment (called in __init__)
   def setPythonOpenADEnvVars(self):
     for repo in self.OpenADRepos.values():
-      os.environ[repo.getVar()] = os.path.abspath(os.path.join(repo.getLocalPath(), repo.getLocalName()))
+      if repo.getVar() is not None:
+        os.environ[repo.getVar()] = os.path.abspath(os.path.join(repo.getLocalPath(), repo.getLocalName()))
     os.environ['OPENAD_BASE'] = OpenADRoot
   
     # set Root environment variables in python environment (called in __init__)
