@@ -32,10 +32,9 @@ class Runner:
   def doit(self, cmdDescVecRef):
     for desc in cmdDescVecRef:
       if self.interactive:
-        sys.stdout.write("Execute command: \""+desc.getCmd()+"\" (y)/n ? ")
-        ans = sys.stdin.read(1)
-        if ans == 'n' or ans == 'N':
-          continue
+         if (raw_input("Execute command: \"%s\" ? (y)/n: " % (desc.getCmd())) == "n"):
+           sys.stdout.flush()
+           continue
       try:  
         self.__doSingle(desc.getCmd(), desc.getDesc())
       except RunnerException, e:
