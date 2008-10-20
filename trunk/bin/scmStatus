@@ -40,7 +40,7 @@ def inOut(repo):
     sys.stdout.flush()
 
 def main():
-  usage = '%prog [options]\n\t display OpenAD repository status'
+  usage = '%prog [options]\n\t display OpenAD repository status\n\tKind is hg, svn or cvs\n\tR/W: R=read-only, W=writeable\n\tLocal: C=locally changed\n\tRemote: O=outgoing, I=incoming changes'
   opt = OptionParser(usage=usage)
   opt.add_option('-q','--quick',dest='quick',
                  help="don't check for uncommited changes or pending pushes",
@@ -55,7 +55,7 @@ def main():
       return -1
   repList=['../OpenAD','angel','boost','OpenADFortTk','OpenAnalysis','xaif','xaifBooster','Open64','xercesc']
   maxNameLength=max([len(r) for r in repList])
-  sys.stdout.write('Repo\t\tKind\tR/W\tStatus\tI/O\tPath\n')
+  sys.stdout.write('local direct.\tKind\tR/W\tLocal\tRemote\tURL to remote Repo\n')
   sys.stdout.flush()
   try:
       for i in repList:
@@ -70,11 +70,10 @@ def main():
                   changed(repo)
                   inOut(repo)
           else:
-              sys.stdout.write('R')
+              sys.stdout.write('R\t')
               sys.stdout.flush()
               if (not doQuick) :
-                  sys.stdout.write('\t\t')
-                  sys.stdout.flush()
+                  changed(repo)
           sys.stdout.write('\t%s\n' % repo.getUrl().strip())
           sys.stdout.flush()
           os.chdir(cwd)

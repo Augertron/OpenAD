@@ -57,11 +57,10 @@ class CVSRepository(Repository):
     rootFile.close()
     rsh=(rootString.split(':'))[1]
     url=rootString
-    localPath=(dir.split('/'))[:-1]
+    (localPath,localName)=os.path.split(dir)
     repoFile=open(os.path.join(dir,'CVS','Repository'))
     repoString=repoFile.readline()
     repoFile.close()
-    localName=(dir.split('/'))[-1]
     subdir=None
     tag=None
     if os.path.isfile(os.path.join(dir,'CVS','Tag')):
@@ -72,6 +71,7 @@ class CVSRepository(Repository):
 
   def __init__(self,rsh,url,localPath,localName,subdir,tag,var):
     Repository.__init__(self,url,localPath,localName,subdir,tag,var)
+    self.rsh=rsh
     self.env = 'CVS_RSH="' + rsh + '"'
     self.opt = '-z3 -d'
 
@@ -153,8 +153,7 @@ class SVNRepository(Repository):
     if (infoString[:5]!='URL: '): 
       raise RepositoryExceptuuib, "cannot find url for "+dir   
     url=infoString[5:]
-    localPath='.'
-    localName=dir
+    (localPath,localName)=os.path.split(dir)
     return SVNRepository(url,localPath,localName,None,None,None)
 
   def __init__(self,url,localPath, localName,subdir,tag,var):
@@ -168,14 +167,14 @@ class SVNRepository(Repository):
 
   def locallyModified(self):
     fName=tempfile.mktemp()
-    os.system('cd '+self.getLocalRepoPath()+'; svn status | grep -v \"^?\" > '+fName)
+    os.system('cd '+self.getLocalRepoPath()+'; svn status | grep -vE \"^? \" > '+fName)
     info=os.stat(fName)
     os.remove(fName)
     return (info[6]>0)
 
   def incoming(self):
     fName=tempfile.mktemp()
-    ret=os.system('cd '+self.getLocalRepoPath()+'; svn status -uq | grep -v \"^M\" > '+fName)
+    ret=os.system('cd '+self.getLocalRepoPath()+'; svn status -uq | grep -vE \"^M \" > '+fName)
     infoFile=open(fName)
     lines=infoFile.readlines()
     infoFile.close()    
@@ -223,8 +222,7 @@ class MercurialRepository(Repository):
     if (infoString[:len(headAttribute)]!=headAttribute):
         raise RepositoryException, "cannot find url for "+rep   
     url=infoString[len(headAttribute):]
-    localPath='.'
-    localName=dir
+    (localPath,localName)=os.path.split(dir)
     return MercurialRepository(url,localPath,localName,None,None,None)
 
   def __init__(self,url,localPath, localName,subdir,tag,var):
