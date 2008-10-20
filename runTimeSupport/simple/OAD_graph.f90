@@ -189,20 +189,20 @@
             itr => invertex%first
             do 100
               call makegraph(invertex, itr%called%value)
-              write(itoa, '(I)') itr%called%doubles
+              write(itoa, '(I10)') itr%called%doubles
               itoa = adjustl(itoa)
-              write(itoa2, '(I)') itr%called%integers
+              write(itoa2, '(I10)') itr%called%integers
               itoa2 = adjustl(itoa2)
-              write(itoa3, '(I)') itr%called%argFloats
+              write(itoa3, '(I10)') itr%called%argFloats
               itoa3 = adjustl(itoa3)
-              write(itoa4, '(I)') itr%called%ArgInts
+              write(itoa4, '(I10)') itr%called%ArgInts
               itoa4 = adjustl(itoa4)
-              write(itoa5, '(I)') itr%called%ArgBools
+              write(itoa5, '(I10)') itr%called%ArgBools
               itoa5 = adjustl(itoa5)
-              write(10,'(I,A,A,A,A,A,A,A)')iaddr(itr%called),&
+              write(10,'(Z8,A,A,A,A,A,A,A)')iaddr(itr%called),&
               '[shape="box" height=.25 label="',&
        trim(itr%called%value),' ', trim(itoa), ':', trim(itoa2), '"];'
-            write (10,'(I, A,I, A,A,A,A,A,A,A)') iaddr(invertex), '->',&
+            write (10,'(Z8, A,Z8, A,A,A,A,A,A,A)') iaddr(invertex), '->',&
        iaddr(itr%called), '[label="', trim(itoa3), ':', trim(itoa4),&
        ':', trim(itoa5), '"];' 
               call graphprint(itr%called)
@@ -217,21 +217,21 @@
             if(associated(invertex%first%called)) then
               call makegraph(invertex, invertex%first%called%value)
               call makevertex(invertex%first%called)
-              write(itoa, '(I)') invertex%first%called%doubles
+              write(itoa, '(I10)') invertex%first%called%doubles
               itoa = adjustl(itoa)
-              write(itoa2, '(I)') invertex%first%called%integers
+              write(itoa2, '(I10)') invertex%first%called%integers
               itoa2 = adjustl(itoa2)
-              write(itoa3, '(I)') invertex%first%called%argFloats
+              write(itoa3, '(I10)') invertex%first%called%argFloats
               itoa3 = adjustl(itoa3)
-              write(itoa4, '(I)') invertex%first%called%ArgInts
+              write(itoa4, '(I10)') invertex%first%called%ArgInts
               itoa4 = adjustl(itoa4)
-              write(itoa5, '(I)') invertex%first%called%ArgBools
+              write(itoa5, '(I10)') invertex%first%called%ArgBools
               itoa5 = adjustl(itoa5)
-            write(10,'(I,A,A,A,A,A,A,A)')iaddr(invertex%first%called),&
+            write(10,'(Z8,A,A,A,A,A,A,A)')iaddr(invertex%first%called),&
        '[shape="box" height=.25 label="',&
        trim(invertex%first%called%value), ' ', trim(itoa), ':',&
        trim(itoa2), '"];'
-              write (10,'(I, A,I, A,A,A,A,A,A,A)') iaddr(invertex), '->',&
+              write (10,'(Z8, A,Z8, A,A,A,A,A,A,A)') iaddr(invertex), '->',&
        iaddr(invertex%first%called), '[label="', trim(itoa3), ':',&
        trim(itoa4), ':', trim(itoa5), '"];'
 
@@ -252,15 +252,15 @@
           character (len = 20) :: itoa5          
           itr => graph
           do 130
-            write(itoa, '(I)') itr%doubles
+            write(itoa, '(I10)') itr%doubles
             itoa = adjustl(itoa)
-            write(itoa2, '(I)') itr%integers
+            write(itoa2, '(I10)') itr%integers
             itoa2 = adjustl(itoa2)
-            write(itoa3, '(I)') itr%argInts
+            write(itoa3, '(I10)') itr%argInts
             itoa3 = adjustl(itoa3)
-            write(itoa4, '(I)') itr%argFloats
+            write(itoa4, '(I10)') itr%argFloats
             itoa4 = adjustl(itoa4)
-            write(itoa5, '(I)') itr%argBools
+            write(itoa5, '(I10)') itr%argBools
             itoa5 = adjustl(itoa5)
             write(11, '(A,A,A,A,A,A,A,A,A,A,A,A,A,A)') trim(itr%value),&
        '[shape="box" height=.25 label="', trim(itr%value),&
@@ -277,7 +277,7 @@
             if(associated(itr%calls)) then
               itr2 => itr%calls
               do 150
-                write(itoa, '(I)') itr2%traversed
+                write(itoa, '(I10)') itr2%traversed
                 itoa = adjustl(itoa)                            
                 write(11, *) trim(itr%value), '->', trim(itr2%tofunc),&
         '[label="', trim(itoa), '"];'
