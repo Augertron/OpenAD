@@ -1,4 +1,4 @@
-# $Header: /m_home/m_utkej/Argonne/cvs2svn/cvs/OpenAD/Makefile,v 1.16 2008-02-20 21:44:29 utke Exp $
+# $Header: /Volumes/cvsrep/developer/OpenAD/Makefile,v 1.13 2007/04/11 13:28:12 utke Exp $
 
 SHELL = /bin/sh
 WD := $(shell pwd)
@@ -42,7 +42,7 @@ endif
 
 #############################################################################
 
-all: configure build install
+all: configure build 
 
 .PHONY : all
 
@@ -228,13 +228,75 @@ xaifBooster_veryclean:
 
 ############################################################
 
-install: uninstall
-	@echo "*** Installing (doing nothing) ***"
+ifndef INST_DIR
+export INST_DIR=/opt/OpenAD
+endif
+
+install: uninstall open64_install openadforttk_install xaif_install xaifBooster_install
+	cp -f README ${INST_DIR}
+	cp -f README.License ${INST_DIR}
+	cp -f openad_config.py ${INST_DIR}
+	chmod a+r ${INST_DIR}/openad_config.py
+	mkdir -p ${INST_DIR}/config
+	cp -f config/hpcguess ${INST_DIR}/config
+	cp -f config/config.guess ${INST_DIR}/config
+	cp -f config/hpcplatform ${INST_DIR}/config
+	chmod a+rx ${INST_DIR}/config/*
+	mkdir -p ${INST_DIR}/bin
+	cp -f bin/openad ${INST_DIR}/bin
+	chmod a+rx ${INST_DIR}/bin/openad
+	cp -rf runTimeSupport ${INST_DIR}
+	chmod -R a+r ${INST_DIR}/runTimeSupport
+	cp -f setenv.csh ${INST_DIR}
+	chmod a+r ${INST_DIR}/setenv.csh
+	cp -f setenv.sh ${INST_DIR}
+	chmod a+r ${INST_DIR}/setenv.sh
+	mkdir -p ${INST_DIR}/tools/setenv
+	cp -f tools/setenv/setenv.py ${INST_DIR}/tools/setenv
+	chmod a+r ${INST_DIR}/tools/setenv/setenv.py
+	mkdir -p ${INST_DIR}/tools/libpythontk
+	cp -f tools/libpythontk/*.py ${INST_DIR}/tools/libpythontk
+	chmod a+r ${INST_DIR}/tools/libpythontk/*.py
+
+open64_install: 
+	cd Open64 && export INST_DIR=${INST_DIR}/Open64 && $(MAKE) install
+
+FORTTK_INST_EXT=$(subst ${PWD},${INST_DIR}/OpenADFortTk,${OPENADFORTTKROOT})
+
+openadforttk_install: 
+# we do this here because of the not very usefull generated install inside FortTk
+	mkdir -p ${FORTTK_INST_EXT}/bin
+	cp -f ${OPENADFORTTKROOT}/bin/whirl2xaif ${FORTTK_INST_EXT}/bin/
+	strip ${FORTTK_INST_EXT}/bin/whirl2xaif
+	chmod a+rx ${FORTTK_INST_EXT}/bin/whirl2xaif
+	cp -f ${OPENADFORTTKROOT}/bin/xaif2whirl ${FORTTK_INST_EXT}/bin/
+	strip ${FORTTK_INST_EXT}/bin/xaif2whirl
+	chmod a+rx ${FORTTK_INST_EXT}/bin/whirl2xaif
+	mkdir -p ${INST_DIR}/OpenADFortTk/tools/multiprocess/perl/Lib/FT
+	cp -f ${OPENADROOT}/OpenADFortTk/tools/multiprocess/multi-pp.pl ${INST_DIR}/OpenADFortTk/tools/multiprocess/
+	chmod a+rx ${INST_DIR}/OpenADFortTk/tools/multiprocess/multi-pp.pl
+	cp -f ${OPENADROOT}/OpenADFortTk/tools/multiprocess/Lib/*.pm ${INST_DIR}/OpenADFortTk/tools/multiprocess/perl/Lib
+	chmod a+rx ${INST_DIR}/OpenADFortTk/tools/multiprocess/perl/Lib/*.pm
+	cp -f ${OPENADROOT}/OpenADFortTk/tools/multiprocess/Lib/FT/*.pm ${INST_DIR}/OpenADFortTk/tools/multiprocess/perl/Lib/FT
+	chmod a+rx ${INST_DIR}/OpenADFortTk/tools/multiprocess/perl/Lib/FT/*.pm
+
+xaif_install: 
+# we do this here because xaif does not have Makefiles
+	mkdir -p ${INST_DIR}/xaif/schema/examples
+	cp -f ${XAIFSCHEMAROOT}/schema/*.xsd ${INST_DIR}/xaif/schema
+	chmod a+r ${INST_DIR}/xaif/schema/*.xsd
+	cp -f ${XAIFSCHEMAROOT}/schema/examples/inlinable_intrinsics.xaif ${INST_DIR}/xaif/schema/examples
+	chmod a+r ${INST_DIR}/xaif/schema/examples/inlinable_intrinsics.xaif
+
+xaifBooster_install: 
+	cd xaifBooster && export INST_DIR=${INST_DIR}/xaifBooster && $(MAKE) install
 
 uninstall: 
-	@echo "*** Uninstalling (doing nothing) ***"
+	@if [ -d ${INST_DIR} ]; then \
+	  echo "about to uninstall ${INST_DIR}"; \
+	  rm -rI ${INST_DIR}; \
+        fi
 
-.PHONY : install uninstall
+.PHONY : install uninstall open64_install openadforttk_install xaif_install xaifBooster_install
 
 #############################################################################
-
