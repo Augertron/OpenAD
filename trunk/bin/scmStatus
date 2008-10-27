@@ -83,7 +83,7 @@ def main():
                   sys.stdout.write('R\t')
                   sys.stdout.flush()
                   if (not options.quick):
-                      changed(repo)
+                      inOut(repo)
               sys.stdout.write('\t%s\n' % repo.getUrl().strip())
           sys.stdout.flush()
           os.chdir(cwd)
