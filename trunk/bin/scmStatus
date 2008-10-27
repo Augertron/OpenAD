@@ -26,7 +26,7 @@ def changed(repo):
         sys.stdout.write('\t')
         sys.stdout.flush()
 
-def inOut(repo):
+def inOut(repo, writeable):
     if (not netAvail()) :
     	sys.stdout.write('\t?')
         sys.stdout.flush()
@@ -34,7 +34,7 @@ def inOut(repo):
     status=""
     if repo.incoming() :
         status+="I"
-    if repo.outgoing() :
+    if (writeable and repo.outgoing()) :
         status+="O"
     sys.stdout.write('\t'+status)
     sys.stdout.flush()
@@ -78,12 +78,12 @@ def main():
                   sys.stdout.flush()
                   if (not options.quick):
                       changed(repo)
-                      inOut(repo)
+                      inOut(repo, True)
               else:
                   sys.stdout.write('R\t')
                   sys.stdout.flush()
                   if (not options.quick):
-                      inOut(repo)
+                      inOut(repo, False)
               sys.stdout.write('\t%s\n' % repo.getUrl().strip())
           sys.stdout.flush()
           os.chdir(cwd)
