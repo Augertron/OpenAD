@@ -30,6 +30,8 @@ class Repository:
     return self.subdir
   def getTag(self):
     return self.tag
+  def getVersionTag(self, localRev=False):
+    return self.getTag()
   def getVar(self):
     return self.var
 
@@ -65,7 +67,7 @@ class CVSRepository(Repository):
     tag=None
     if os.path.isfile(os.path.join(dir,'CVS','Tag')):
       tagFile=open(os.path.join(dir,'CVS','Tag'))
-      tag=tagFile.readline()[1:]
+      tag=tagFile.readline()[1:].strip()
       tagFile.close()
     return CVSRepository(rsh,url,localPath,localName,subdir,tag,None)
 
@@ -184,6 +186,15 @@ class SVNRepository(Repository):
   def outgoing(self):
     return self.locallyModified()
 
+  def getVersionTag(self,localRev=False):
+    fName=tempfile.mktemp()
+    ret=os.system('cd '+self.getLocalRepoPath()+'; svn info | grep Revision: | sed \'s/Revision: //\' > '+fName)
+    infoFile=open(fName)
+    lines=infoFile.readlines()
+    infoFile.close()    
+    os.remove(fName)
+    return lines[0].strip()
+
   def update(self):
     if not os.path.exists(os.path.join(self.getLocalRepoPath(),'.svn')):
       raise RepositoryException("a directory "+self.getLocalRepoPath()+" exists but is not a SVN working directory")
@@ -258,6 +269,22 @@ class MercurialRepository(Repository):
     infoFile.close()    
     os.remove(fName)
     return (re.search('no changes found',lines[-1]) is None)
+
+  def getVersionTag(self,localRev=False):
+    versionTag=''
+    fName=tempfile.mktemp()
+    if localRev:
+      os.system('cd '+self.getLocalRepoPath()+'; hg id -n > '+fName)
+      infoFile=open(fName)
+      lines=infoFile.readlines()
+      infoFile.close()
+      versionTag=lines[0].strip()+":"
+    os.system('cd '+self.getLocalRepoPath()+'; hg id -i > '+fName)
+    infoFile=open(fName)
+    lines=infoFile.readlines()
+    infoFile.close()    
+    os.remove(fName)
+    return versionTag+lines[0].strip()
 
   def update(self):
     if not os.path.exists(os.path.join(self.getLocalRepoPath(),'.hg')):

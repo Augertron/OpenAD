@@ -45,36 +45,46 @@ def main():
   opt.add_option('-q','--quick',dest='quick',
                  help="don't check for uncommited changes or pending pushes",
                  action='store_true',default=False)
+  opt.add_option('-t','--tagsOnly',dest='tagsOnly',
+                 help="only list the repository and a version tag",
+                 action='store_true',default=False)
+  opt.add_option('-l','--localTag',dest='localTag',
+                 help="inlcude the local revision tag where applicable (implies -t)",
+                 action='store_true',default=False)
   (options, args) = opt.parse_args()
+  if (options.localTag):
+      options.tagsOnly=True
   doQuick=False
-  if (options.quick):
-    doQuick=True
   cwd=os.getcwd()
   if (os.path.basename(cwd) != 'OpenAD'):
       opt.error('the current working directory has to the the OpenAD root directory')
       return -1
   repList=['../OpenAD','angel','boost','OpenADFortTk','OpenAnalysis','xaif','xaifBooster','Open64','xercesc']
   maxNameLength=max([len(r) for r in repList])
-  sys.stdout.write('local direct.\tKind\tR/W\tLocal\tRemote\tURL to remote Repo\n')
-  sys.stdout.flush()
+  if (not options.tagsOnly): 
+      sys.stdout.write('local direct.\tKind\tR/W\tLocal\tRemote\tURL\n')
+      sys.stdout.flush()
   try:
       for i in repList:
           repo=Repository.Detect.makeRepo(os.path.join(OpenADRoot,i))
           patchedName=i+"".join([' ' for s in range(len(i),maxNameLength)])
-          sys.stdout.write('%s\t%s\t' % (patchedName,repo.kind()))
-          sys.stdout.flush()
-          if repo.writeable():
-              sys.stdout.write('W')
-              sys.stdout.flush()
-              if (not doQuick) :
-                  changed(repo)
-                  inOut(repo)
+          if options.tagsOnly:
+              sys.stdout.write('%s\t%s:%s\n' % (patchedName,repo.kind(),repo.getVersionTag(options.localTag)))
           else:
-              sys.stdout.write('R\t')
+              sys.stdout.write('%s\t%s\t' % (patchedName,repo.kind()))
               sys.stdout.flush()
-              if (not doQuick) :
-                  changed(repo)
-          sys.stdout.write('\t%s\n' % repo.getUrl().strip())
+              if repo.writeable():
+                  sys.stdout.write('W')
+                  sys.stdout.flush()
+                  if (not options.quick):
+                      changed(repo)
+                      inOut(repo)
+              else:
+                  sys.stdout.write('R\t')
+                  sys.stdout.flush()
+                  if (not options.quick):
+                      changed(repo)
+              sys.stdout.write('\t%s\n' % repo.getUrl().strip())
           sys.stdout.flush()
           os.chdir(cwd)
   except RuntimeError, e:
