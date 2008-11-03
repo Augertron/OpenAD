@@ -59,7 +59,7 @@ def main():
   if (os.path.basename(cwd) != 'OpenAD'):
       opt.error('the current working directory has to the the OpenAD root directory')
       return -1
-  repList=['../OpenAD','angel','boost','OpenADFortTk','OpenAnalysis','xaif','xaifBooster','Open64','xercesc','Regression','OpenADFortTk/Regression']
+  repList=['../OpenAD','Regression','Examples','OpenADFortTk','OpenADFortTk/Regression','OpenAnalysis','xaif','xaifBooster','angel','Open64','boost','xercesc']
   maxNameLength=max([len(r) for r in repList])
   if (not options.tagsOnly):
       ldirName="local direct."
