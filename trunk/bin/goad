@@ -93,7 +93,7 @@ def main():
                  help="keep going despite errors",
                  action='store_true',default=False)
   opt.add_option('-t','--tests',dest='tests',
-                 help="include repositories with test cases (requires Mercurial)",
+                 help="include repositories for examples and test cases (requires Mercurial)",
                  action='store_true',default=False)
   opt.add_option('-d','--debug',dest='debug',
                  help="extra information",

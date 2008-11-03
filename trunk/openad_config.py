@@ -47,7 +47,7 @@ class openad_config:
       ANLMercurialUrl = 'http://mercurial.mcs.anl.gov//ad/'
       self.OpenADRepos["RegressionOpenAD"]=Repository.MercurialRepository(ANLMercurialUrl+'RegressionOpenAD',OpenADRoot,'Regression',None,None,None)
       self.OpenADRepos["RegressionOpenADFortTk"]=Repository.MercurialRepository(ANLMercurialUrl+'RegressionOpenADFortTk',os.path.join(OpenADRoot,'OpenADFortTk'),'Regression',None,None,None)
-      
+      self.OpenADRepos["Examples"]=Repository.MercurialRepository(ANLMercurialUrl+'OpenADExamples',OpenADRoot,'Examples',None,None,None)
 
     self.setPythonOpenADEnvVars()
     

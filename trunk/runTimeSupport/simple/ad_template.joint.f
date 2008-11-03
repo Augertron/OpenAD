@@ -128,7 +128,7 @@ C            print*, " adjoint    ", our_rev_mode
             our_rev_mode%adjoint=.FALSE.
 C adjoint
 !$PLACEHOLDER_PRAGMA$ id=3
-C adjoint
+C adjoint end
             our_rev_mode%arg_store=.FALSE.
             our_rev_mode%arg_restore=.TRUE.
             our_rev_mode%plain=.FALSE.

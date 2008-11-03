@@ -254,21 +254,17 @@ class MercurialRepository(Repository):
 
   def incoming(self):
     fName=tempfile.mktemp()
-    ret=os.system('cd '+self.getLocalRepoPath()+'; hg incoming > '+fName)
-    infoFile=open(fName)
-    lines=infoFile.readlines()
-    infoFile.close()    
+    ret=os.system('cd '+self.getLocalRepoPath()+'; hg incoming -q > '+fName)
+    info=os.stat(fName)
     os.remove(fName)
-    return (re.search('no changes found',lines[-1]) is None)
+    return (info[6]>0)
 
   def outgoing(self):
     fName=tempfile.mktemp()
-    ret=os.system('cd '+self.getLocalRepoPath()+'; hg outgoing > '+fName)
-    infoFile=open(fName)
-    lines=infoFile.readlines()
-    infoFile.close()    
+    ret=os.system('cd '+self.getLocalRepoPath()+'; hg outgoing -q > '+fName)
+    info=os.stat(fName)
     os.remove(fName)
-    return (re.search('no changes found',lines[-1]) is None)
+    return (info[6]>0)
 
   def getVersionTag(self,localRev=False):
     versionTag=''

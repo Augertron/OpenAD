@@ -231,7 +231,7 @@ def main():
   opt = OptionParser(usage=usage)
   opt.add_option('-m','--mode',dest='mode',
                  type='choice', choices=modeChoices,
-                 help="basic transformation mode: "+ modeChoicesHelp,
+                 help="basic transformation mode with MODE being one of: "+ modeChoicesHelp,
                  default='f')
   opt.add_option('-d', '--debug',dest='debug',
                  type='int',
