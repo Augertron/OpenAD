@@ -169,7 +169,7 @@ class SVNRepository(Repository):
 
   def locallyModified(self):
     fName=tempfile.mktemp()
-    os.system('cd '+self.getLocalRepoPath()+'; svn status | grep -vE \"^? \" > '+fName)
+    os.system('cd '+self.getLocalRepoPath()+'; svn status | grep -vE \"^\? \" > '+fName)
     info=os.stat(fName)
     os.remove(fName)
     return (info[6]>0)
@@ -246,11 +246,20 @@ class MercurialRepository(Repository):
     return (re.search('http://', self.getUrl()) is None)
 
   def locallyModified(self):
+    # local changes
     fName=tempfile.mktemp()
     os.system('cd '+self.getLocalRepoPath()+'; hg status > '+fName)
-    info=os.stat(fName)
+    changes=(os.stat(fName)[6]>0)
     os.remove(fName)
-    return (info[6]>0)
+    # tip
+    fName=tempfile.mktemp()
+    os.system('cd '+self.getLocalRepoPath()+'; hg  tip  --template \'{node|short}\\n\' > '+fName)
+    infoFile=open(fName)
+    tip=infoFile.readlines()[0].strip()
+    infoFile.close()
+    os.remove(fName)
+    id=self.getVersionTag()
+    return (changes or tip != id)
 
   def incoming(self):
     fName=tempfile.mktemp()
