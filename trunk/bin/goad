@@ -38,6 +38,10 @@ class Goad:
       if repo.getUrl() is None:
         continue
       if repo.repoExists():
+	if os.path.islink(repo.getLocalName()):
+	  sys.stdout.write('WARNING: '+repo.getLocalRepoPath()+' is a link, no updates will be done\n')
+          sys.stdout.flush()
+          continue
         try: 
           repo.update() # sets CmdDesc to update repository
         except (RunCmds.RunnerException), e:
