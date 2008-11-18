@@ -16,19 +16,19 @@ def netAvail() :
 
 def changed(repo):
     if (not netAvail()) :
-    	sys.stdout.write('\t?')
+    	sys.stdout.write('  ? |')
         sys.stdout.flush()
         return
     if repo.locallyModified() :
-        sys.stdout.write('\tC')
+        sys.stdout.write('  C |')
         sys.stdout.flush()
     else:
-        sys.stdout.write('\t')
+        sys.stdout.write('    |')
         sys.stdout.flush()
 
 def inOut(repo, writeable):
     if (not netAvail()) :
-    	sys.stdout.write('\t?')
+    	sys.stdout.write('  ? |')
         sys.stdout.flush()
         return
     status=""
@@ -36,7 +36,7 @@ def inOut(repo, writeable):
         status+="I"
     if (writeable and repo.outgoing()) :
         status+="O"
-    sys.stdout.write('\t'+status)
+    sys.stdout.write('%3s |'%status)
     sys.stdout.flush()
 
 def main():
@@ -59,36 +59,42 @@ def main():
   if (os.path.basename(cwd) != 'OpenAD'):
       opt.error('the current working directory has to the the OpenAD root directory')
       return -1
-  repList=['../OpenAD','Regression','Examples','OpenADFortTk','OpenADFortTk/Regression','OpenAnalysis','xaif','xaifBooster','angel','Open64','boost/boost','xercesc']
+  allRepList=['../OpenAD','Regression','Examples','OpenADFortTk','OpenADFortTk/Regression','OpenADFortTk/tools/SourceProcessing','OpenADFortTk/tools/SourceProcessing/Regression','OpenAnalysis','xaif','xaifBooster','angel','Open64','boost/boost','xercesc']
+  repList=[]
+  for i in allRepList:
+      if (os.path.exists(i)):
+          repList.append(i)
   maxNameLength=max([len(r) for r in repList])
   if (not options.tagsOnly):
       ldirName="local direct."
-      patchedName=ldirName+"".join([' ' for s in range(len(ldirName),maxNameLength+1)])
-      sys.stdout.write(patchedName+'Kind\tR/W\tLocal\tRemote\tURL\n')
+      patchedName=ldirName+"".join([' ' for s in range(len(ldirName),maxNameLength)])
+      sys.stdout.write(patchedName+'|Kind|R/W')
+      if (not options.quick):
+          sys.stdout.write('|Loc.|Rem.')
+      sys.stdout.write('|URL\n')
       sys.stdout.flush()
   try:
       for i in repList:
-	  if (not os.path.exists(i)): 
-	      continue
           repo=Repository.Detect.makeRepo(os.path.join(OpenADRoot,i))
-          patchedName=i+"".join([' ' for s in range(len(i),maxNameLength+1)])
+          patchedName=i+"".join([' ' for s in range(len(i),maxNameLength)])
           if options.tagsOnly:
-              sys.stdout.write('%s%s:%s\n' % (patchedName,repo.kind(),repo.getVersionTag(options.localTag)))
+              sys.stdout.write('%s %s:%s\n' % (patchedName,repo.kind(),repo.getVersionTag(options.localTag)))
           else:
-              sys.stdout.write('%s%s\t' % (patchedName,repo.kind()))
+              sys.stdout.write('%s|%4s|' % (patchedName,repo.kind()))
               sys.stdout.flush()
               if repo.writeable():
-                  sys.stdout.write('W')
+                  sys.stdout.write(' W |')
                   sys.stdout.flush()
                   if (not options.quick):
                       changed(repo)
                       inOut(repo, True)
               else:
-                  sys.stdout.write('R\t')
+                  sys.stdout.write(' R |')
                   sys.stdout.flush()
                   if (not options.quick):
+                      sys.stdout.write('    |')
                       inOut(repo, False)
-              sys.stdout.write('\t%s\n' % repo.getUrl().strip())
+              sys.stdout.write('%s\n' % repo.getUrl().strip())
           sys.stdout.flush()
           os.chdir(cwd)
   except RuntimeError, e:
