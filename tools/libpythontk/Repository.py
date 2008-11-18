@@ -202,11 +202,15 @@ class SVNRepository(Repository):
     self.cmdDesc.setDesc("updating "+self.getLocalName())
 
   def checkout(self):
+    url=self.getUrl()
+    if self.getTag() is not None:
+      url+=self.getTag()
     if self.getSubdir() is not None:
       name = os.path.join(self.getLocalName(),self.getSubdir())
+      url=os.path.join(url,self.getSubdir())
     else:
       name=self.getLocalName()
-    self.cmdDesc.setCmd("svn co "+self.getUrl()+" "+name)
+    self.cmdDesc.setCmd("svn co "+url+" "+name)
     self.cmdDesc.setDesc("checking out "+self.getLocalName())
 
 class MercurialRepository(Repository):
