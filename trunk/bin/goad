@@ -4,9 +4,12 @@
 import os
 import sys
 import time
-OpenADRoot = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
-sys.path.append(OpenADRoot)
-sys.path.append(os.path.join(OpenADRoot,"tools","libpythontk"))
+if (not os.environ.has_key("OPENADROOT")):
+  sys.stderr.write("ERROR: no OPENADROOT environment variable set, please use the setenv scripts and refer to the manual for details.\n")
+  sys.exit(-1)
+sys.path.append(os.environ["OPENADROOT"])
+import openad_config
+sys.path.append(os.path.join(os.environ["OPENADROOT"],"tools","libpythontk"))
 import RunCmds
 import Repository
 
@@ -17,7 +20,7 @@ class Goad:
     print "goad log: "+ snm
     self.logfnm = os.path.join(dir,snm)
     self.runCmdsDebug=1
-    if options.debug :
+    if options.verbose :
       self.runCmdsDebug=2
     self.interactive=options.interactive
     self.keepGoing=options.keepGoing
@@ -30,7 +33,6 @@ class Goad:
     RunCmds.Runner(self.runCmdsDebug,self.interactive, self.logfnm, self.keepGoing).doit([aCmdDesc])
     
   def Run(self):
-    import openad_config
     repositories =openad_config.openad_config(self.tests).getRepos();
     cmdDescVecRef = []
     for repo in repositories.values():
@@ -86,8 +88,11 @@ class Goad:
     sys.exit(0);
 
 def main():
-  os.chdir(OpenADRoot)
   from optparse import OptionParser
+  cwd=os.getcwd()
+  if (os.path.basename(cwd) != 'OpenAD'):
+      opt.error('the current working directory has to the the OpenAD root directory')
+      return -1
   usage = '%prog [options]\n\t get or update OpenAD repositories'
   opt = OptionParser(usage=usage)
   opt.add_option('-i','--interactive',dest='interactive',
@@ -99,11 +104,14 @@ def main():
   opt.add_option('-t','--tests',dest='tests',
                  help="include repositories for examples and test cases (requires Mercurial)",
                  action='store_true',default=False)
-  opt.add_option('-d','--debug',dest='debug',
-                 help="extra information",
+  opt.add_option('-v','--verbose',dest='verbose',
+                 help="extra output",
                  action='store_true',default=False)
   (options, args) = opt.parse_args()
+  if (options.verbose):
+    sys.stdout.write("running for OPENADROOT="+os.environ["OPENADROOT"])
   try: 
+    os.chdir(os.environ["OPENADROOT"])
     goad = Goad(options)
     goad.updateOpenADRepository()
     goad.Run()

@@ -25,8 +25,9 @@ import Repository
 class openad_config:
   ''' A list of all repositories in this configuation of OpenAD '''
   def __init__(self, includeTests=False):
-    self.OpenADRepos = {}
     riceSvnUrl = 'http://hpc.svn.rice.edu/r/'
+    self.skeletonRepo=Repository.SVNRepository(riceSvnUrl+'OpenAD/trunk',OpenADRoot,'.',None,None,None)
+    self.OpenADRepos = {}
     # Open64
     self.OpenADRepos["Open64"]=Repository.SVNRepository(riceSvnUrl+'open64/tags/version-openad',OpenADRoot,'Open64',None,None,"OPEN64_BASE")
     # OpenADFortTk
