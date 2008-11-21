@@ -2,9 +2,11 @@
 
 import os
 import sys
-from optparse import OptionParser
-OpenADRoot = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
-sys.path.append(os.path.join(OpenADRoot,'tools','libpythontk'))
+if (not os.environ.has_key("OPENADROOT")):
+  sys.stderr.write("ERROR: no OPENADROOT environment variable set, please use the setenv scripts and refer to the manual for details.\n")
+  sys.exit(-1)
+sys.path.append(os.environ["OPENADROOT"])
+sys.path.append(os.path.join(os.environ["OPENADROOT"],"tools","libpythontk"))
 import Repository
 
 def netAvail() :
@@ -40,42 +42,46 @@ def inOut(repo, writeable):
     sys.stdout.flush()
 
 def main():
+  from optparse import OptionParser
   usage = '%prog [options]\n\tdisplays OpenAD repository status\n\tKind:   hg, svn or cvs\n\tR/W:    R=read-only, W=writeable\n\tLocal:  C=locally changed or locally pending updates (hg only) \n\tRemote: O=outgoing changes , I=incoming changes'
   opt = OptionParser(usage=usage)
+  opt.add_option('-l','--localTag',dest='localTag',
+                 help="inlcude the local revision tag where applicable (implies -t)",
+                 action='store_true',default=False)
   opt.add_option('-q','--quick',dest='quick',
                  help="don't check for uncommited changes or pending pushes",
                  action='store_true',default=False)
   opt.add_option('-t','--tagsOnly',dest='tagsOnly',
                  help="only list the repository and a version tag",
                  action='store_true',default=False)
-  opt.add_option('-l','--localTag',dest='localTag',
-                 help="inlcude the local revision tag where applicable (implies -t)",
+  opt.add_option('-v','--verbose',dest='verbose',
+                 help="extra output",
                  action='store_true',default=False)
   (options, args) = opt.parse_args()
   if (options.localTag):
       options.tagsOnly=True
   doQuick=False
-  cwd=os.getcwd()
-  if (os.path.basename(cwd) != 'OpenAD'):
-      opt.error('the current working directory has to the the OpenAD root directory')
-      return -1
-  allRepList=['../OpenAD','Regression','Examples','OpenADFortTk','OpenADFortTk/Regression','OpenADFortTk/tools/SourceProcessing','OpenADFortTk/tools/SourceProcessing/Regression','OpenAnalysis','xaif','xaifBooster','angel','Open64','boost/boost','xercesc']
-  repList=[]
-  for i in allRepList:
-      if (os.path.exists(i)):
-          repList.append(i)
-  maxNameLength=max([len(r) for r in repList])
-  if (not options.tagsOnly):
-      ldirName="local direct."
-      patchedName=ldirName+"".join([' ' for s in range(len(ldirName),maxNameLength)])
-      sys.stdout.write(patchedName+'|Kind|R/W')
-      if (not options.quick):
-          sys.stdout.write('|Loc.|Rem.')
-      sys.stdout.write('|URL\n')
-      sys.stdout.flush()
+  if (options.verbose):
+      sys.stdout.write("running for OPENADROOT="+os.environ["OPENADROOT"])
   try:
+      os.chdir(os.environ["OPENADROOT"])
+      allRepList=['../OpenAD','Regression','Examples','OpenADFortTk','OpenADFortTk/Regression','OpenADFortTk/tools/SourceProcessing','OpenADFortTk/tools/SourceProcessing/Regression','OpenAnalysis','xaif','xaifBooster','angel','Open64','boost/boost','xercesc']
+      repList=[]
+      for i in allRepList:
+          if (os.path.exists(i)):
+              repList.append(i)
+      maxNameLength=max([len(r) for r in repList])
+      if (not options.tagsOnly):
+          ldirName="local direct."
+	  maxNameLength=max(maxNameLength,len(ldirName))
+          patchedName=ldirName+"".join([' ' for s in range(len(ldirName),maxNameLength)])
+          sys.stdout.write(patchedName+'|Kind|R/W')
+          if (not options.quick):
+              sys.stdout.write('|Loc.|Rem.')
+          sys.stdout.write('|URL\n')
+          sys.stdout.flush()
       for i in repList:
-          repo=Repository.Detect.makeRepo(os.path.join(OpenADRoot,i))
+          repo=Repository.Detect.makeRepo(os.path.join(os.environ["OPENADROOT"],i))
           patchedName=i+"".join([' ' for s in range(len(i),maxNameLength)])
           if options.tagsOnly:
               sys.stdout.write('%s %s:%s\n' % (patchedName,repo.kind(),repo.getVersionTag(options.localTag)))
@@ -96,7 +102,7 @@ def main():
                       inOut(repo, False)
               sys.stdout.write('%s\n' % repo.getUrl().strip())
           sys.stdout.flush()
-          os.chdir(cwd)
+          os.chdir(os.environ["OPENADROOT"])
   except RuntimeError, e:
       print 'caught excetion: ',e
       return -1

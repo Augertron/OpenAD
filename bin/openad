@@ -3,6 +3,9 @@
 
 import os
 import sys
+if (not os.environ.has_key("OPENADROOT")):
+  sys.stderr.write("ERROR: no OPENADROOT environment variable set, please use the setenv scripts and refer to the manual for details.\n")
+  sys.exit(-1)
 sys.path.append(os.environ["OPENADROOT"])
 sys.path.append(os.path.join(os.environ["OPENADROOT"],"tools","libpythontk"))
 import RunCmds
