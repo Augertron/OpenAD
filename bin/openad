@@ -57,8 +57,8 @@ class RunOpenAD:
                                      'xaifBooster',
                                      'algorithms',
                                      'BasicBlockPreaccumulation',
-                                     'test',
-                                     't')+
+                                     'driver',
+                                     'oadDriver')+
                         " -c "+self.ii_xaif+
                         " -s "+os.path.join(os.environ["XAIFSCHEMAROOT"],"schema")+
                         " -i "+self.baseName+".xaif"+
@@ -86,8 +86,8 @@ class RunOpenAD:
                                      'xaifBooster',
                                      'algorithms',
                                      'BasicBlockPreaccumulationReverse',
-                                     'test',
-                                     't')+
+                                     'driver',
+                                     'oadDriver')+
                         " -c "+self.ii_xaif+
                         " -s "+os.path.join(os.environ["XAIFSCHEMAROOT"],"schema")+
                         " -i "+self.baseName+".xaif"+
@@ -133,8 +133,8 @@ class RunOpenAD:
                                      'xaifBooster',
                                      'algorithms',
                                      'TraceDiff',
-                                     'test',
-                                     't')+
+                                     'driver',
+                                     'oadDriver')+
                         " -c "+self.ii_xaif+
                         " -s "+os.path.join(os.environ["XAIFSCHEMAROOT"],"schema")+
                         " -i "+self.baseName+".xaif"+

@@ -91,13 +91,7 @@ class openad_config:
        'whirl2sexp':os.path.join(os.environ['OPENADFORTTKROOT'],'bin','whirl2sexp'),
        'whirl2f90':os.path.join(os.environ['OPEN64ROOT'],'whirl2f','whirl2f90'),
        'ir_b2a':os.path.join(os.environ['OPEN64ROOT'],'ir_tools','ir_b2a'),
-       'ir_size':os.path.join(os.environ['OPEN64ROOT'],'ir_tools','ir_size'),
-       'xboostread':os.path.join(xbase,'system','test','t')+' -c '+ii_xaif,
-       'xboost_l':os.path.join(xbase,'algorithms','Linearization','test','t')+' -c '+ii_xaif,
-       'xboost_bb':os.path.join(xbase,'algorithms','BasicBlockPreaccumulation','test','t')+' -c '+ii_xaif,
-       'xboost_bbt':os.path.join(xbase,'algorithms','BasicBlockPreaccumulationTape','test','t')+' -c '+ii_xaif,
-       'xboost_bbr':os.path.join(xbase,'algorithms','BasicBlockPreaccumulationReverse','test','t')+' -c '+ii_xaif,
-       'xboost_cfr':os.path.join(xbase,'algorithms','ControlFlowReversal','test','t')+' -c '+ii_xaif}
+       'ir_size':os.path.join(os.environ['OPEN64ROOT'],'ir_tools','ir_size')}
 
 
     # set OpenAD environment variables in python environment (called in __init__)
