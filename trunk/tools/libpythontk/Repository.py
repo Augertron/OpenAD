@@ -44,6 +44,34 @@ class Repository:
   def repoExists(self):
     return os.path.exists(self.getLocalRepoPath())
   
+class NoRepository(Repository):
+  
+  @staticmethod
+  def isRepo(dir):
+    return os.path.isdir(dir)
+
+  @staticmethod
+  def instanceFrom(dir):
+    if (not NoRepository.isRepo(dir)):
+      raise RepositoryException, dir+" is not a directory"
+    (localPath,localName)=os.path.split(dir)   
+    return NoRepository('n/a', localPath, localName,  None, None, None)
+
+  def kind(self):
+    return 'n/a'
+  
+  def writeable(self):
+    return False
+
+  def locallyModified(self):
+    return False
+
+  def incoming(self):
+    return False
+
+  def outgoing(self):
+    return False
+                                          
 class CVSRepository(Repository):
 
   @staticmethod
@@ -335,7 +363,10 @@ class Detect:
     if (matches>1):
         raise RepositoryException, "more than one possible repository type for "+dir   
     if (matches<1):
-        raise RepositoryException, "cannot determine type for "+dir
+        if (NoRepository.isRepo(dir)):
+           repo=NoRepository.instanceFrom(dir)
+        else : 
+           raise RepositoryException, "cannot determine type for "+dir
     return repo
 
     

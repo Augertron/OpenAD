@@ -62,7 +62,7 @@ def main():
       options.tagsOnly=True
   doQuick=False
   if (options.verbose):
-      sys.stdout.write("running for OPENADROOT="+os.environ["OPENADROOT"])
+      sys.stdout.write("running for OPENADROOT="+os.environ["OPENADROOT"]+"\n")
   try:
       os.chdir(os.environ["OPENADROOT"])
       allRepList=['../OpenAD','Regression','Examples','OpenADFortTk','OpenADFortTk/Regression','OpenADFortTk/tools/SourceProcessing','OpenADFortTk/tools/SourceProcessing/Regression','OpenAnalysis','xaif','xaifBooster','angel','Open64','boost/boost','xercesc']
@@ -72,13 +72,13 @@ def main():
               repList.append(i)
       maxNameLength=max([len(r) for r in repList])
       if (not options.tagsOnly):
-          ldirName="local direct."
+          ldirName="local directory"
 	  maxNameLength=max(maxNameLength,len(ldirName))
-          patchedName=ldirName+"".join([' ' for s in range(len(ldirName),maxNameLength)])
-          sys.stdout.write(patchedName+'|Kind|R/W')
+          columnLabelsStr = ldirName+' '*(maxNameLength-len(ldirName))+'|Kind|R/W'
           if (not options.quick):
-              sys.stdout.write('|Loc.|Rem.')
-          sys.stdout.write('|URL\n')
+              columnLabelsStr += '|Loc.|Rem.'
+          columnLabelsStr += '|URL\n'
+          sys.stdout.write(columnLabelsStr+'-'*len(columnLabelsStr)+'\n')
           sys.stdout.flush()
       for i in repList:
           repo=Repository.Detect.makeRepo(os.path.join(os.environ["OPENADROOT"],i))
