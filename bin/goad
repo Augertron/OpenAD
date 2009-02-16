@@ -31,8 +31,9 @@ class Goad:
     repositories={'skeletonRepo':oaCfg.skeletonRepo}
     repositories.update(openad_config.openad_config(self.tests).getRepos())
     cmdDescVecRef = []
-    for repo in repositories.values():
-       # if we don't have repository info, then this is external to us
+    for key in oaCfg.orderedRepoList:
+      repo=repositories[key]
+      # if we don't have repository info, then this is external to us
       if repo.getUrl() is None:
         continue
       if repo.repoExists():

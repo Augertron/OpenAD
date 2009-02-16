@@ -150,7 +150,7 @@ class CVSRepository(Repository):
     if not os.path.exists(os.path.join(self.getLocalRepoPath(),'CVS')):
       raise RepositoryException("a directory "+self.getLocalRepoPath()+" exists but is not a CVS working directory")
     self.cmdDesc.setCmd("cd "+self.getLocalRepoPath()+" && "+self.env+"  cvs " + self.opt + " " + self.getUrl() + " update -d")
-    self.cmdDesc.setDesc("updating "+self.getLocalName())
+    self.cmdDesc.setDesc("updating "+self.getLocalRepoPath())
 
   def checkout(self):
     if self.getSubdir() is not None:
@@ -158,7 +158,7 @@ class CVSRepository(Repository):
     else:
       name=self.getLocalName()
     self.cmdDesc.setCmd(self.env+" cvs " + self.opt + " " + self.getUrl() + " co "+self.getCVSTagOpt()+" "+name)
-    self.cmdDesc.setDesc("checking out "+self.getLocalName())
+    self.cmdDesc.setDesc("checking out into "+self.getLocalRepoPath())
 
 class SVNRepository(Repository):
 
@@ -227,7 +227,7 @@ class SVNRepository(Repository):
     if not os.path.exists(os.path.join(self.getLocalRepoPath(),'.svn')):
       raise RepositoryException("a directory "+self.getLocalRepoPath()+" exists but is not a SVN working directory")
     self.cmdDesc.setCmd("cd "+self.getLocalRepoPath()+" && svn update")
-    self.cmdDesc.setDesc("updating "+self.getLocalName())
+    self.cmdDesc.setDesc("updating "+self.getLocalRepoPath())
 
   def checkout(self):
     url=self.getUrl()
@@ -239,7 +239,7 @@ class SVNRepository(Repository):
     else:
       name=self.getLocalName()
     self.cmdDesc.setCmd("svn co "+url+" "+name)
-    self.cmdDesc.setDesc("checking out "+self.getLocalName())
+    self.cmdDesc.setDesc("checking out into "+self.getLocalRepoPath())
 
 class MercurialRepository(Repository):
 
@@ -327,11 +327,11 @@ class MercurialRepository(Repository):
     if not os.path.exists(os.path.join(self.getLocalRepoPath(),'.hg')):
       raise RepositoryException("a directory "+self.getLocalRepoPath()+" exists but is not a Mercurial working directory")
     self.cmdDesc.setCmd("cd "+self.getLocalRepoPath()+" && hg pull -q && hg update")
-    self.cmdDesc.setDesc("updating "+self.getLocalName())
+    self.cmdDesc.setDesc("updating "+self.getLocalRepoPath())
 
   def checkout(self):
     cmd=""
-    desc="cloning "
+    desc="cloning into "
     if self.getSubdir() is not None:
       raise RepositoryException("For a Mercurial repository one cannot specify a subdirectory to be cloned")
     if self.getLocalPath() is not None:
@@ -339,7 +339,7 @@ class MercurialRepository(Repository):
       desc+=os.path.join(self.getLocalPath(),self.getLocalName())
     else:
       desc+=self.getLocalName()
-    cmd+="hg clone "+self.getUrl()+" "+self.getLocalName()
+    cmd+="hg clone "+self.getUrl()+" "+self.getLocalRepoPath()
     self.cmdDesc.setCmd(cmd)
     self.cmdDesc.setDesc(desc)
 

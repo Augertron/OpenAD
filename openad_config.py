@@ -25,31 +25,45 @@ import Repository
 class openad_config:
   ''' A list of all repositories in this configuation of OpenAD '''
   def __init__(self, includeTests=False):
+    self.orderedRepoList=[] # we need something that is explicitly ordered
     riceSvnUrl = 'http://hpc.svn.rice.edu/r/'
     self.skeletonRepo=Repository.SVNRepository(riceSvnUrl+'OpenAD/trunk',OpenADRoot,'.',None,None,None)
+    self.orderedRepoList.append('skeletonRepo')
     self.OpenADRepos = {}
     # Open64
     self.OpenADRepos["Open64"]=Repository.SVNRepository(riceSvnUrl+'open64/tags/version-openad',OpenADRoot,'Open64',None,None,"OPEN64_BASE")
+    self.orderedRepoList.append("Open64")
     # OpenADFortTk
-    self.OpenADRepos["OpenAdFortTk"]=Repository.SVNRepository(riceSvnUrl+'OpenADFortTk/trunk',OpenADRoot,'OpenADFortTk',None,None,'OPENADFORTTK_BASE') 
+    self.OpenADRepos["OpenAdFortTk"]=Repository.SVNRepository(riceSvnUrl+'OpenADFortTk/trunk',OpenADRoot,'OpenADFortTk',None,None,'OPENADFORTTK_BASE')  
+    self.orderedRepoList.append("OpenAdFortTk")
     # OpenAnalysis
     self.OpenADRepos["OpenAnalysis"]=Repository.SVNRepository(riceSvnUrl+'open-analysis/tags/version-openad',OpenADRoot,'OpenAnalysis',None,None,'OPENANALYSIS_BASE')
+    self.orderedRepoList.append("OpenAnalysis")
     # xercesc
     self.OpenADRepos["xercesc"]=Repository.SVNRepository(riceSvnUrl+'xercesc/tags/version-openad',OpenADRoot,'xercesc', None, None,'XERCESC_BASE')
+    self.orderedRepoList.append("xercesc")
     # xaifBooster
     self.OpenADRepos["xaifBooster"]=Repository.SVNRepository(riceSvnUrl+'xaifBooster/trunk',OpenADRoot,'xaifBooster',None,None,'XAIFBOOSTER_BASE')
+    self.orderedRepoList.append("xaifBooster")
     # xaif
     self.OpenADRepos["xaif"]=Repository.SVNRepository(riceSvnUrl+'xaif/trunk',OpenADRoot,'xaif',None,None,'XAIFSCHEMA_BASE')
+    self.orderedRepoList.append("xaif")
     # angel
     self.OpenADRepos["angel"]=Repository.CVSRepository('pserver',':pserver:anonymous@angellib.cvs.sourceforge.net:/cvsroot/angellib',OpenADRoot,'angel',None,None,'ANGEL_BASE')
+    self.orderedRepoList.append("angel")
     # boost
     self.OpenADRepos["boost"]=Repository.CVSRepository('pserver',':pserver:anonymous@boost.cvs.sourceforge.net:/cvsroot/boost',OpenADRoot,'boost','boost','Version_1_34_1','BOOST_BASE')
+    self.orderedRepoList.append("boost")
     if includeTests:
       ANLMercurialUrl = 'http://mercurial.mcs.anl.gov//ad/'
       self.OpenADRepos["RegressionOpenAD"]=Repository.MercurialRepository(ANLMercurialUrl+'RegressionOpenAD',OpenADRoot,'Regression',None,None,None)
+      self.orderedRepoList.append("RegressionOpenAD")
       self.OpenADRepos["RegressionOpenADFortTk"]=Repository.MercurialRepository(ANLMercurialUrl+'RegressionOpenADFortTk',os.path.join(OpenADRoot,'OpenADFortTk'),'Regression',None,None,None)
+      self.orderedRepoList.append("RegressionOpenADFortTk")
       self.OpenADRepos["RegressionSourceProcessing"]=Repository.MercurialRepository(ANLMercurialUrl+'RegressionSourceProcessing',os.path.join(OpenADRoot,'OpenADFortTk','tools','SourceProcessing'),'Regression',None,None,None)
+      self.orderedRepoList.append("RegressionSourceProcessing")
       self.OpenADRepos["Examples"]=Repository.MercurialRepository(ANLMercurialUrl+'OpenADExamples',OpenADRoot,'Examples',None,None,None)
+      self.orderedRepoList.append("Examples")
 
     self.setPythonOpenADEnvVars()
     
