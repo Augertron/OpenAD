@@ -81,7 +81,7 @@ def main():
           sys.stdout.write(columnLabelsStr+'-'*len(columnLabelsStr)+'\n')
           sys.stdout.flush()
       for i in repList:
-          repo=Repository.Detect.makeRepo(os.path.join(os.environ["OPENADROOT"],i))
+          repo=Repository.Detect.makeRepo(os.path.join(os.environ["OPENADROOT"],i),None)
           patchedName=i+"".join([' ' for s in range(len(i),maxNameLength)])
           if options.tagsOnly:
               sys.stdout.write('%s %s:%s\n' % (patchedName,repo.kind(),repo.getVersionTag(options.localTag)))

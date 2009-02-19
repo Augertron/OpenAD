@@ -47,15 +47,21 @@ class Repository:
 class NoRepository(Repository):
   
   @staticmethod
-  def isRepo(dir):
-    return os.path.isdir(dir)
+  def isRepo(dir,subDir):
+    if subDir:
+      return os.path.isdir(os.path.join(dir,subDir))
+    else:
+      return os.path.isdir(dir)
 
   @staticmethod
-  def instanceFrom(dir):
-    if (not NoRepository.isRepo(dir)):
-      raise RepositoryException, dir+" is not a directory"
+  def instanceFrom(dir,subDir):
+    if (not NoRepository.isRepo(dir,subDir)):
+      if subDir:
+        raise RepositoryException, os.path.join(dir,subDir)+" is not a directory"
+      else:
+        raise RepositoryException, dir+" is not a directory"
     (localPath,localName)=os.path.split(dir)   
-    return NoRepository('n/a', localPath, localName,  None, None, None)
+    return NoRepository('n/a', localPath, localName,  subDir, None, None)
 
   def kind(self):
     return 'n/a'
@@ -75,12 +81,12 @@ class NoRepository(Repository):
 class CVSRepository(Repository):
 
   @staticmethod
-  def isRepo(dir):
+  def isRepo(dir,subDir):
     return os.path.isdir(os.path.join(dir,'CVS'))
 
   @staticmethod
-  def instanceFrom(dir):
-    if (not CVSRepository.isRepo(dir)):
+  def instanceFrom(dir,subDir):
+    if (not CVSRepository.isRepo(dir,subDir)):
       raise RepositoryException, dir+" is not a CVS repository"   
     rootFile=open(os.path.join(dir,'CVS','Root'))
     rootString=rootFile.readline()
@@ -91,13 +97,12 @@ class CVSRepository(Repository):
     repoFile=open(os.path.join(dir,'CVS','Repository'))
     repoString=repoFile.readline()
     repoFile.close()
-    subdir=None
     tag=None
     if os.path.isfile(os.path.join(dir,'CVS','Tag')):
       tagFile=open(os.path.join(dir,'CVS','Tag'))
       tag=tagFile.readline()[1:].strip()
       tagFile.close()
-    return CVSRepository(rsh,url,localPath,localName,subdir,tag,None)
+    return CVSRepository(rsh,url,localPath,localName,subDir,tag,None)
 
   def __init__(self,rsh,url,localPath,localName,subdir,tag,var):
     Repository.__init__(self,url,localPath,localName,subdir,tag,var)
@@ -148,7 +153,7 @@ class CVSRepository(Repository):
   
   def update(self):
     if not os.path.exists(os.path.join(self.getLocalRepoPath(),'CVS')):
-      raise RepositoryException("a directory "+self.getLocalRepoPath()+" exists but is not a CVS working directory")
+      raise RepositoryException("directory "+self.getLocalRepoPath()+" has no CVS data")
     self.cmdDesc.setCmd("cd "+self.getLocalRepoPath()+" && "+self.env+"  cvs " + self.opt + " " + self.getUrl() + " update -d")
     self.cmdDesc.setDesc("updating "+self.getLocalRepoPath())
 
@@ -163,28 +168,45 @@ class CVSRepository(Repository):
 class SVNRepository(Repository):
 
   @staticmethod
-  def isRepo(dir):
-    return os.path.isdir(os.path.join(dir,'.svn'))
+  def isRepo(dir,subDir):
+    path=dir
+    if subDir:
+      path=os.path.join(path,subDir)
+    return os.path.isdir(os.path.join(path,'.svn'))
 
   @staticmethod
-  def instanceFrom(dir):
-    if (not SVNRepository.isRepo(dir)):
+  def instanceFrom(dir,subDir):
+    if (not SVNRepository.isRepo(dir,subDir)):
       raise RepositoryException, dir+" is not an SVN repository"   
     fName=tempfile.mktemp()
-    os.system('cd '+dir+'; svn info > '+fName+'; cd ../')
+    path=dir
+    if subDir:
+      path=os.path.join(path,subDir)
+    os.system('cd '+path+'; svn info > '+fName)
     infoFile=open(fName)
-    infoString=''
+    urlString=''
+    urlRoot=''
     while 1:
         infoString=infoFile.readline()
-        if (infoString[:5]=='URL: ' or len(infoString)==0):
-            break
+        if (len(infoString)==0):
+          break
+        if (infoString[:5]=='URL: '):
+          urlString=infoString[5:].strip()
+        if (infoString[:17]=='Repository Root: '):
+          urlRoot=infoString[17:].strip()
+        if (urlString!='' and urlRoot!=''):
+          break
     infoFile.close()
     os.remove(fName)
-    if (infoString[:5]!='URL: '): 
-      raise RepositoryExceptuuib, "cannot find url for "+dir   
-    url=infoString[5:]
+    if (urlString==''): 
+      raise RepositoryException, "cannot find url for "+dir   
+    if (urlRoot==''): 
+      raise RepositoryException, "cannot find url root for "+dir   
     (localPath,localName)=os.path.split(dir)
-    return SVNRepository(url,localPath,localName,None,None,None)
+    tag=urlString[len(urlRoot)+1:]
+    if subDir:
+      tag=tag[:-(len(subDir)+1)]
+    return SVNRepository(urlRoot,localPath,localName,subDir,tag,None)
 
   def __init__(self,url,localPath, localName,subdir,tag,var):
     Repository.__init__(self,url,localPath,localName,subdir,tag,var)
@@ -225,14 +247,14 @@ class SVNRepository(Repository):
 
   def update(self):
     if not os.path.exists(os.path.join(self.getLocalRepoPath(),'.svn')):
-      raise RepositoryException("a directory "+self.getLocalRepoPath()+" exists but is not a SVN working directory")
+      raise RepositoryException("directory "+self.getLocalRepoPath()+" has no SVN data")
     self.cmdDesc.setCmd("cd "+self.getLocalRepoPath()+" && svn update")
     self.cmdDesc.setDesc("updating "+self.getLocalRepoPath())
 
   def checkout(self):
     url=self.getUrl()
     if self.getTag() is not None:
-      url+=self.getTag()
+      url=os.path.join(url,self.getTag())
     if self.getSubdir() is not None:
       name = os.path.join(self.getLocalName(),self.getSubdir())
       url=os.path.join(url,self.getSubdir())
@@ -244,12 +266,12 @@ class SVNRepository(Repository):
 class MercurialRepository(Repository):
 
   @staticmethod
-  def isRepo(dir):
+  def isRepo(dir,subDir):
     return os.path.isdir(os.path.join(dir,'.hg'))
 
   @staticmethod
-  def instanceFrom(dir):
-    if (not MercurialRepository.isRepo(dir)):
+  def instanceFrom(dir,subDir):
+    if (not MercurialRepository.isRepo(dir,subDir)):
       raise RepositoryException, dir+" is not a Mercurial repository"   
     fName=tempfile.mktemp()
     os.system('cd '+dir+'; hg show > '+fName+'; cd ../')
@@ -264,7 +286,7 @@ class MercurialRepository(Repository):
     os.remove(fName)
     if (infoString[:len(headAttribute)]!=headAttribute):
         raise RepositoryException, "cannot find url for "+rep   
-    url=infoString[len(headAttribute):]
+    url=infoString[len(headAttribute):].strip()
     (localPath,localName)=os.path.split(dir)
     return MercurialRepository(url,localPath,localName,None,None,None)
 
@@ -325,7 +347,7 @@ class MercurialRepository(Repository):
 
   def update(self):
     if not os.path.exists(os.path.join(self.getLocalRepoPath(),'.hg')):
-      raise RepositoryException("a directory "+self.getLocalRepoPath()+" exists but is not a Mercurial working directory")
+      raise RepositoryException("directory "+self.getLocalRepoPath()+" has no Mercurial data")
     self.cmdDesc.setCmd("cd "+self.getLocalRepoPath()+" && hg pull -q && hg update")
     self.cmdDesc.setDesc("updating "+self.getLocalRepoPath())
 
@@ -347,24 +369,24 @@ class MercurialRepository(Repository):
 class Detect:
 
   @staticmethod
-  def makeRepo(dir):
+  def makeRepo(dir,subDir):
     # figure out what it is
     matches=0
     repo=None
-    if (CVSRepository.isRepo(dir)):
+    if (CVSRepository.isRepo(dir,subDir)):
         matches+=1
-        repo=CVSRepository.instanceFrom(dir)
-    if (SVNRepository.isRepo(dir)):
+        repo=CVSRepository.instanceFrom(dir,subDir)
+    if (SVNRepository.isRepo(dir,subDir)):
         matches+=1
-        repo=SVNRepository.instanceFrom(dir)
-    if (MercurialRepository.isRepo(dir)):
+        repo=SVNRepository.instanceFrom(dir,subDir)
+    if (MercurialRepository.isRepo(dir,subDir)):
         matches+=1
-        repo=MercurialRepository.instanceFrom(dir)
+        repo=MercurialRepository.instanceFrom(dir,subDir)
     if (matches>1):
         raise RepositoryException, "more than one possible repository type for "+dir   
     if (matches<1):
-        if (NoRepository.isRepo(dir)):
-           repo=NoRepository.instanceFrom(dir)
+        if (NoRepository.isRepo(dir,subDir)):
+           repo=NoRepository.instanceFrom(dir,subDir)
         else : 
            raise RepositoryException, "cannot determine type for "+dir
     return repo

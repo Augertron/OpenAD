@@ -31,28 +31,28 @@ class openad_config:
     self.orderedRepoList.append('skeletonRepo')
     self.OpenADRepos = {}
     # Open64
-    self.OpenADRepos["Open64"]=Repository.SVNRepository(riceSvnUrl+'open64/tags/version-openad',OpenADRoot,'Open64',None,None,"OPEN64_BASE")
+    self.OpenADRepos["Open64"]=Repository.SVNRepository(riceSvnUrl+'open64',OpenADRoot,'Open64',None,'tags/version-openad',"OPEN64_BASE")
     self.orderedRepoList.append("Open64")
     # OpenADFortTk
-    self.OpenADRepos["OpenAdFortTk"]=Repository.SVNRepository(riceSvnUrl+'OpenADFortTk/trunk',OpenADRoot,'OpenADFortTk',None,None,'OPENADFORTTK_BASE')  
+    self.OpenADRepos["OpenAdFortTk"]=Repository.SVNRepository(riceSvnUrl+'OpenADFortTk',OpenADRoot,'OpenADFortTk',None,'trunk','OPENADFORTTK_BASE')  
     self.orderedRepoList.append("OpenAdFortTk")
     # OpenAnalysis
-    self.OpenADRepos["OpenAnalysis"]=Repository.SVNRepository(riceSvnUrl+'open-analysis/tags/version-openad',OpenADRoot,'OpenAnalysis',None,None,'OPENANALYSIS_BASE')
+    self.OpenADRepos["OpenAnalysis"]=Repository.SVNRepository(riceSvnUrl+'open-analysis',OpenADRoot,'OpenAnalysis',None,'tags/version-openad','OPENANALYSIS_BASE')
     self.orderedRepoList.append("OpenAnalysis")
     # xercesc
-    self.OpenADRepos["xercesc"]=Repository.SVNRepository(riceSvnUrl+'xercesc/tags/version-openad',OpenADRoot,'xercesc', None, None,'XERCESC_BASE')
+    self.OpenADRepos["xercesc"]=Repository.SVNRepository(riceSvnUrl+'xercesc',OpenADRoot,'xercesc', None, 'tags/version-openad','XERCESC_BASE')
     self.orderedRepoList.append("xercesc")
     # xaifBooster
-    self.OpenADRepos["xaifBooster"]=Repository.SVNRepository(riceSvnUrl+'xaifBooster/trunk',OpenADRoot,'xaifBooster',None,None,'XAIFBOOSTER_BASE')
+    self.OpenADRepos["xaifBooster"]=Repository.SVNRepository(riceSvnUrl+'xaifBooster',OpenADRoot,'xaifBooster',None,'trunk','XAIFBOOSTER_BASE')
     self.orderedRepoList.append("xaifBooster")
     # xaif
-    self.OpenADRepos["xaif"]=Repository.SVNRepository(riceSvnUrl+'xaif/trunk',OpenADRoot,'xaif',None,None,'XAIFSCHEMA_BASE')
+    self.OpenADRepos["xaif"]=Repository.SVNRepository(riceSvnUrl+'xaif',OpenADRoot,'xaif',None,'trunk','XAIFSCHEMA_BASE')
     self.orderedRepoList.append("xaif")
     # angel
     self.OpenADRepos["angel"]=Repository.CVSRepository('pserver',':pserver:anonymous@angellib.cvs.sourceforge.net:/cvsroot/angellib',OpenADRoot,'angel',None,None,'ANGEL_BASE')
     self.orderedRepoList.append("angel")
     # boost
-    self.OpenADRepos["boost"]=Repository.CVSRepository('pserver',':pserver:anonymous@boost.cvs.sourceforge.net:/cvsroot/boost',OpenADRoot,'boost','boost','Version_1_34_1','BOOST_BASE')
+    self.OpenADRepos["boost"]=Repository.SVNRepository('http://svn.boost.org/svn/boost',OpenADRoot,'boost','boost','tags/release/Boost_1_38_0','BOOST_BASE')
     self.orderedRepoList.append("boost")
     if includeTests:
       ANLMercurialUrl = 'http://mercurial.mcs.anl.gov//ad/'

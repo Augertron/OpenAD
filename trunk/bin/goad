@@ -22,55 +22,62 @@ class Goad:
     self.runCmdsDebug=1
     if options.verbose :
       self.runCmdsDebug=2
-    self.interactive=options.interactive
-    self.keepGoing=options.keepGoing
-    self.tests=options.tests
+    self.options=options
 
   def Run(self):
-    oaCfg=openad_config.openad_config(self.tests)
+    oaCfg=openad_config.openad_config(self.options.tests)
     repositories={'skeletonRepo':oaCfg.skeletonRepo}
-    repositories.update(openad_config.openad_config(self.tests).getRepos())
+    repositories.update(openad_config.openad_config(self.options.tests).getRepos())
     cmdDescVecRef = []
     for key in oaCfg.orderedRepoList:
       repo=repositories[key]
+      actRepo=None
       # if we don't have repository info, then this is external to us
       if repo.getUrl() is None:
+        sys.stdout.write('WARNING: '+repo.getLocalRepoPath()+' has no repository information, no updates will be done\n')
+        sys.stdout.flush()
         continue
       if repo.repoExists():
 	if os.path.islink(repo.getLocalName()):
 	  sys.stdout.write('WARNING: '+repo.getLocalRepoPath()+' is a link, no updates will be done\n')
           sys.stdout.flush()
           continue
-        try: 
-          repo.update() # sets CmdDesc to update repository
+        try:
+          actRepo=Repository.Detect.makeRepo(os.path.join(repo.getLocalPath(),repo.getLocalName()),
+                                             repo.getSubdir())
+          if (actRepo.getUrl()==repo.getUrl()
+              and
+              actRepo.getTag()==repo.getTag()) : 
+            repo.update() # sets CmdDesc to update repository
+          else:
+            if (self.options.development):
+              if (actRepo.getUrl()!=repo.getUrl()
+                  or
+                  actRepo.getTag()!=repo.getTag()):
+                sys.stderr.write('NOTE: development repo URL '+actRepo.getUrl()+' for '+actRepo.getLocalRepoPath()+'\n')
+              actRepo.update() # sets CmdDesc to update the actual repository
+              repo=actRepo
+            else:   
+              sys.stderr.write('WARNING: mismatched ')
+              if (str(actRepo.getUrl())!=str(repo.getUrl())) : 
+                sys.stderr.write('URL: \n\tcurrent: '+str(actRepo.getUrl())+'\n\tconfig : '+str(repo.getUrl())+'\n\t')
+              elif (actRepo.getTag()!=repo.getTag()) : 
+                sys.stderr.write('tag: \n\tcurrent: '+str(actRepo.getTag())+'\n\tconfig : '+str(repo.getTag())+'\n\t')
+              if (not self.options.force and raw_input("The current repository will be deleted and a new repository will be created, continue? (y)/n: ")) == "n" :
+                sys.stdout.flush()
+                repo.update() # sets CmdDesc to update repository
+              else : 
+                cmdDescVecRef.append(RunCmds.CmdDesc("rm -rf "+os.path.join(repo.getLocalPath(),repo.getLocalName())))
+                repo.checkout() # check out repository
         except (RunCmds.RunnerException), e:
-          if self.keepGoing:
-            sys.stderr.write('WARNING: '+str(e)+'... continuing\n')
+          if self.options.keepGoing:
+            sys.stderr.write('ERROR: '+str(e)+'... continuing\n')
             continue
           else:
             raise e
         except (Repository.RepositoryException), e:
-          if self.keepGoing:
-            sys.stderr.write('WARNING: '+str(e)+'... continuing\n')
-            if isinstance(repo,Repository.CVSRepository) or isinstance(repo,Repository.SVNRepository):
-              if (self.interactive):
-                 if (raw_input("     May be this is a Mercurial repository. Should I try an hg update? (y)/n: ")) == "n" :
-                   sys.stdout.flush()
-                   continue
-              else:
-                sys.stdout.write("     Assuming this is a Mercurial repository and attempting an hg update.\n")
-              # see if this is a mercurial repo
-              mercRepo=Repository.MercurialRepository(repo.getUrl(),
-                                                      repo.getLocalPath(),
-                                                      repo.getLocalName(),
-                                                      repo.getSubdir(),
-                                                      repo.getTag(),
-                                                      repo.getVar())
-              try: 
-                mercRepo.update() 
-                cmdDescVecRef.append(mercRepo.cmdDesc)
-              except (Repository.RepositoryException), eInner:
-                sys.stderr.write('ERROR: '+str(eInner)+'... continue\n')
+          if self.options.keepGoing:
+            sys.stderr.write('ERROR: '+str(e)+'... continuing\n')
             continue
           else:
             raise e
@@ -78,13 +85,13 @@ class Goad:
         try: 
           repo.checkout() # check out repository
         except (Repository.RepositoryException, RunCmds.RunnerException), e:
-          if self.keepGoing:
+          if self.options.keepGoing:
             sys.stderr.write('ERROR: '+str(e)+'... continuing\n')
             continue
           else:
             raise e
       cmdDescVecRef.append(repo.cmdDesc)
-    RunCmds.Runner(self.runCmdsDebug,self.interactive, self.logfnm, self.keepGoing).doit(cmdDescVecRef)
+    RunCmds.Runner(self.runCmdsDebug,self.options.interactive, self.logfnm, self.options.keepGoing).doit(cmdDescVecRef)
     sys.exit(0);
 
 def main():
@@ -95,11 +102,14 @@ def main():
       return -1
   usage = '%prog [options]\n\t get or update OpenAD repositories'
   opt = OptionParser(usage=usage)
+  opt.add_option('-f','--force',dest='force',
+                 help="do all actions, no confirmations (even when repositories are deleted), implies -k",
+                 action='store_true',default=False)
   opt.add_option('-i','--interactive',dest='interactive',
                  help="requires to confirm each command",
                  action='store_true',default=False)
   opt.add_option('-k','--keepGoing',dest='keepGoing',
-                 help="keep going despite errors, to be used particularly for working with Mercurial development repositories",
+                 help="keep going despite errors",
                  action='store_true',default=False)
   opt.add_option('-t','--tests',dest='tests',
                  help="include repositories for examples and test cases (requires Mercurial)",
@@ -107,9 +117,16 @@ def main():
   opt.add_option('-v','--verbose',dest='verbose',
                  help="extra output",
                  action='store_true',default=False)
+  opt.add_option('-d','--development',dest='development',
+                 help="only for developers!: adjust updates for Mercurial development repositories",
+                 action='store_true',default=False)
   (options, args) = opt.parse_args()
   if (options.verbose):
     sys.stdout.write("running for OPENADROOT="+os.environ["OPENADROOT"])
+  if (options.force):
+    options.keepGoing=True
+    if (options.interactive):
+      opt.error("options -f and -i are mutually exclusive")
   try: 
     os.chdir(os.environ["OPENADROOT"])
     cfgOldMtime=os.stat('openad_config.py').st_mtime
