@@ -198,7 +198,14 @@ class SVNRepository(Repository):
     if (urlString==''): 
       raise RepositoryException, "cannot find url for "+dir   
     if (urlRoot==''): 
-      raise RepositoryException, "cannot find url root for "+dir   
+      trunkIdx=urlString.find('/trunk')
+      tagsIdx=urlString.find('/tags')
+      if trunkIdx>0 :
+         urlRoot=urlString[:trunkIdx]
+      elif tagsIdx>0 :
+         urlRoot=urlString[:tagsIdx]
+      else:
+         raise RepositoryException, "cannot find url root for "+dir
     (localPath,localName)=os.path.split(dir)
     tag=urlString[len(urlRoot)+1:]
     if subDir:
