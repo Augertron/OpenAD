@@ -66,8 +66,11 @@ class Goad:
               if (not self.options.force and raw_input("The current repository will be deleted and a new repository will be created, continue? (y)/n: ")) == "n" :
                 sys.stdout.flush()
                 repo.update() # sets CmdDesc to update repository
-              else : 
-                cmdDescVecRef.append(RunCmds.CmdDesc("rm -rf "+os.path.join(repo.getLocalPath(),repo.getLocalName())))
+              else :
+		cmd=RunCmds.CmdDesc()
+		cmd.setCmd("rm -rf "+os.path.join(repo.getLocalPath(),repo.getLocalName()))
+		cmd.setDesc("removing "+os.path.join(repo.getLocalPath(),repo.getLocalName()))
+                cmdDescVecRef.append(cmd)
                 repo.checkout() # check out repository
         except (RunCmds.RunnerException), e:
           if self.options.keepGoing:
