@@ -92,11 +92,8 @@ class CVSRepository(Repository):
     rootString=rootFile.readline()
     rootFile.close()
     rsh=(rootString.split(':'))[1]
-    url=rootString
+    url=rootString.strip()
     (localPath,localName)=os.path.split(dir)
-    repoFile=open(os.path.join(dir,'CVS','Repository'))
-    repoString=repoFile.readline()
-    repoFile.close()
     tag=None
     if os.path.isfile(os.path.join(dir,'CVS','Tag')):
       tagFile=open(os.path.join(dir,'CVS','Tag'))
