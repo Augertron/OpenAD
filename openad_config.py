@@ -27,7 +27,7 @@ class openad_config:
   def __init__(self, includeTests=False):
     self.orderedRepoList=[] # we need something that is explicitly ordered
     riceSvnUrl = 'http://hpc.svn.rice.edu/r/'
-    self.skeletonRepo=Repository.SVNRepository(riceSvnUrl+'OpenAD/trunk',OpenADRoot,'.',None,None,None)
+    self.skeletonRepo=Repository.SVNRepository(riceSvnUrl+'OpenAD',OpenADRoot,'.',None,'trunk',None)
     self.orderedRepoList.append('skeletonRepo')
     self.OpenADRepos = {}
     # Open64
