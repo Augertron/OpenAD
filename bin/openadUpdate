@@ -58,12 +58,12 @@ class Goad:
               actRepo.update() # sets CmdDesc to update the actual repository
               repo=actRepo
             else:   
-              sys.stderr.write('WARNING: mismatched ')
+              sys.stderr.write('WARNING: for '+repo.getLocalName()+' mismatched ')
               if (str(actRepo.getUrl())!=str(repo.getUrl())) : 
-                sys.stderr.write('URL: \n\tcurrent: '+str(actRepo.getUrl())+'\n\tconfig : '+str(repo.getUrl())+'\n\t')
+                sys.stderr.write('URL: \n\tcurrent: '+str(actRepo.getUrl())+'\n\tconfig : '+str(repo.getUrl())+'\n')
               elif (actRepo.getTag()!=repo.getTag()) : 
-                sys.stderr.write('tag: \n\tcurrent: '+str(actRepo.getTag())+'\n\tconfig : '+str(repo.getTag())+'\n\t')
-              if (not self.options.force and raw_input("The current repository will be deleted and a new repository will be created, continue? (y)/n: ")) == "n" :
+                sys.stderr.write('tag: \n\tcurrent: '+str(actRepo.getTag())+'\n\tconfig : '+str(repo.getTag())+'\n')
+              if (not self.options.force and raw_input("\tThe current repository will be deleted and a new repository will be created, continue? (y)/n: ")) == "n" :
                 sys.stdout.flush()
                 repo.update() # sets CmdDesc to update repository
               else :

@@ -289,7 +289,7 @@ class MercurialRepository(Repository):
     infoFile.close()
     os.remove(fName)
     if (infoString[:len(headAttribute)]!=headAttribute):
-        raise RepositoryException, "cannot find url for "+rep   
+        raise RepositoryException, "cannot find url for "+ dir  
     url=infoString[len(headAttribute):].strip()
     (localPath,localName)=os.path.split(dir)
     return MercurialRepository(url,localPath,localName,None,None,None)
