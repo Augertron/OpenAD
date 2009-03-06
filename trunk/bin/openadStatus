@@ -6,6 +6,7 @@ if (not os.environ.has_key("OPENADROOT")):
   sys.stderr.write("ERROR: no OPENADROOT environment variable set, please use the setenv scripts and refer to the manual for details.\n")
   sys.exit(-1)
 sys.path.append(os.environ["OPENADROOT"])
+import openadConfig
 sys.path.append(os.path.join(os.environ["OPENADROOT"],"tools","libpythontk"))
 import Repository
 
@@ -43,7 +44,7 @@ def inOut(repo, writeable):
 
 def main():
   from optparse import OptionParser
-  usage = '%prog [options]\n\tdisplays OpenAD repository status\n\tKind:   hg, svn or cvs\n\tR/W:    R=read-only, W=writeable\n\tLocal:  C=locally changed or locally pending updates (hg only) \n\tRemote: O=outgoing changes , I=incoming changes'
+  usage = '%prog [options]\n\tdisplays OpenAD repository status\n\tKind:   hg, svn or cvs\n\tR/W:    R=read-only, W=writeable\n\tLocal:  C=locally changed or locally pending updates (hg only) \n\tRemote: O=outgoing changes , I=incoming changes\n\tA \'?\' is shown when the network/server takes too long.'
   opt = OptionParser(usage=usage)
   opt.add_option('-l','--localTag',dest='localTag',
                  help="inlcude the local revision tag where applicable (implies -t)",
@@ -64,11 +65,17 @@ def main():
   if (options.verbose):
       sys.stdout.write("running for OPENADROOT="+os.environ["OPENADROOT"]+"\n")
   try:
-      os.chdir(os.environ["OPENADROOT"])
-      allRepList=['../OpenAD','Regression','Examples','OpenADFortTk','OpenADFortTk/Regression','OpenADFortTk/tools/SourceProcessing','OpenADFortTk/tools/SourceProcessing/Regression','OpenAnalysis','xaif','xaifBooster','angel','Open64','boost/boost','xercesc']
+      root=os.environ["OPENADROOT"]
+      os.chdir(root)
+      oaCfg=openadConfig.openadConfig(True,True)
+      repsDict=oaCfg.getRepos()
+      allRepList=[ (repsDict[k].getLocalRepoPath()[len(root)+1:] ) for k in oaCfg.orderedRepoList ] 
       repList=[]
       for i in allRepList:
           if (os.path.exists(i)):
+            if (i=='.'): # just to have something better in the output
+              repList.append(os.path.join('..','OpenAD'))
+            else:
               repList.append(i)
       maxNameLength=max([len(r) for r in repList])
       if (not options.tagsOnly):

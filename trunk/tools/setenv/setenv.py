@@ -10,7 +10,7 @@ import getopt
 mydir = os.path.dirname(__file__)
 OpenADRoot = os.path.abspath(os.path.join(mydir, "../.."))
 sys.path.append(OpenADRoot)
-import openad_config
+import openadConfig
 libsetenvdir = os.path.join(OpenADRoot, "tools/libpythontk")
 sys.path.append(libsetenvdir)
 import libsetenv
@@ -46,7 +46,7 @@ class setenv:
 
 # GenEnvSettings: Generate code to setup CVS repository variables
   def GenEnvSettings(self):
-    config=openad_config.openad_config()
+    config=openadConfig.openadConfig()
     OpenADRepos = config.getRepos()
     # BASE environment variables
     print self.libsetenv_instance.genSetEnvVar('OPENAD_BASE',OpenADRoot)
