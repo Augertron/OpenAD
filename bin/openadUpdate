@@ -8,16 +8,16 @@ if (not os.environ.has_key("OPENADROOT")):
   sys.stderr.write("ERROR: no OPENADROOT environment variable set, please use the setenv scripts and refer to the manual for details.\n")
   sys.exit(-1)
 sys.path.append(os.environ["OPENADROOT"])
-import openad_config
+import openadConfig
 sys.path.append(os.path.join(os.environ["OPENADROOT"],"tools","libpythontk"))
 import RunCmds
 import Repository
 
-class Goad:
+class OpenadUpdate:
   def __init__(self,options):
     dir = os.getcwd();
-    snm="goad."+time.strftime('%Y-%m-%d_%H:%M:%S', time.localtime())+".log~"
-    print "goad log: "+ snm
+    snm="openadUpdate."+time.strftime('%Y-%m-%d_%H:%M:%S', time.localtime())+".log~"
+    print "openadUpdate log: "+ snm
     self.logfnm = os.path.join(dir,snm)
     self.runCmdsDebug=1
     if options.verbose :
@@ -25,9 +25,8 @@ class Goad:
     self.options=options
 
   def Run(self):
-    oaCfg=openad_config.openad_config(self.options.tests)
-    repositories={'skeletonRepo':oaCfg.skeletonRepo}
-    repositories.update(openad_config.openad_config(self.options.tests).getRepos())
+    oaCfg=openadConfig.openadConfig(self.options.tests,self.options.extras,self.options.development)
+    repositories=oaCfg.getRepos()
     cmdDescVecRef = []
     for key in oaCfg.orderedRepoList:
       repo=repositories[key]
@@ -99,12 +98,12 @@ class Goad:
 
 def main():
   from optparse import OptionParser
-  cwd=os.getcwd()
-  if (os.path.basename(cwd) != 'OpenAD'):
-      opt.error('the current working directory has to the the OpenAD root directory')
-      return -1
+  os.chdir(os.environ["OPENADROOT"])
   usage = '%prog [options]\n\t get or update OpenAD repositories'
   opt = OptionParser(usage=usage)
+  opt.add_option('-e','--extras',dest='extras',
+                 help="include repositories for revolve and examples referenced in the User Manual (requires Mercurial)",
+                 action='store_true',default=False)
   opt.add_option('-f','--force',dest='force',
                  help="do all actions, no confirmations (even when repositories are deleted), implies -k",
                  action='store_true',default=False)
@@ -115,7 +114,7 @@ def main():
                  help="keep going despite errors",
                  action='store_true',default=False)
   opt.add_option('-t','--tests',dest='tests',
-                 help="include repositories for examples and test cases (requires Mercurial)",
+                 help="include repositories for test cases (requires Mercurial)",
                  action='store_true',default=False)
   opt.add_option('-v','--verbose',dest='verbose',
                  help="extra output",
@@ -132,13 +131,13 @@ def main():
       opt.error("options -f and -i are mutually exclusive")
   try: 
     os.chdir(os.environ["OPENADROOT"])
-    cfgOldMtime=os.stat('openad_config.py').st_mtime
-    goad = Goad(options)
-    goad.Run()
-    if (cfgOldMtime!=os.stat('openad_config.py').st_mtime):
+    cfgOldMtime=os.stat('openadConfig.py').st_mtime
+    oadU = OpenadUpdate(options)
+    oadU.Run()
+    if (cfgOldMtime!=os.stat('openadConfig.py').st_mtime):
       sys.stderr.write('NOTE: the update changed the repository configuration, rerunning the update.\n')
-      goad = Goad(options)
-      goad.Run()
+      oadU = OpenadUpdate(options)
+      oadU.Run()
   except (Repository.RepositoryException, RunCmds.RunnerException), e:
     sys.stderr.write('ERROR: '+str(e)+'\n')
     opt.print_help()

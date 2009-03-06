@@ -18,10 +18,12 @@ module OAD_cp
 
   interface cp_write_open
      module procedure write_open_i
+     module procedure write_openX_i
   end interface
 
   interface cp_read_open
      module procedure read_open_i
+     module procedure read_openX_i
   end interface
 
   interface cp_close
@@ -45,9 +47,23 @@ contains
     cp_file_number=cp_file_number+1
   end subroutine 
 
+  subroutine write_openX_i(X)
+    implicit none
+    integer X
+    cp_file_number=X
+    call cp_open()
+  end subroutine 
+
   subroutine read_open_i()
     implicit none
     cp_file_number=cp_file_number-1
+    call cp_open()
+  end subroutine 
+
+  subroutine read_openX_i(X)
+    implicit none
+    integer X
+    cp_file_number=X
     call cp_open()
   end subroutine 
 
