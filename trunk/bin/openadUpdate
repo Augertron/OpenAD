@@ -53,15 +53,15 @@ class OpenadUpdate:
               if (actRepo.getUrl()!=repo.getUrl()
                   or
                   actRepo.getTag()!=repo.getTag()):
-                sys.stderr.write('NOTE: development repo URL '+actRepo.getUrl()+' for '+actRepo.getLocalRepoPath()+'\n')
+                sys.stdout.write('NOTE: development repo URL '+actRepo.getUrl()+' for '+actRepo.getLocalRepoPath()+'\n')
               actRepo.update() # sets CmdDesc to update the actual repository
               repo=actRepo
             else:   
-              sys.stderr.write('WARNING: for '+repo.getLocalName()+' mismatched ')
+              sys.stdout.write('WARNING: for '+repo.getLocalName()+' mismatched ')
               if (str(actRepo.getUrl())!=str(repo.getUrl())) : 
-                sys.stderr.write('URL: \n\tcurrent: '+str(actRepo.getUrl())+'\n\tconfig : '+str(repo.getUrl())+'\n')
+                sys.stdout.write('URL: \n\tcurrent: '+str(actRepo.getUrl())+'\n\tconfig : '+str(repo.getUrl())+'\n')
               elif (actRepo.getTag()!=repo.getTag()) : 
-                sys.stderr.write('tag: \n\tcurrent: '+str(actRepo.getTag())+'\n\tconfig : '+str(repo.getTag())+'\n')
+                sys.stdout.write('tag: \n\tcurrent: '+str(actRepo.getTag())+'\n\tconfig : '+str(repo.getTag())+'\n')
               if (not self.options.force and raw_input("\tThe current repository will be deleted and a new repository will be created, continue? (y)/n: ")) == "n" :
                 sys.stdout.flush()
                 repo.update() # sets CmdDesc to update repository
@@ -135,7 +135,7 @@ def main():
     oadU = OpenadUpdate(options)
     oadU.Run()
     if (cfgOldMtime!=os.stat('openadConfig.py').st_mtime):
-      sys.stderr.write('NOTE: the update changed the repository configuration, rerunning the update.\n')
+      sys.stdout.write('NOTE: the update changed the repository configuration, rerunning the update.\n')
       oadU = OpenadUpdate(options)
       oadU.Run()
   except (Repository.RepositoryException, RunCmds.RunnerException), e:
