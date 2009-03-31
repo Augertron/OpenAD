@@ -58,6 +58,9 @@ def main():
   opt.add_option('-v','--verbose',dest='verbose',
                  help="extra output",
                  action='store_true',default=False)
+  opt.add_option('-d','--development',dest='development',
+                 help="only for developers!: consider SourceProcessing as a separate repository",
+                 action='store_true',default=False)
   (options, args) = opt.parse_args()
   if (options.localTag):
       options.tagsOnly=True
@@ -67,7 +70,7 @@ def main():
   try:
       root=os.environ["OPENADROOT"]
       os.chdir(root)
-      oaCfg=openadConfig.openadConfig(True,True)
+      oaCfg=openadConfig.openadConfig(True,True,options.development)
       repsDict=oaCfg.getRepos()
       allRepList=[ (repsDict[k].getLocalRepoPath()[len(root)+1:] ) for k in oaCfg.orderedRepoList ] 
       repList=[]
