@@ -44,7 +44,7 @@ def inOut(repo, writeable):
 
 def main():
   from optparse import OptionParser
-  usage = '%prog [options]\n\tdisplays OpenAD repository status\n\tKind:   hg, svn or cvs\n\tR/W:    R=read-only, W=writeable\n\tLocal:  C=locally changed or locally pending updates (hg only) \n\tRemote: O=outgoing changes , I=incoming changes\n\tA \'?\' is shown when the network/server takes too long.'
+  usage = '%prog [options]\n\tdisplays OpenAD repository status\n\tKind:   hg, svn or cvs\n\tR/W:    R=read-only, W=writeable, L=symbolic link\n\tLocal:  C=locally changed or locally pending updates (hg only) \n\tRemote: O=outgoing changes , I=incoming changes\n\tA \'?\' is shown when the network/server takes too long.'
   opt = OptionParser(usage=usage)
   opt.add_option('-l','--localTag',dest='localTag',
                  help="inlcude the local revision tag where applicable (implies -t)",
@@ -98,18 +98,25 @@ def main():
           else:
               sys.stdout.write('%s|%4s|' % (patchedName,repo.kind()))
               sys.stdout.flush()
+              # read/write/link?
+              rwlString=' '
               if repo.writeable():
-                  sys.stdout.write(' W |')
-                  sys.stdout.flush()
-                  if (not options.quick):
-                      changed(repo)
-                      inOut(repo, True)
+                rwlString+='W'
               else:
-                  sys.stdout.write(' R |')
-                  sys.stdout.flush()
-                  if (not options.quick):
-                      sys.stdout.write('    |')
-                      inOut(repo, False)
+                rwlString+='R'
+              if (os.path.islink(i)):
+                rwlString+='L'
+              else:  
+                rwlString+=' '
+              sys.stdout.write(rwlString+'|')
+              sys.stdout.flush()
+              if (not options.quick):
+                if repo.writeable():
+                  changed(repo)
+                  inOut(repo, True)
+                else:
+                  sys.stdout.write('    |')
+                  inOut(repo, False)
               sys.stdout.write('%s\n' % repo.getUrl().strip())
           sys.stdout.flush()
           os.chdir(os.environ["OPENADROOT"])

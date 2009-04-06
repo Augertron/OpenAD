@@ -102,6 +102,7 @@ class openadConfig:
        'whirl2xaif':os.path.join(os.environ['OPENADFORTTKROOT'],'bin','whirl2xaif'),
        'xaif2whirl':os.path.join(os.environ['OPENADFORTTKROOT'],'bin','xaif2whirl'),
        'whirl2sexp':os.path.join(os.environ['OPENADFORTTKROOT'],'bin','whirl2sexp'),
+       'sexp2whirl':os.path.join(os.environ['OPENADFORTTKROOT'],'bin','sexp2whirl'),
        'whirl2f90':os.path.join(os.environ['OPEN64ROOT'],'whirl2f','whirl2f90'),
        'ir_b2a':os.path.join(os.environ['OPEN64ROOT'],'ir_tools','ir_b2a'),
        'ir_size':os.path.join(os.environ['OPEN64ROOT'],'ir_tools','ir_size')}

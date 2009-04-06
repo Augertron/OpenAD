@@ -214,7 +214,7 @@ C $OpenAD$ INLINE DECLS
           type(active), intent(in) :: x
           type(active), intent(inout) :: y
 C $OpenAD$ END DECLS
-          y%d=y%d+x%d*a
+          y%d=y%d+x%d*(a)
         end subroutine
 
 
