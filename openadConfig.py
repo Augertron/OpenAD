@@ -47,6 +47,9 @@ class openadConfig:
     name="boost";         self.orderedRepoList.append(name)
     self.OpenADRepos[name]=Repository.SVNRepository('http://svn.boost.org/svn/boost',OpenADRoot,name,'boost','tags/release/Boost_1_38_0','BOOST_BASE')
     ANLMercurialUrl = 'http://mercurial.mcs.anl.gov//ad/'
+    if includeDev:
+      name="SourceProcessing"; self.orderedRepoList.append(name)
+      self.OpenADRepos[name]=Repository.MercurialRepository(ANLMercurialUrl+name,os.path.join(OpenADRoot,'OpenADFortTk','tools'),name,None,None,None)
     if includeTests:
       name="RegressionOpenAD"; self.orderedRepoList.append(name)
       self.OpenADRepos[name]=Repository.MercurialRepository(ANLMercurialUrl+name,OpenADRoot,'Regression',None,None,None)
@@ -59,9 +62,6 @@ class openadConfig:
       self.OpenADRepos[name]=Repository.MercurialRepository(ANLMercurialUrl+name,OpenADRoot,name,None,None,None)
       name="Examples"; self.orderedRepoList.append(name)
       self.OpenADRepos[name]=Repository.MercurialRepository(ANLMercurialUrl+'OpenADExamples',OpenADRoot,name,None,None,None)
-    if includeDev:
-      name="SourceProcessing"; self.orderedRepoList.append(name)
-      self.OpenADRepos[name]=Repository.MercurialRepository(ANLMercurialUrl+name,os.path.join(OpenADRoot,'OpenADFortTk','tools'),name,None,None,None)
 
     self.setPythonOpenADEnvVars()
     
