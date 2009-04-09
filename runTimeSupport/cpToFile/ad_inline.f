@@ -99,7 +99,9 @@ C $OpenAD$ END DECLS
       oad_st_ptr=oad_st_ptr-1
       x=oad_st(oad_st_ptr)
       end subroutine
-      
+
+C ----------------------- Propagation -----------------------
+
       subroutine saxpy(a,x,y)
 C $OpenAD$ INLINE DECLS
       double precision, intent(in) :: a
@@ -130,17 +132,6 @@ C $OpenAD$ INLINE DECLS
       type(active), intent(in) :: y
 C $OpenAD$ END DECLS
       x%d=x%d+y%d
-      end subroutine
-
-      subroutine condinczeroderiv(y,x)
-C $OpenAD$ INLINE DECLS
-      type(active), intent(out) :: x
-      type(active), intent(in) :: y
-C $OpenAD$ END DECLS
-      if (iaddr(y).ne.iaddr(x)) then
-         x%d=x%d+y%d
-         y%d=0
-      end if
       end subroutine
 
 C Checkpointing stuff ---------------------------------------
