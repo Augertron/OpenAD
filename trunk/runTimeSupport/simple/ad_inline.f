@@ -244,6 +244,14 @@ C $OpenAD$ END DECLS
           x%d=x%d+y%d
         end subroutine
 
+        subroutine decderiv(y,x)
+C $OpenAD$ INLINE DECLS
+          type(active), intent(out) :: x
+          type(active), intent(in) :: y
+C $OpenAD$ END DECLS
+          x%d = x%d - y%d
+        end subroutine decderiv
+
 C Checkpointing stuff ---------------------------------------
 
 C active reals ----------------------------------------------

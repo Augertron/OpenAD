@@ -56,7 +56,8 @@
         use w2f__types
         implicit none
         private
-        public :: active, saxpy, sax, setderiv, zero_deriv, &
+        public :: active, saxpy, sax, zero_deriv, &
+setderiv, set_neg_deriv, inc_deriv, dec_deriv, &
 convert_p2a_scalar, convert_a2p_scalar, &
 convert_p2a_vector, convert_a2p_vector, & 
 convert_p2a_matrix, convert_a2p_matrix, & 
@@ -84,17 +85,32 @@ oad_allocateMatching
         end type active
 
         interface saxpy
-          module procedure saxpy_a_a, saxpy_i4_a_a, saxpy_i8_a_a
+          module procedure saxpy_d_a_a, saxpy_i4_a_a, saxpy_i8_a_a
         end interface
         
         interface sax
-          module procedure sax_d_a_a, sax_i_a_a
+          module procedure sax_d_a_a, sax_i8_a_a
         end interface
 
         interface setderiv
           module procedure setderiv_a_a
           module procedure setderiv_av_av
         end interface
+
+        interface set_neg_deriv
+          module procedure set_neg_deriv_a_a
+          module procedure set_neg_deriv_av_av
+        end interface set_neg_deriv
+
+        interface inc_deriv
+          module procedure inc_deriv_a_a
+          module procedure inc_deriv_av_av
+        end interface inc_deriv
+
+        interface dec_deriv
+          module procedure dec_deriv_a_a
+          module procedure dec_deriv_av_av
+        end interface dec_deriv
 
         interface zero_deriv
           module procedure zero_deriv_a
@@ -182,14 +198,14 @@ oad_allocateMatching
         ! chain rule saxpy to be used in forward and reverse modes
         !
         
-        subroutine saxpy_a_a(a,x,y)
+        subroutine saxpy_d_a_a(a,x,y)
           real(w2f__8), intent(in) :: a
           type(active), intent(in) :: x
           type(active), intent(inout) :: y
           integer :: i
           !do i=1,y%n
           do i=1,max_deriv_vec_len
-            y%d(i) = y%d(i)+x%d(i)*a
+            y%d(i) = y%d(i) + x%d(i)*a
           end do
         end subroutine saxpy_a_a
 
@@ -199,7 +215,7 @@ oad_allocateMatching
           type(active), intent(inout) :: y
           integer :: i
           do i=1,max_deriv_vec_len
-            y%d(i) = y%d(i)+x%d(i)*a
+            y%d(i) = y%d(i) + x%d(i)*a
           end do
         end subroutine saxpy_i4_a_a
         
@@ -209,7 +225,7 @@ oad_allocateMatching
           type(active), intent(inout) :: y
           integer :: i
           do i=1,max_deriv_vec_len
-            y%d(i) = y%d(i)+x%d(i)*a
+            y%d(i) = y%d(i) + x%d(i)*a
           end do
         end subroutine saxpy_i8_a_a
 
@@ -230,7 +246,7 @@ oad_allocateMatching
           end do
         end subroutine sax_d_a_a
 
-        subroutine sax_i_a_a(a,x,y)
+        subroutine sax_i8_a_a(a,x,y)
           integer(kind=w2f__i8), intent(in) :: a
           type(active), intent(in) :: x
           type(active), intent(inout) :: y
@@ -263,6 +279,78 @@ oad_allocateMatching
             y%d(i) = x%d(i)
           end do
         end subroutine setderiv_av_av
+
+        !
+        ! set the derivative of y to be the negated derivative of x
+        ! note: making y inout allows for already existing active
+        ! variables to become the target of a derivative assignment
+        !
+        
+        subroutine set_neg_deriv_a_a(y,x)
+          type(active), intent(inout) :: y
+          type(active), intent(in) :: x
+          integer :: i
+          do i=1,max_deriv_vec_len
+            y%d(i) = -x%d(i)
+          end do
+        end subroutine set_neg_deriv_a_a
+
+        subroutine set_neg_deriv_av_av(y,x)
+          type(active), intent(inout), dimension(:) :: y
+          type(active), intent(in), dimension(:) :: x
+          integer :: i
+          do i=1,max_deriv_vec_len
+            y%d(i) = -x%d(i)
+          end do
+        end subroutine set_neg_deriv_av_av
+
+        !
+        ! increment the derivative of y by the derivative of x
+        ! note: making y inout allows for already existing active
+        ! variables to become the target of a derivative assignment
+        !
+        
+        subroutine inc_deriv_a_a(y,x)
+          type(active), intent(inout) :: y
+          type(active), intent(in) :: x
+          integer :: i
+          do i = 1,max_deriv_vec_len
+            y%d(i) = y%d(i) + x%d(i)
+          end do
+        end subroutine inc_deriv_a_a
+
+        subroutine inc_deriv_av_av(y,x)
+          type(active), intent(inout), dimension(:) :: y
+          type(active), intent(in), dimension(:) :: x
+          integer :: i
+          do i = 1,max_deriv_vec_len
+            y%d(i) = y%d(i) + x%d(i)
+          end do
+        end subroutine inc_deriv_av_av
+
+        !
+        ! decrement the derivative of y by the derivative of x
+        ! note: making y inout allows for already existing active
+        ! variables to become the target of a derivative assignment
+        !
+        
+        subroutine dec_deriv_a_a(y,x)
+          type(active), intent(inout) :: y
+          type(active), intent(in) :: x
+          integer :: i
+          do i = 1,max_deriv_vec_len
+            y%d(i) = y%d(i) - x%d(i)
+          end do
+        end subroutine dec_deriv_a_a
+
+        subroutine dec_deriv_av_av(y,x)
+          type(active), intent(inout), dimension(:) :: y
+          type(active), intent(in), dimension(:) :: x
+          integer :: i
+          do i = 1,max_deriv_vec_len
+            y%d(i) = y%d(i) - x%d(i)
+          end do
+        end subroutine dec_deriv_av_av
 
         !
         ! set derivative components to 0.0
