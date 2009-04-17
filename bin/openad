@@ -188,12 +188,15 @@ class RunOpenAD:
     def postProcess(self):
         ppOpt=""
         if self.options.mode=='f':
-            ppOpt+="-f "
+          ppOpt+="-m f "
+        else:
+          ppOpt+="-m r "
         aCmdDesc=RunCmds.CmdDesc()
-        aCmdDesc.setCmd("perl "+os.path.join(os.environ['OPENADFORTTKROOT'],
-                                             'bin',
-                                             'multi-pp.pl')+
-                        " "+ppOpt+self.baseName+".xb.x2w.w2f.f")
+        aCmdDesc.setCmd(os.path.join(os.environ['OPENADFORTTK_BASE'],
+                                     'tools',
+                                     'SourceProcessing',
+                                     'postProcess.py')+
+                        " "+ppOpt+"-o "+self.baseName+".xb.x2w.w2f.pp.f "+self.baseName+".xb.x2w.w2f.f")
         aCmdDesc.setDesc("postprocessing transformed fortran")
         self.commandDescriptions.append(aCmdDesc)
         
