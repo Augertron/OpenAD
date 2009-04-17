@@ -105,7 +105,9 @@ class openadConfig:
        'sexp2whirl':os.path.join(os.environ['OPENADFORTTKROOT'],'bin','sexp2whirl'),
        'whirl2f90':os.path.join(os.environ['OPEN64ROOT'],'whirl2f','whirl2f90'),
        'ir_b2a':os.path.join(os.environ['OPEN64ROOT'],'ir_tools','ir_b2a'),
-       'ir_size':os.path.join(os.environ['OPEN64ROOT'],'ir_tools','ir_size')}
+       'ir_size':os.path.join(os.environ['OPEN64ROOT'],'ir_tools','ir_size'),
+       'preProcess.py':os.path.join(os.environ['OPENADFORTTK_BASE'],'tools','SourceProcessing','preProcess.py'),
+       'postProcess.py':os.path.join(os.environ['OPENADFORTTK_BASE'],'tools','SourceProcessing','postProcess.py')}
 
 
     # set OpenAD environment variables in python environment (called in __init__)
