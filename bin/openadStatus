@@ -22,12 +22,17 @@ def changed(repo):
     	sys.stdout.write('  ? |')
         sys.stdout.flush()
         return
+    sys.stdout.write(' ')
     if repo.locallyModified() :
-        sys.stdout.write('  C |')
-        sys.stdout.flush()
+        sys.stdout.write('C')
     else:
-        sys.stdout.write('    |')
-        sys.stdout.flush()
+        sys.stdout.write(' ')
+    if repo.pendingUpdate() :
+        sys.stdout.write('U')
+    else:
+        sys.stdout.write(' ')
+    sys.stdout.write(' |')
+    sys.stdout.flush()
 
 def inOut(repo, writeable):
     if (not netAvail()) :
@@ -44,7 +49,7 @@ def inOut(repo, writeable):
 
 def main():
   from optparse import OptionParser
-  usage = '%prog [options]\n\tdisplays OpenAD repository status\n\tKind:   hg, svn or cvs\n\tR/W:    R=read-only, W=writeable, L=symbolic link\n\tLocal:  C=locally changed or locally pending updates (hg only) \n\tRemote: O=outgoing changes , I=incoming changes\n\tA \'?\' is shown when the network/server takes too long.'
+  usage = '%prog [options]\n\tdisplays OpenAD repository status\n\tKind:   hg, svn or cvs\n\tR/W:    R=read-only, W=writeable, L=symbolic link\n\tLocal:  C=locally changed , U=locally pending updates (hg only) \n\tRemote: O=outgoing changes , I=incoming changes\n\tA \'?\' is shown when the network/server takes too long.'
   opt = OptionParser(usage=usage)
   opt.add_option('-l','--localTag',dest='localTag',
                  help="inlcude the local revision tag where applicable (implies -t)",
