@@ -44,6 +44,12 @@ class Repository:
   def repoExists(self):
     return os.path.exists(self.getLocalRepoPath())
   
+  def locallyModified(self):
+    return False
+
+  def pendingUpdate(self):
+    return False
+
 class NoRepository(Repository):
   
   @staticmethod
@@ -67,9 +73,6 @@ class NoRepository(Repository):
     return 'n/a'
   
   def writeable(self):
-    return False
-
-  def locallyModified(self):
     return False
 
   def incoming(self):
@@ -309,15 +312,7 @@ class MercurialRepository(Repository):
     os.system('cd '+self.getLocalRepoPath()+'; hg status > '+fName)
     changes=(os.stat(fName)[6]>0)
     os.remove(fName)
-    # tip
-    fName=tempfile.mktemp()
-    os.system('cd '+self.getLocalRepoPath()+'; hg  tip  --template \'{node|short}\\n\' > '+fName)
-    infoFile=open(fName)
-    tip=infoFile.readlines()[0].strip()
-    infoFile.close()
-    os.remove(fName)
-    id=self.getVersionTag()
-    return (changes or tip != id)
+    return (changes)
 
   def incoming(self):
     fName=tempfile.mktemp()
@@ -369,6 +364,18 @@ class MercurialRepository(Repository):
     self.cmdDesc.setCmd(cmd)
     self.cmdDesc.setDesc(desc)
 
+  def pendingUpdate(self):
+    # tip
+    fName=tempfile.mktemp()
+    os.system('cd '+self.getLocalRepoPath()+'; hg  tip  --template \'{node|short}\\n\' > '+fName)
+    infoFile=open(fName)
+    tip=infoFile.readlines()[0].strip()
+    infoFile.close()
+    os.remove(fName)
+    id=self.getVersionTag()
+    if id[-1]=='+':
+      id=id[:-1]
+    return (tip != id)
 
 class Detect:
 
