@@ -182,7 +182,7 @@ contains
     use OAD_rev
     implicit none
     fileNumber=1
-    call mode_init() ! this comes from OAD_rev
+    call OAD_revInit() ! this comes from OAD_rev
   end subroutine
 
   subroutine oad_trace_open_i()

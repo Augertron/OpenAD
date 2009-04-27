@@ -191,6 +191,8 @@ class RunOpenAD:
           ppOpt+="-m f "
         else:
           ppOpt+="-m r "
+        if self.options.mode=='t': 
+          ppOpt+="--noInline "
         aCmdDesc=RunCmds.CmdDesc()
         aCmdDesc.setCmd(os.path.join(os.environ['OPENADFORTTK_BASE'],
                                      'tools',
