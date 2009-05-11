@@ -27,26 +27,41 @@ class openadConfig:
   def __init__(self, includeTests=False, includeExtras=False, includeDev=False):
     self.orderedRepoList=[] # we need something that is explicitly ordered
     riceSvnUrl = 'http://hpc.svn.rice.edu/r/'
+    ANLMercurialUrl = 'http://mercurial.mcs.anl.gov//ad/'
     self.OpenADRepos = {}
     name="OpenAD";        self.orderedRepoList.append(name)
     self.OpenADRepos[name]=Repository.SVNRepository(riceSvnUrl+name,OpenADRoot,'.',None,'trunk',None)
     name="Open64";        self.orderedRepoList.append(name)
     self.OpenADRepos[name]=Repository.SVNRepository(riceSvnUrl+'open64',OpenADRoot,name,None,'tags/version-openad',"OPEN64_BASE")
     name="OpenADFortTk";  self.orderedRepoList.append(name)
-    self.OpenADRepos[name]=Repository.SVNRepository(riceSvnUrl+name,OpenADRoot,name,None,'trunk','OPENADFORTTK_BASE')  
+    if includeDev:
+      self.OpenADRepos[name]=Repository.MercurialRepository(ANLMercurialUrl+name,OpenADRoot,name,None,None,'OPENADFORTTK_BASE')
+    else:
+      self.OpenADRepos[name]=Repository.SVNRepository(riceSvnUrl+name,OpenADRoot,name,None,'trunk','OPENADFORTTK_BASE')  
     name="OpenAnalysis";  self.orderedRepoList.append(name)
-    self.OpenADRepos[name]=Repository.SVNRepository(riceSvnUrl+'open-analysis',OpenADRoot,name,None,'tags/version-openad','OPENANALYSIS_BASE')
+    if includeDev:
+      self.OpenADRepos[name]=Repository.MercurialRepository(ANLMercurialUrl+name,OpenADRoot,name,None,None,'OPENANALYSIS_BASE')
+    else:
+      self.OpenADRepos[name]=Repository.SVNRepository(riceSvnUrl+'open-analysis',OpenADRoot,name,None,'tags/version-openad','OPENANALYSIS_BASE')
     name="xercesc";       self.orderedRepoList.append(name)
     self.OpenADRepos[name]=Repository.SVNRepository(riceSvnUrl+name,OpenADRoot,name,None,'tags/version-openad','XERCESC_BASE')
     name="xaifBooster";   self.orderedRepoList.append(name)
-    self.OpenADRepos[name]=Repository.SVNRepository(riceSvnUrl+name,OpenADRoot,name,None,'trunk','XAIFBOOSTER_BASE')
+    if includeDev:
+      self.OpenADRepos[name]=Repository.MercurialRepository(ANLMercurialUrl+name,OpenADRoot,name,None,None,'XAIFBOOSTER_BASE')
+    else:
+      self.OpenADRepos[name]=Repository.SVNRepository(riceSvnUrl+name,OpenADRoot,name,None,'trunk','XAIFBOOSTER_BASE')
     name="xaif";          self.orderedRepoList.append(name)
-    self.OpenADRepos[name]=Repository.SVNRepository(riceSvnUrl+name,OpenADRoot,name,None,'trunk','XAIFSCHEMA_BASE')
+    if includeDev:
+      self.OpenADRepos[name]=Repository.MercurialRepository(ANLMercurialUrl+name,OpenADRoot,name,None,None,'XAIFSCHEMA_BASE')
+    else:
+      self.OpenADRepos[name]=Repository.SVNRepository(riceSvnUrl+name,OpenADRoot,name,None,'trunk','XAIFSCHEMA_BASE')
     name="angel";         self.orderedRepoList.append(name)
-    self.OpenADRepos[name]=Repository.CVSRepository('pserver',':pserver:anonymous@angellib.cvs.sourceforge.net:/cvsroot/angellib',OpenADRoot,name,None,None,'ANGEL_BASE')
+    if includeDev:
+      self.OpenADRepos[name]=Repository.MercurialRepository(ANLMercurialUrl+name,OpenADRoot,name,None,None,'ANGEL_BASE')
+    else:
+      self.OpenADRepos[name]=Repository.CVSRepository('pserver',':pserver:anonymous@angellib.cvs.sourceforge.net:/cvsroot/angellib',OpenADRoot,name,None,None,'ANGEL_BASE')
     name="boost";         self.orderedRepoList.append(name)
     self.OpenADRepos[name]=Repository.SVNRepository('http://svn.boost.org/svn/boost',OpenADRoot,name,'boost','tags/release/Boost_1_38_0','BOOST_BASE')
-    ANLMercurialUrl = 'http://mercurial.mcs.anl.gov//ad/'
     if includeDev:
       name="SourceProcessing"; self.orderedRepoList.append(name)
       self.OpenADRepos[name]=Repository.MercurialRepository(ANLMercurialUrl+name,os.path.join(OpenADRoot,'OpenADFortTk','tools'),name,None,None,None)
