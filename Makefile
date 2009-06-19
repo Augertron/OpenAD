@@ -1,12 +1,9 @@
-# $Header: /Volumes/cvsrep/developer/OpenAD/Makefile,v 1.13 2007/04/11 13:28:12 utke Exp $
-
 SHELL = /bin/sh
 WD := $(shell pwd)
 
 PLATFORM := $(shell cd $(WD)/config; ./hpcplatform)
 ifeq ($(PLATFORM),)
-  $(error "Unknown/unsupported platform") # unavailable in older gmakes
-  error "Unknown/unsupported platform"    # will certainly cause an error
+  $(error "Unknown/unsupported platform")
 endif
 
 # xercesc platform
@@ -51,18 +48,33 @@ all: configure build
 configure: 
 	@echo "*** Configuring (doing nothing) ***"
 
-build: open64_build oa_build xercesc_build openadforttk_build \
-	angel_build xaifBooster_build
+build: \
+build_Open64 \
+build_OpenAnalysis \
+build_xercesc \
+build_OpenADFortTk \
+build_angel \
+build_xaifBooster
 
 # clean build files only
-clean: open64_clean oa_clean xercesc_clean openadforttk_clean \
-	angel_clean xaifBooster_clean
+clean: \
+clean_Open64 \
+clean_OpenAnalysis \
+clean_xercesc \
+clean_OpenADFortTk \
+clean_angel \
+clean_xaifBooster
 
 # clean everything
-veryclean: open64_veryclean oa_veryclean xercesc_veryclean \
-	openadforttk_veryclean angel_veryclean xaifBooster_veryclean
+veryclean: \
+veryclean_Open64 \
+veryclean_OpenAnalysis \
+veryclean_xercesc \
+veryclean_OpenADFortTk \
+veryclean_angel \
+veryclean_xaifBooster
 
-.PHONY : configure build clean
+.PHONY : configure build clean veryclean
 
 #############################################################################
 
@@ -70,33 +82,31 @@ ifndef OPEN64ROOT
   $(error "Error: OPEN64ROOT not set!")
 endif 
 
-open64_build: open64_fe_build open64_be_build open64_tools_build
+build_Open64: build_Open64_fe build_Open64_be build_Open64_tools
 
-open64_fe_build: 
+build_Open64_fe: 
 	cd $(OPEN64ROOT)/crayf90/sgi && $(MAKE) 
 
-open64_be_build: 
+build_Open64_be: 
 	cd $(OPEN64ROOT)/whirl2f && $(MAKE)
 
-open64_tools_build: 
+build_Open64_tools: 
 	cd $(OPEN64ROOT)/ir_tools && $(MAKE)
 
 
-open64_clean: 
+clean_Open64: 
 	cd $(OPEN64ROOT) && $(MAKE) clean 
 
-open64_veryclean: 
+veryclean_Open64: 
 	cd $(OPEN64ROOT) && $(MAKE) clobber 
 
-.PHONY : open64_build open64_fe_build open64_be_build open64_tools_build open64_clean open64_veryclean 
+.PHONY : build_Open64 build_Open64_fe build_Open64_be build_Open64_tools clean_Open64 veryclean_Open64 
 
 ############################################################
 
-# FIXME: make a rebuild target for OA and Xercesc Makefiles
-# FIXME: reinstalling this stuff will cause exes like xaifBooster to relink!
 OA_OPT = -f Makefile.quick CXX="$(CXX)"
 
-oa_build:
+build_OpenAnalysis:
 	@if [ -d $(OPENANALYSIS_BASE) ]; then \
 	  echo "*** Building OA ***" ; \
 	  if [ -d $(OPENANALYSIS_BASE)/build-$(PLATFORM) ]; then \
@@ -108,7 +118,7 @@ oa_build:
 	  echo "*** Building OA -- NON-EXISTENT ***" ; \
 	fi
 
-oa_clean:
+clean_OpenAnalysis:
 	@if [ -d $(OPENANALYSIS_BASE) ]; then \
 	  echo "*** Cleaning OA ***" ; \
 	  cd $(OPENANALYSIS_BASE) && $(MAKE) $(OA_OPT) clean ; \
@@ -116,15 +126,15 @@ oa_clean:
 	  echo "*** Cleaning OA -- NON-EXISTENT ***" ; \
 	fi
 
-oa_veryclean: oa_clean
+veryclean_OpenAnalysis: clean_OpenAnalysis
 
-.PHONY : oa_build oa_clean oa_veryclean 
+.PHONY : build_OpenAnalysis clean_OpenAnalysis veryclean_OpenAnalysis 
 
 ############################################################
 
 XERCESC_OPT = CXX="$(CXX)" CC="$(CC)"
 
-xercesc_build:
+build_xercesc:
 	@if [ -d $(XERCESC_BASE) ]; then \
 	  echo "*** Building xercesc ***" ; \
 	  if [ -d $(XERCESC_BASE)/xerces-c-src/obj/$(XERCESPLATFORM) ]; then \
@@ -136,7 +146,7 @@ xercesc_build:
 	  echo "*** Building xercesc -- NON-EXISTENT ***" ; \
 	fi
 
-xercesc_clean:
+clean_xercesc:
 	@if [ -d $(XERCESC_BASE) ]; then \
 	  echo "*** Cleaning xercesc ***" ; \
 	  cd $(XERCESC_BASE) && $(MAKE) $(XERCESC_OPT) clean ; \
@@ -144,15 +154,15 @@ xercesc_clean:
 	  echo "*** Cleaning xercesc -- NON-EXISTENT ***" ; \
 	fi
 
-xercesc_veryclean: xercesc_clean
+veryclean_xercesc: clean_xercesc
 
-.PHONY : xercesc_build xercesc_clean xercesc_veryclean 
+.PHONY : build_xercesc clean_xercesc veryclean_xercesc 
 
 ############################################################
 
 FORTTK_OPT = -f Makefile.quick CXX="$(CXX)" CC="$(CC)" 
 
-openadforttk_build:
+build_OpenADFortTk:
 	@if [ -d $(OPENADFORTTK_BASE) ]; then \
 	  echo "*** Building OpenADFortTk ***" ; \
 	  cd $(OPENADFORTTK_BASE) && $(MAKE) $(FORTTK_OPT) all; \
@@ -160,7 +170,7 @@ openadforttk_build:
 	  echo "*** Building OpenADFortTk -- NON-EXISTENT ***" ; \
 	fi
 
-openadforttk_clean:
+clean_OpenADFortTk:
 	@if [ -d $(OPENADFORTTK_BASE) ]; then \
 	  echo "*** Cleaning OpenADFortTk ***" ; \
 	  cd $(OPENADFORTTK_BASE) && $(MAKE) $(FORTTK_OPT) clean ; \
@@ -168,13 +178,13 @@ openadforttk_clean:
 	  echo "*** Cleaning OpenADFortTk -- NON-EXISTENT ***" ; \
 	fi
 
-openadforttk_veryclean: openadforttk_clean
+veryclean_OpenADFortTk: clean_OpenADFortTk
 
-.PHONY : openadforttk_build openadforttk_clean openadforttk_veryclean 
+.PHONY : build_OpenADFortTk clean_OpenADFortTk veryclean_OpenADFortTk 
 
 ############################################################
 
-angel_build:
+build_angel:
 	@if [ -d $(ANGEL_BASE) ]; then \
 	  echo "*** Building angel ***" ; \
 	  cd $(ANGEL_BASE) && $(MAKE) ; \
@@ -182,14 +192,14 @@ angel_build:
 	  echo "*** Building angel -- NON-EXISTENT ***" ; \
 	fi
 
-angel_clean:
+clean_angel:
 	@if [ -d $(ANGEL_BASE) ]; then \
 	  echo "*** Cleaning angel (skipping) ***" ; \
 	else \
 	  echo "*** Cleaning angel -- NON-EXISTENT ***" ; \
 	fi
 
-angel_veryclean:
+veryclean_angel:
 	@if [ -d $(ANGEL_BASE) ]; then \
 	  echo "*** Very-Cleaning angel ***" ; \
 	  cd $(ANGEL_BASE) && $(MAKE) clean ; \
@@ -197,11 +207,11 @@ angel_veryclean:
 	  echo "*** Very-Cleaning angel -- NON-EXISTENT ***" ; \
 	fi
 
-.PHONY : angel_build angel_clean angel_veryclean
+.PHONY : build_angel clean_angel veryclean_angel
 
 ############################################################
 
-xaifBooster_build:
+build_xaifBooster:
 	@if [ -d $(XAIFBOOSTER_BASE) ]; then \
 	  echo "*** Building xaifBooster ***" ; \
 	  cd $(XAIFBOOSTER_BASE) && $(MAKE) ; \
@@ -209,14 +219,14 @@ xaifBooster_build:
 	  echo "*** Building xaifBooster -- NON-EXISTENT ***" ; \
 	fi
 
-xaifBooster_clean:
+clean_xaifBooster:
 	@if [ -d $(XAIFBOOSTER_BASE) ]; then \
 	  echo "*** Cleaning xaifBooster (skipping) ***" ; \
 	else \
 	  echo "*** Cleaning xaifBooster -- NON-EXISTENT ***" ; \
 	fi
 
-xaifBooster_veryclean:
+veryclean_xaifBooster:
 	@if [ -d $(XAIFBOOSTER_BASE) ]; then \
 	  echo "*** Very-Cleaning xaifBooster ***" ; \
 	  cd $(XAIFBOOSTER_BASE) && $(MAKE) clean ; \
@@ -224,7 +234,7 @@ xaifBooster_veryclean:
 	  echo "*** Very-Cleaning xaifBooster -- NON-EXISTENT ***" ; \
 	fi
 
-.PHONY : xaifBooster_build xaifBooster_clean xaifBooster_veryclean
+.PHONY : build_xaifBooster clean_xaifBooster veryclean_xaifBooster
 
 ############################################################
 
