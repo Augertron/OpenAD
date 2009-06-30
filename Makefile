@@ -278,13 +278,13 @@ install: uninstall open64_install openadforttk_install xaif_install xaifBooster_
 	mkdir -p ${INST_DIR}/runTimeSupport/scalar
 	mkdir -p ${INST_DIR}/runTimeSupport/simple
 	mkdir -p ${INST_DIR}/runTimeSupport/vector
-	cp -rf runTimeSupport/all/*.f90      runTimeSupport/all/*.c      runTimeSupport/all/*.f {INST_DIR}      runTimeSupport/all
-	cp -rf runTimeSupport/cgTools/*.f90  runTimeSupport/cgTools/*.c  runTimeSupport/cgTools/*.f {INST_DIR}  runTimeSupport/cgTools
-	cp -rf runTimeSupport/cpToFile/*.f90 runTimeSupport/cpToFile/*.c runTimeSupport/cpToFile/*.f {INST_DIR} runTimeSupport/cpToFile
-	cp -rf runTimeSupport/metrics/*.f90  runTimeSupport/metrics/*.c  runTimeSupport/metrics/*.f {INST_DIR}  runTimeSupport/metrics
-	cp -rf runTimeSupport/scalar/*.f90   runTimeSupport/scalar/*.c   runTimeSupport/scalar/*.f {INST_DIR}   runTimeSupport/scalar
-	cp -rf runTimeSupport/simple/*.f90   runTimeSupport/simple/*.c   runTimeSupport/simple/*.f {INST_DIR}   runTimeSupport/simple
-	cp -rf runTimeSupport/vector/*.f90   runTimeSupport/vector/*.c   runTimeSupport/vector/*.f {INST_DIR}   runTimeSupport/vector
+	cp -f runTimeSupport/all/*.c        runTimeSupport/all/*.f90    ${INST_DIR}/runTimeSupport/all
+	cp -f runTimeSupport/cgTools/*.f90  runTimeSupport/cgTools/*.f  ${INST_DIR}/runTimeSupport/cgTools
+	cp -f runTimeSupport/cpToFile/*.f90 runTimeSupport/cpToFile/*.f ${INST_DIR}/runTimeSupport/cpToFile
+	cp -f runTimeSupport/metrics/*.c                                ${INST_DIR}/runTimeSupport/metrics
+	cp -f runTimeSupport/scalar/*.f90                               ${INST_DIR}/runTimeSupport/scalar
+	cp -f runTimeSupport/simple/*.f90   runTimeSupport/simple/*.f   ${INST_DIR}/runTimeSupport/simple
+	cp -f runTimeSupport/vector/*.f90                               ${INST_DIR}/runTimeSupport/vector
 	chmod -R a+r ${INST_DIR}/runTimeSupport
 
 open64_install: 
