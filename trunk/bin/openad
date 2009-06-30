@@ -10,7 +10,52 @@ sys.path.append(os.environ["OPENADROOT"])
 sys.path.append(os.path.join(os.environ["OPENADROOT"],"tools","libpythontk"))
 import RunCmds
 
+class MajorMode:
+  forward=0
+  reverse=1
+  trace=2
+
+
+class DShape:
+  scalar=0
+  vector=1
+
+
+class CGReversal:
+  none=-1
+  split=0
+  joint=1
+  
+
+class Mode:
+  def __init__(self,major):
+    self.major=major
+    self.dShape=DShape.scalar
+    self.cgRev=CGReversal.none
+
+
 class RunOpenAD:
+
+    @staticmethod
+    def _getRtFilesCommon():
+      import glob
+      fileList=glob.glob(os.path.join(os.environ["OPENADROOT"],"runTimeSupport","all","*.f90"))
+      fileList+=glob.glob(os.path.join(os.environ["OPENADROOT"],"runTimeSupport","all","*.c"))
+      return fileList
+
+    def getRtFileActive(self):
+      if self.mode.dShape==DShape.scalar:
+        return os.path.join(os.environ["OPENADROOT"],
+                            "runTimeSupport",
+                            "scalar",
+                            "OAD_active.f90")
+      elif self.mode.dShape==DShape.vector: 
+        return os.path.join(os.environ["OPENADROOT"],
+                            "runTimeSupport",
+                            "vector",
+                            "OAD_active.f90")
+      else:
+        raise Exception("unknown mode.dShape="+str(self.mode.dShape))
 
     def __init__(self,name,options):
         import time
@@ -31,7 +76,18 @@ class RunOpenAD:
             self.runTimeFileCmd="cp -f"
         else:
             self.runTimeFileCmd="ln -sf"
-
+        self.mode=Mode(MajorMode.forward)
+        if options.mode[0]=='f' and len(options.mode)==2 and options.mode[1]=='v':
+          self.mode.dShape=DShape.vector
+        if options.mode[0]=='r':
+          self.mode.major=MajorMode.reverse
+          if options.mode[1]=='s':
+            self.mode.cgRev=CGReversal.split
+          if options.mode[1]=='j':
+            self.mode.cgRev=CGReversal.joint
+        if options.mode[0]=='t':
+          self.mode.major=MajorMode.trace
+          
     def mfef90(self):
         aCmdDesc=RunCmds.CmdDesc()
         aCmdDesc.setCmd(os.path.join(os.environ['OPEN64ROOT'],
@@ -66,14 +122,9 @@ class RunOpenAD:
         aCmdDesc.setDesc("tangent linear transformation")
         self.commandDescriptions.append(aCmdDesc)
         # link run time support files
-        import glob
         fileList=[]
-        fileList.append(os.path.join(os.environ["OPENADROOT"],
-                                     "runTimeSupport",
-                                     "scalar",
-                                     "OAD_active.f90"))
-        fileList+=glob.glob(os.path.join(os.environ["OPENADROOT"],"runTimeSupport","all","*.f90"))
-        fileList+=glob.glob(os.path.join(os.environ["OPENADROOT"],"runTimeSupport","all","*.c"))
+        fileList.append(self.getRtFileActive())
+        fileList+=RunOpenAD._getRtFilesCommon()
         for file in fileList:
             aCmdDesc=RunCmds.CmdDesc()
             aCmdDesc.setCmd(self.runTimeFileCmd+" "+file+" ./")
@@ -95,14 +146,9 @@ class RunOpenAD:
         aCmdDesc.setDesc("adjoint transformation")
         self.commandDescriptions.append(aCmdDesc)
         # link run time support files
-        import glob
         fileList=[]
-        fileList.append(os.path.join(os.environ["OPENADROOT"],
-                                     "runTimeSupport",
-                                     "scalar",
-                                     "OAD_active.f90"))
-        fileList+=glob.glob(os.path.join(os.environ["OPENADROOT"],"runTimeSupport","all","*.f90"))
-        fileList+=glob.glob(os.path.join(os.environ["OPENADROOT"],"runTimeSupport","all","*.c"))
+        fileList.append(self.getRtFileActive())
+        fileList+=RunOpenAD._getRtFilesCommon()
         fileList.append(os.path.join(os.environ["OPENADROOT"],"runTimeSupport","simple","ad_inline.f"))
         fileList.append(os.path.join(os.environ["OPENADROOT"],"runTimeSupport","simple","OAD_cp.f90"))
         fileList.append(os.path.join(os.environ["OPENADROOT"],"runTimeSupport","simple","OAD_rev.f90"))
@@ -115,10 +161,12 @@ class RunOpenAD:
         # copy the template file
         aCmdDesc=RunCmds.CmdDesc()
         templFile=""
-        if self.options.mode == "rs":
-            templFile="ad_template.split.f"
-        if self.options.mode == "rj":
-            templFile="ad_template.joint.f"
+        if self.mode.cgRev == CGReversal.split:
+          templFile="ad_template.split.f"
+        elif self.mode.cgRev == CGReversal.joint:
+          templFile="ad_template.joint.f"
+        else: 
+          raise Exception("unknown cgRev: "+str(self.mode.cgRev))
         aCmdDesc.setCmd(self.runTimeFileCmd+" "+os.path.join(os.environ["OPENADROOT"],
                                                              "runTimeSupport",
                                                              "simple",
@@ -142,14 +190,9 @@ class RunOpenAD:
         aCmdDesc.setDesc("tracing transformation")
         self.commandDescriptions.append(aCmdDesc)
         # link run time support files
-        import glob
         fileList=[]
-        fileList.append(os.path.join(os.environ["OPENADROOT"],
-                                     "runTimeSupport",
-                                     "scalar",
-                                     "OAD_active.f90"))
-        fileList+=glob.glob(os.path.join(os.environ["OPENADROOT"],"runTimeSupport","all","*.f90"))
-        fileList+=glob.glob(os.path.join(os.environ["OPENADROOT"],"runTimeSupport","all","*.c"))
+        fileList.append(self.getRtFileActive())
+        fileList+=RunOpenAD._getRtFilesCommon()
         fileList.append(os.path.join(os.environ["OPENADROOT"],"runTimeSupport","simple","OAD_rev.f90"))
         fileList.append(os.path.join(os.environ["OPENADROOT"],"runTimeSupport","simple","OAD_trace.f90"))
         for file in fileList:
@@ -187,11 +230,11 @@ class RunOpenAD:
 
     def postProcess(self):
         ppOpt=""
-        if self.options.mode=='f':
+        if self.mode.major==MajorMode.forward:
           ppOpt+="-m f "
         else:
           ppOpt+="-m r "
-        if self.options.mode=='t': 
+        if self.mode.major==MajorMode.trace: 
           ppOpt+="--noInline "
         aCmdDesc=RunCmds.CmdDesc()
         aCmdDesc.setCmd(os.path.join(os.environ['OPENADFORTTK_BASE'],
@@ -205,11 +248,11 @@ class RunOpenAD:
     def composePipeline(self):
         self.mfef90()
         self.whirl2xaif()
-        if self.options.mode=='f':
+        if self.mode.major==MajorMode.forward:
             self.forward()
-        elif self.options.mode=='rs' or self.options.mode=='rj':
+        elif self.mode.major==MajorMode.reverse:
             self.reverse()
-        elif self.options.mode=='t':
+        elif self.mode.major==MajorMode.trace:
             self.traceDiff()
         else:
             raise RuntimeError("no valid basic transformation mode selected")
@@ -231,7 +274,7 @@ class RunOpenAD:
 def main():
   from optparse import OptionParser
   usage = '%prog [options] <fortran-file>'
-  modes={'f':'forward','rs':'reverse split','rj':'reverse joint','t':'tracing'}
+  modes={'f':'forward','fv':'forward vector','rs':'reverse split','rj':'reverse joint','t':'tracing'}
   modeChoices=modes.keys()
   modeChoicesHelp=""
   for k,v in modes.items():

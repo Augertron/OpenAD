@@ -68,7 +68,7 @@ module OAD_tape
   integer, parameter :: max_character_tape_size =1000000
   integer, parameter :: max_stringlength_tape_size =1000
 
-  real(8)   :: double_tape (max_double_tape_size)
+  double precision   :: double_tape (max_double_tape_size)
   integer   :: integer_tape(max_integer_tape_size)
   logical   :: logical_tape(max_logical_tape_size)
   character(max_character_tape_size) :: character_tape

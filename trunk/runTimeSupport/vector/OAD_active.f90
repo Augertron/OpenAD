@@ -207,7 +207,7 @@ oad_allocateMatching
           do i=1,max_deriv_vec_len
             y%d(i) = y%d(i) + x%d(i)*a
           end do
-        end subroutine saxpy_a_a
+        end subroutine saxpy_d_a_a
 
         subroutine saxpy_i4_a_a(a,x,y)
           integer(kind=w2f__i4), intent(in) :: a
@@ -254,7 +254,7 @@ oad_allocateMatching
           do i=1,max_deriv_vec_len
             y%d(i) = x%d(i)*a
           end do
-        end subroutine sax_i_a_a
+        end subroutine sax_i8_a_a
         
         !
         ! set derivative of y to be equal to derivative of x

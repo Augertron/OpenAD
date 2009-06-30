@@ -62,6 +62,11 @@ class openadConfig:
       self.OpenADRepos[name]=Repository.CVSRepository('pserver',':pserver:anonymous@angellib.cvs.sourceforge.net:/cvsroot/angellib',OpenADRoot,name,None,None,'ANGEL_BASE')
     name="boost";         self.orderedRepoList.append(name)
     self.OpenADRepos[name]=Repository.SVNRepository('http://svn.boost.org/svn/boost',OpenADRoot,name,'boost','tags/release/Boost_1_38_0','BOOST_BASE')
+    if includeExtras:
+      name="RevolveF9X"; self.orderedRepoList.append(name)
+      self.OpenADRepos[name]=Repository.MercurialRepository(ANLMercurialUrl+name,OpenADRoot,name,None,None,None)
+      name="Examples"; self.orderedRepoList.append(name)
+      self.OpenADRepos[name]=Repository.MercurialRepository(ANLMercurialUrl+'OpenADExamples',OpenADRoot,name,None,None,None)
     if includeDev:
       name="SourceProcessing"; self.orderedRepoList.append(name)
       self.OpenADRepos[name]=Repository.MercurialRepository(ANLMercurialUrl+name,os.path.join(OpenADRoot,'OpenADFortTk','tools'),name,None,None,None)
@@ -72,11 +77,6 @@ class openadConfig:
       self.OpenADRepos[name]=Repository.MercurialRepository(ANLMercurialUrl+name,os.path.join(OpenADRoot,'OpenADFortTk'),'Regression',None,None,None)
       name="RegressionSourceProcessing"; self.orderedRepoList.append(name)
       self.OpenADRepos[name]=Repository.MercurialRepository(ANLMercurialUrl+name,os.path.join(OpenADRoot,'OpenADFortTk','tools','SourceProcessing'),'Regression',None,None,None)
-    if includeExtras:
-      name="RevolveF9X"; self.orderedRepoList.append(name)
-      self.OpenADRepos[name]=Repository.MercurialRepository(ANLMercurialUrl+name,OpenADRoot,name,None,None,None)
-      name="Examples"; self.orderedRepoList.append(name)
-      self.OpenADRepos[name]=Repository.MercurialRepository(ANLMercurialUrl+'OpenADExamples',OpenADRoot,name,None,None,None)
 
     self.setPythonOpenADEnvVars()
     

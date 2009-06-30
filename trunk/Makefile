@@ -243,10 +243,11 @@ export INST_DIR=/opt/OpenAD
 endif
 
 install: uninstall open64_install openadforttk_install xaif_install xaifBooster_install
+	openadStatus -dt | head -10 > ${INST_DIR}/openadStatus.txt
 	cp -f README ${INST_DIR}
 	cp -f README.License ${INST_DIR}
-	cp -f openad_config.py ${INST_DIR}
-	chmod a+r ${INST_DIR}/openad_config.py
+	cp -f openadConfig.py ${INST_DIR}
+	chmod a+r ${INST_DIR}/openadConfig.py
 	mkdir -p ${INST_DIR}/config
 	cp -f config/hpcguess ${INST_DIR}/config
 	cp -f config/config.guess ${INST_DIR}/config
@@ -257,6 +258,9 @@ install: uninstall open64_install openadforttk_install xaif_install xaifBooster_
 	chmod a+rx ${INST_DIR}/bin/openad
 	cp -rf runTimeSupport ${INST_DIR}
 	chmod -R a+r ${INST_DIR}/runTimeSupport
+	mkdir -p ${INST_DIR}/RevolveF9X
+	cp -rf RevolveF9X/* ${INST_DIR}/RevolveF9X
+	chmod -R a+r ${INST_DIR}/RevolveF9X
 	cp -f setenv.csh ${INST_DIR}
 	chmod a+r ${INST_DIR}/setenv.csh
 	cp -f setenv.sh ${INST_DIR}
@@ -271,24 +275,37 @@ install: uninstall open64_install openadforttk_install xaif_install xaifBooster_
 open64_install: 
 	cd Open64 && export INST_DIR=${INST_DIR}/Open64 && $(MAKE) install
 
-FORTTK_INST_EXT=$(subst ${PWD},${INST_DIR}/OpenADFortTk,${OPENADFORTTKROOT})
+FORTTK_INST_EXT=$(subst ${PWD},${INST_DIR},${OPENADFORTTKROOT})
 
 openadforttk_install: 
-# we do this here because of the not very usefull generated install inside FortTk
+	# we do this here because of the not very usefull generated install inside FortTk
 	mkdir -p ${FORTTK_INST_EXT}/bin
 	cp -f ${OPENADFORTTKROOT}/bin/whirl2xaif ${FORTTK_INST_EXT}/bin/
 	strip ${FORTTK_INST_EXT}/bin/whirl2xaif
 	chmod a+rx ${FORTTK_INST_EXT}/bin/whirl2xaif
 	cp -f ${OPENADFORTTKROOT}/bin/xaif2whirl ${FORTTK_INST_EXT}/bin/
 	strip ${FORTTK_INST_EXT}/bin/xaif2whirl
-	chmod a+rx ${FORTTK_INST_EXT}/bin/whirl2xaif
-	mkdir -p ${INST_DIR}/OpenADFortTk/tools/multiprocess/perl/Lib/FT
-	cp -f ${OPENADROOT}/OpenADFortTk/tools/multiprocess/multi-pp.pl ${INST_DIR}/OpenADFortTk/tools/multiprocess/
-	chmod a+rx ${INST_DIR}/OpenADFortTk/tools/multiprocess/multi-pp.pl
-	cp -f ${OPENADROOT}/OpenADFortTk/tools/multiprocess/Lib/*.pm ${INST_DIR}/OpenADFortTk/tools/multiprocess/perl/Lib
-	chmod a+rx ${INST_DIR}/OpenADFortTk/tools/multiprocess/perl/Lib/*.pm
-	cp -f ${OPENADROOT}/OpenADFortTk/tools/multiprocess/Lib/FT/*.pm ${INST_DIR}/OpenADFortTk/tools/multiprocess/perl/Lib/FT
-	chmod a+rx ${INST_DIR}/OpenADFortTk/tools/multiprocess/perl/Lib/FT/*.pm
+	chmod a+rx ${FORTTK_INST_EXT}/bin/xaif2whirl
+	# copy all the python code
+	mkdir -p ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/PyUtil/_Setup
+	cp -f  ${OPENADROOT}/OpenADFortTk/tools/SourceProcessing/PyUtil/_Setup/*.py ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/PyUtil/_Setup/
+	cp -f  ${OPENADROOT}/OpenADFortTk/tools/SourceProcessing/PyUtil/*.py        ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/PyUtil/
+	mkdir -p ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/PyIR/_Setup
+	cp -f  ${OPENADROOT}/OpenADFortTk/tools/SourceProcessing/PyIR/_Setup/*.py   ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/PyIR/_Setup/
+	cp -f  ${OPENADROOT}/OpenADFortTk/tools/SourceProcessing/PyIR/*.py          ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/PyIR/
+	mkdir -p ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/PyFort/_Setup
+	cp -f  ${OPENADROOT}/OpenADFortTk/tools/SourceProcessing/PyFort/_Setup/*.py ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/PyFort/_Setup/
+	cp -f  ${OPENADROOT}/OpenADFortTk/tools/SourceProcessing/PyFort/*.py        ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/PyFort/
+	mkdir -p ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/Canon/_Setup
+	cp -f  ${OPENADROOT}/OpenADFortTk/tools/SourceProcessing/Canon/_Setup/*.py  ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/Canon/_Setup/
+	cp -f  ${OPENADROOT}/OpenADFortTk/tools/SourceProcessing/Canon/*.py         ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/Canon/
+	cp -f  ${OPENADROOT}/OpenADFortTk/tools/SourceProcessing/preProcess.py      ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/
+	chmod a+rx ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/preProcess.py
+	mkdir -p ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/PP/_Setup
+	cp -f  ${OPENADROOT}/OpenADFortTk/tools/SourceProcessing/PP/_Setup/*.py     ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/PP/_Setup/
+	cp -f  ${OPENADROOT}/OpenADFortTk/tools/SourceProcessing/PP/*.py            ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/PP/
+	cp -f  ${OPENADROOT}/OpenADFortTk/tools/SourceProcessing/postProcess.py     ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/
+	chmod a+rx ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/postProcess.py
 
 xaif_install: 
 # we do this here because xaif does not have Makefiles
