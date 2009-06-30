@@ -256,11 +256,10 @@ install: uninstall open64_install openadforttk_install xaif_install xaifBooster_
 	mkdir -p ${INST_DIR}/bin
 	cp -f bin/openad ${INST_DIR}/bin
 	chmod a+rx ${INST_DIR}/bin/openad
-	cp -rf runTimeSupport ${INST_DIR}
-	chmod -R a+r ${INST_DIR}/runTimeSupport
-	mkdir -p ${INST_DIR}/RevolveF9X
-	cp -rf RevolveF9X/* ${INST_DIR}/RevolveF9X
-	chmod -R a+r ${INST_DIR}/RevolveF9X
+	cp -f bin/openadStatus ${INST_DIR}/bin
+	chmod a+rx ${INST_DIR}/bin/openadStatus
+	cp -f bin/openadUpdate ${INST_DIR}/bin
+	chmod a+rx ${INST_DIR}/bin/openadUpdate
 	cp -f setenv.csh ${INST_DIR}
 	chmod a+r ${INST_DIR}/setenv.csh
 	cp -f setenv.sh ${INST_DIR}
@@ -271,6 +270,22 @@ install: uninstall open64_install openadforttk_install xaif_install xaifBooster_
 	mkdir -p ${INST_DIR}/tools/libpythontk
 	cp -f tools/libpythontk/*.py ${INST_DIR}/tools/libpythontk
 	chmod a+r ${INST_DIR}/tools/libpythontk/*.py
+	# copy all run time support files
+	mkdir -p ${INST_DIR}/runTimeSupport/all
+	mkdir -p ${INST_DIR}/runTimeSupport/cgTools
+	mkdir -p ${INST_DIR}/runTimeSupport/cpToFile
+	mkdir -p ${INST_DIR}/runTimeSupport/metrics
+	mkdir -p ${INST_DIR}/runTimeSupport/scalar
+	mkdir -p ${INST_DIR}/runTimeSupport/simple
+	mkdir -p ${INST_DIR}/runTimeSupport/vector
+	cp -rf runTimeSupport/all/*.f90      runTimeSupport/all/*.c      runTimeSupport/all/*.f {INST_DIR}      runTimeSupport/all
+	cp -rf runTimeSupport/cgTools/*.f90  runTimeSupport/cgTools/*.c  runTimeSupport/cgTools/*.f {INST_DIR}  runTimeSupport/cgTools
+	cp -rf runTimeSupport/cpToFile/*.f90 runTimeSupport/cpToFile/*.c runTimeSupport/cpToFile/*.f {INST_DIR} runTimeSupport/cpToFile
+	cp -rf runTimeSupport/metrics/*.f90  runTimeSupport/metrics/*.c  runTimeSupport/metrics/*.f {INST_DIR}  runTimeSupport/metrics
+	cp -rf runTimeSupport/scalar/*.f90   runTimeSupport/scalar/*.c   runTimeSupport/scalar/*.f {INST_DIR}   runTimeSupport/scalar
+	cp -rf runTimeSupport/simple/*.f90   runTimeSupport/simple/*.c   runTimeSupport/simple/*.f {INST_DIR}   runTimeSupport/simple
+	cp -rf runTimeSupport/vector/*.f90   runTimeSupport/vector/*.c   runTimeSupport/vector/*.f {INST_DIR}   runTimeSupport/vector
+	chmod -R a+r ${INST_DIR}/runTimeSupport
 
 open64_install: 
 	cd Open64 && export INST_DIR=${INST_DIR}/Open64 && $(MAKE) install
