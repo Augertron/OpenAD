@@ -126,8 +126,14 @@ def main():
           sys.stdout.flush()
           os.chdir(os.environ["OPENADROOT"])
   except RuntimeError, e:
-      print 'caught excetion: ',e
-      return -1
+    print 'caught excetion: ',e
+    return -1
+  except IOError, e:
+    import errno
+    if e.errno == errno.EPIPE: 
+      return 0
+    else :
+      raise e
 
 if __name__ == "__main__":
   sys.exit(main())
