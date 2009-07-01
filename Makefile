@@ -290,7 +290,7 @@ install: uninstall open64_install openadforttk_install xaif_install xaifBooster_
 open64_install: 
 	cd Open64 && export INST_DIR=${INST_DIR}/Open64 && $(MAKE) install
 
-FORTTK_INST_EXT=$(subst ${PWD},${INST_DIR},${OPENADFORTTKROOT})
+FORTTK_INST_EXT=${INST_DIR}/OpenADFortTk/OpenADFortTk-${OPENADPLATFORM}
 
 openadforttk_install: 
 	# we do this here because of the not very usefull generated install inside FortTk

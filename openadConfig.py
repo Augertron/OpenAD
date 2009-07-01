@@ -97,6 +97,7 @@ class openadConfig:
        'OPEN64ROOT':os.path.join(os.environ['OPEN64_BASE'],'osprey1.0',o64targ),
        'OPEN64TARG':o64targ,
        'OPENADFORTTKROOT':os.path.join(os.environ['OPENADFORTTK_BASE'],'OpenADFortTk-'+self.platform),
+       'OPENADPLATFORM':self.platform,
        'OPENANALYSISROOT':os.path.join(os.environ['OPENANALYSIS_BASE'],self.platform),
        'XERCESCROOT':os.path.join(os.environ['XERCESC_BASE'],self.platform),
        'XAIFBOOSTERROOT':os.path.join(os.environ['XAIFBOOSTER_BASE'],'..'),
