@@ -215,7 +215,7 @@ class RunOpenAD:
         aCmdDesc.setCmd(os.path.join(os.environ['OPENADFORTTKROOT'],
                                      'bin',
                                      'xaif2whirl')+
-                        " --structured "+self.baseName+".B "+self.baseName+".xb.xaif")
+                        " "+self.baseName+".B "+self.baseName+".xb.xaif")
         aCmdDesc.setDesc("translating transformed xaif to whirl")
         self.commandDescriptions.append(aCmdDesc)
 
