@@ -31,11 +31,19 @@ endif
 
 #############################################################################
 
-# WARNING: exporting these causes problems with the Open64 build system
-#export CC
-#export CXX
-#export CFLAGS
-#export CXXFLAGS
+# WARNING: exporting CC/CXX/CFLAGS/CXXFLAGS causes problems with the Open64 build system
+ifneq ($(CC),cc)
+  $(error "Error: predefining CC (set to ${CC}, but should be the implicit gnu make default cc) in the environment causes inconsistencies between the Open64 build and the other components")
+endif 
+ifneq ($(CXX),g++)
+  $(error "Error: predefining CXX (set to ${CXX}, but should be the implicit gnu make default g++) in the environment causes inconsistencies between the Open64 build and the other components")
+endif
+ifdef CFLAGS
+  $(error "Error: predefining CFLAGS in the environment causes problems in the Open64 build system")
+endif
+ifdef CXXFLAGS
+  $(error "Error: predefining CXXFLAGS in the environment causes problems in the Open64 build system")
+endif
 
 #############################################################################
 
