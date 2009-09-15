@@ -258,7 +258,7 @@ endif
 install: uninstall open64_install openadforttk_install xaif_install xaifBooster_install
 	openadStatus -dt | head -10 > ${INST_DIR}/openadStatus.txt
 	cp -f README ${INST_DIR}
-	cp -f README.License ${INST_DIR}
+	cp -f COPYRIGHT ${INST_DIR}
 	cp -f openadConfig.py ${INST_DIR}
 	chmod a+r ${INST_DIR}/openadConfig.py
 	mkdir -p ${INST_DIR}/config
