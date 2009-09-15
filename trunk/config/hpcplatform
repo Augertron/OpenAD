@@ -1,18 +1,11 @@
 #!/bin/sh
 # Testing: set -x: line by line (set -n: syntax)
 # set -x
-
-# $Header: /Volumes/cvsrep/developer/shared/config/hpcplatform,v 1.1 2003/10/28 19:47:43 eraxxon Exp $
-
-## **************************************************************************
-##
-## File: 
-##    hpcplatform: see usage.
-##
-## Author:
-##    Written by Nathan Tallent, Rice University.
-##    
-## **************************************************************************
+##########################################################
+# This file is part of OpenAD released under the LGPL.   #
+# The full COPYRIGHT notice can be found in the top      #
+# level directory of the OpenAD distribution             #
+##########################################################
 
 #############################################################################
 

@@ -1,19 +1,11 @@
 #!/bin/sh
 # Testing: set -x: line by line (set -n: syntax)
 # set -x
-
-# $Header: /Volumes/cvsrep/developer/shared/config/hpcautotouch,v 1.2 2004/09/29 21:07:37 eraxxon Exp $
-
-## **************************************************************************
-##
-## File: 
-##    $Source: /Volumes/cvsrep/developer/shared/config/hpcautotouch,v $
-##    cf. README.auto
-##
-## Author:
-##    Written by Nathan Tallent, Rice University.
-##    
-## **************************************************************************
+##########################################################
+# This file is part of OpenAD released under the LGPL.   #
+# The full COPYRIGHT notice can be found in the top      #
+# level directory of the OpenAD distribution             #
+##########################################################
 
 #############################################################################
 

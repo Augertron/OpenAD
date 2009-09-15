@@ -1,7 +1,11 @@
 #!/usr/bin/env perl
 # -*-Mode: perl;-*-
 
-# $Header: /Volumes/cvsrep/developer/shared/config/hpcar,v 1.1 2005/02/16 18:55:43 eraxxon Exp $
+##########################################################
+# This file is part of OpenAD released under the LGPL.   #
+# The full COPYRIGHT notice can be found in the top      #
+# level directory of the OpenAD distribution             #
+##########################################################
 
 ## **************************************************************************
 ##

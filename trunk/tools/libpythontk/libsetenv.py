@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+##########################################################
+# This file is part of OpenAD released under the LGPL.   #
+# The full COPYRIGHT notice can be found in the top      #
+# level directory of the OpenAD distribution             #
+##########################################################
 
 import os
 import sys
