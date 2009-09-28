@@ -63,6 +63,10 @@ oad_allocateMatching
 
         interface zero_deriv
           module procedure zero_deriv_a
+          module procedure zero_deriv_av
+          module procedure zero_deriv_am
+          module procedure zero_deriv_am3
+          module procedure zero_deriv_am4
         end interface
         
         interface sax
@@ -279,6 +283,26 @@ oad_allocateMatching
           type(active), intent(inout) :: x
           x%d=0.0d0
         end subroutine zero_deriv_a
+
+        subroutine zero_deriv_av(x)
+          type(active), dimension(:), intent(inout) :: x
+          x%d=0.0d0
+        end subroutine zero_deriv_av
+
+        subroutine zero_deriv_am(x)
+          type(active), dimension(:,:), intent(inout) :: x
+          x%d = 0.0d0
+        end subroutine zero_deriv_am
+
+        subroutine zero_deriv_am3(x)
+          type(active), dimension(:,:,:), intent(inout) :: x
+          x%d = 0.0d0
+        end subroutine zero_deriv_am3
+
+        subroutine zero_deriv_am4(x)
+          type(active), dimension(:,:,:,:), intent(inout) :: x
+          x%d = 0.0d0
+        end subroutine zero_deriv_am4
 
         !
         ! active/passive conversions

@@ -251,7 +251,7 @@ class SVNRepository(Repository):
 
   def getVersionTag(self,localRev=False):
     fName=tempfile.mktemp()
-    ret=os.system('cd '+self.getLocalRepoPath()+'; svn info | grep Revision: | sed \'s/Revision: //\' > '+fName)
+    ret=os.system('cd '+self.getLocalRepoPath()+'; svn info | grep \'Last Changed Rev: \' | sed \'s/Last Changed Rev: //\' > '+fName)
     infoFile=open(fName)
     lines=infoFile.readlines()
     infoFile.close()    
