@@ -49,10 +49,16 @@ class RunOpenAD:
 
     def getRtFileActive(self):
       if self.mode.dShape==DShape.scalar:
-        return os.path.join(os.environ["OPENADROOT"],
-                            "runTimeSupport",
-                            "scalar",
-                            "OAD_active.f90")
+        if self.mode.major==MajorMode.forward:
+          return os.path.join(os.environ["OPENADROOT"],
+                              "runTimeSupport",
+                              "scalarF",
+                              "OAD_active.f90")
+        else : 
+          return os.path.join(os.environ["OPENADROOT"],
+                              "runTimeSupport",
+                              "scalar",
+                              "OAD_active.f90")
       elif self.mode.dShape==DShape.vector: 
         return os.path.join(os.environ["OPENADROOT"],
                             "runTimeSupport",
@@ -65,6 +71,7 @@ class RunOpenAD:
         import time
         self.fileName=name
         (self.baseName,self.extension)=os.path.splitext(name)
+        self.stage=''
         self.options=options
         self.ii_xaif=os.path.join(os.environ['XAIFSCHEMAROOT'],
                                   'schema',
@@ -92,14 +99,32 @@ class RunOpenAD:
         if options.mode[0]=='t':
           self.mode.major=MajorMode.trace
           
+    def preProcess(self):
+        ppOpt=""
+        if self.mode.major==MajorMode.forward:
+          ppOpt+="-m f "
+        else:
+          ppOpt+="-m r "
+        if self.extension=='.f90':
+          ppOpt+="--free "
+        aCmdDesc=RunCmds.CmdDesc()
+        self.stage+='.pre'
+        aCmdDesc.setCmd(os.path.join(os.environ['OPENADFORTTK_BASE'],
+                                     'tools',
+                                     'SourceProcessing',
+                                     'preProcess.py')+
+                        " "+ppOpt+"-o "+self.baseName+self.stage+self.extension+" "+self.fileName)
+        aCmdDesc.setDesc("preprocessing fortran")
+        self.commandDescriptions.append(aCmdDesc)
+
     def mfef90(self):
         aCmdDesc=RunCmds.CmdDesc()
         aCmdDesc.setCmd(os.path.join(os.environ['OPEN64ROOT'],
                                      'crayf90',
                                      'sgi',
                                      'mfef90')+
-                        " -z -F -N132 "+self.fileName)
-        aCmdDesc.setDesc("parsing "+self.fileName)
+                        " -z -F -N132 "+self.baseName+self.stage+self.extension)
+        aCmdDesc.setDesc("parsing preprocessed fortran")
         self.commandDescriptions.append(aCmdDesc)
 
     def whirl2xaif(self):
@@ -107,7 +132,7 @@ class RunOpenAD:
         aCmdDesc.setCmd(os.path.join(os.environ['OPENADFORTTKROOT'],
                                      'bin',
                                      'whirl2xaif')+
-                        " -n -o "+self.baseName+".xaif "+self.baseName+".B")
+                        " -n -o "+self.baseName+self.stage+".xaif "+self.baseName+self.stage+".B")
         aCmdDesc.setDesc("analyzing source code and translating to xaif")
         self.commandDescriptions.append(aCmdDesc)
 
@@ -121,8 +146,9 @@ class RunOpenAD:
                                      'oadDriver')+
                         " -c "+self.ii_xaif+
                         " -s "+os.path.join(os.environ["XAIFSCHEMAROOT"],"schema")+
-                        " -i "+self.baseName+".xaif"+
-                        " -o "+self.baseName+".xb.xaif")
+                        " -i "+self.baseName+self.stage+".xaif"+
+                        " -o "+self.baseName+self.stage+".xb.xaif")
+        self.stage+=".xb"
         aCmdDesc.setDesc("tangent linear transformation")
         self.commandDescriptions.append(aCmdDesc)
         # link run time support files
@@ -145,8 +171,9 @@ class RunOpenAD:
                                      'oadDriver')+
                         " -c "+self.ii_xaif+
                         " -s "+os.path.join(os.environ["XAIFSCHEMAROOT"],"schema")+
-                        " -i "+self.baseName+".xaif"+
-                        " -o "+self.baseName+".xb.xaif")
+                        " -i "+self.baseName+self.stage+".xaif"+
+                        " -o "+self.baseName+self.stage+".xb.xaif")
+        self.stage+=".xb"
         aCmdDesc.setDesc("adjoint transformation")
         self.commandDescriptions.append(aCmdDesc)
         # link run time support files
@@ -189,8 +216,9 @@ class RunOpenAD:
                                      'oadDriver')+
                         " -c "+self.ii_xaif+
                         " -s "+os.path.join(os.environ["XAIFSCHEMAROOT"],"schema")+
-                        " -i "+self.baseName+".xaif"+
-                        " -o "+self.baseName+".xb.xaif")
+                        " -i "+self.baseName+self.stage+".xaif"+
+                        " -o "+self.baseName+self.stage+".xb.xaif")
+        self.stage+=".xb"
         aCmdDesc.setDesc("tracing transformation")
         self.commandDescriptions.append(aCmdDesc)
         # link run time support files
@@ -219,7 +247,8 @@ class RunOpenAD:
         aCmdDesc.setCmd(os.path.join(os.environ['OPENADFORTTKROOT'],
                                      'bin',
                                      'xaif2whirl')+
-                        " "+self.baseName+".B "+self.baseName+".xb.xaif")
+                        " "+self.baseName+".pre.B "+self.baseName+self.stage+".xaif")
+        self.stage+=".x2w"
         aCmdDesc.setDesc("translating transformed xaif to whirl")
         self.commandDescriptions.append(aCmdDesc)
 
@@ -228,7 +257,8 @@ class RunOpenAD:
         aCmdDesc.setCmd(os.path.join(os.environ['OPEN64ROOT'],
                                      'whirl2f',
                                      'whirl2f')+
-                        " -openad "+self.baseName+".xb.x2w.B")
+                        " -openad "+self.baseName+self.stage+".B")
+        self.stage+=".w2f"
         aCmdDesc.setDesc("unparsing transformed whirl to fortran")
         self.commandDescriptions.append(aCmdDesc)
 
@@ -240,16 +270,19 @@ class RunOpenAD:
           ppOpt+="-m r "
         if self.mode.major==MajorMode.trace: 
           ppOpt+="--noInline "
+        if self.extension=='.f90':
+          ppOpt+="--freeOutput "
         aCmdDesc=RunCmds.CmdDesc()
         aCmdDesc.setCmd(os.path.join(os.environ['OPENADFORTTK_BASE'],
                                      'tools',
                                      'SourceProcessing',
                                      'postProcess.py')+
-                        " "+ppOpt+"-o "+self.baseName+".xb.x2w.w2f.pp.f "+self.baseName+".xb.x2w.w2f.f")
+                        " "+ppOpt+"-o "+self.baseName+self.stage+".post"+self.extension+" "+self.baseName+self.stage+".f")
         aCmdDesc.setDesc("postprocessing transformed fortran")
         self.commandDescriptions.append(aCmdDesc)
         
     def composePipeline(self):
+        self.preProcess()
         self.mfef90()
         self.whirl2xaif()
         if self.mode.major==MajorMode.forward:
