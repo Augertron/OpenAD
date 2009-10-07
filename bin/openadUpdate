@@ -98,7 +98,6 @@ class OpenadUpdate:
             raise e
       cmdDescVecRef.append(repoPair[0].cmdDesc)
     RunCmds.Runner(self.runCmdsDebug,self.options.interactive, self.logfnm, self.options.keepGoing).doit(cmdDescVecRef)
-    sys.exit(0);
 
 def main():
   from optparse import OptionParser
