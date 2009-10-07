@@ -55,9 +55,9 @@ class setenv:
     OpenADRepos = config.getRepos()
     # BASE environment variables
     print self.libsetenv_instance.genSetEnvVar('OPENAD_BASE',OpenADRoot)
-    for key,repo in (OpenADRepos.items()):
-      if repo.getVar() is not None:
-        print self.libsetenv_instance.genSetEnvVar(repo.getVar(),os.path.join(repo.getLocalPath(),repo.getLocalName()))
+    for key,repoPair in (OpenADRepos.items()):
+      if repoPair[0].getVar() is not None:
+        print self.libsetenv_instance.genSetEnvVar(repoPair[0].getVar(),os.path.join(repoPair[0].getLocalPath(),repoPair[0].getLocalName()))
     # ROOT environment variables
     print self.libsetenv_instance.genSetEnvVar('OPENADROOT', OpenADRoot)
     for var,val in config.RootEnvVars.items():

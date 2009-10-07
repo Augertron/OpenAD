@@ -22,6 +22,16 @@ def netAvail() :
     else :
 	return False	
 
+def isLink(path):
+  if(os.path.islink(path)):
+    return True
+  (head,tail)=os.path.split(path)
+  while (tail!="OpenAD" and head!=""):
+    if(os.path.islink(head)):
+      return True
+    (head,tail)=os.path.split(head)
+  return False
+
 def changed(repo):
     if (not netAvail()) :
     	sys.stdout.write('  ? |')
@@ -82,7 +92,11 @@ def main():
       os.chdir(root)
       oaCfg=openadConfig.openadConfig(True,True,options.development)
       repsDict=oaCfg.getRepos()
-      allRepList=[ (repsDict[k].getLocalRepoPath()[len(root)+1:] ) for k in oaCfg.orderedRepoList ] 
+      for v in repsDict.values() :
+        if (v[1] and not os.path.exists(v[0].getLocalRepoPath()[len(root)+1:])):
+          sys.stderr.write("required repository "+str(v[0])+" not present")
+          return -1
+      allRepList=[ (repsDict[k][0].getLocalRepoPath()[len(root)+1:] ) for k in oaCfg.orderedRepoList ] 
       repList=[]
       for i in allRepList:
           if (os.path.exists(i)):
@@ -114,7 +128,7 @@ def main():
                 rwlString+='W'
               else:
                 rwlString+='R'
-              if (os.path.islink(i)):
+              if (isLink(i)):
                 rwlString+='L'
               else:  
                 rwlString+=' '

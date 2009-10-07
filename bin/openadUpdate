@@ -33,48 +33,48 @@ class OpenadUpdate:
     repositories=oaCfg.getRepos()
     cmdDescVecRef = []
     for key in oaCfg.orderedRepoList:
-      repo=repositories[key]
+      repoPair=repositories[key]
       actRepo=None
       # if we don't have repository info, then this is external to us
-      if repo.getUrl() is None:
-        sys.stdout.write('WARNING: '+repo.getLocalRepoPath()+' has no repository information, no updates will be done\n')
+      if repoPair[0].getUrl() is None:
+        sys.stdout.write('WARNING: '+repoPair[0].getLocalRepoPath()+' has no repository information, no updates will be done\n')
         sys.stdout.flush()
         continue
-      if repo.repoExists():
-	if os.path.islink(repo.getLocalName()):
-	  sys.stdout.write('WARNING: '+repo.getLocalRepoPath()+' is a link, no updates will be done\n')
+      if repoPair[0].repoExists():
+	if os.path.islink(repoPair[0].getLocalName()):
+	  sys.stdout.write('WARNING: '+repoPair[0].getLocalRepoPath()+' is a link, no updates will be done\n')
           sys.stdout.flush()
           continue
         try:
-          actRepo=Repository.Detect.makeRepo(os.path.join(repo.getLocalPath(),repo.getLocalName()),
-                                             repo.getSubdir())
-          if (actRepo.getUrl()==repo.getUrl()
+          actRepo=Repository.Detect.makeRepo(os.path.join(repoPair[0].getLocalPath(),repoPair[0].getLocalName()),
+                                             repoPair[0].getSubdir())
+          if (actRepo.getUrl()==repoPair[0].getUrl()
               and
-              actRepo.getTag()==repo.getTag()) : 
-            repo.update() # sets CmdDesc to update repository
+              actRepo.getTag()==repoPair[0].getTag()) : 
+            repoPair[0].update() # sets CmdDesc to update repository
           else:
             if (self.options.development):
-              if (actRepo.getUrl()!=repo.getUrl()
+              if (actRepo.getUrl()!=repoPair[0].getUrl()
                   or
-                  actRepo.getTag()!=repo.getTag()):
+                  actRepo.getTag()!=repoPair[0].getTag()):
                 sys.stdout.write('NOTE: development repo URL '+actRepo.getUrl()+' for '+actRepo.getLocalRepoPath()+'\n')
               actRepo.update() # sets CmdDesc to update the actual repository
-              repo=actRepo
+              repoPair=(actRepo,True)
             else:   
-              sys.stdout.write('WARNING: for '+repo.getLocalName()+' mismatched ')
-              if (str(actRepo.getUrl())!=str(repo.getUrl())) : 
-                sys.stdout.write('URL: \n\tcurrent: '+str(actRepo.getUrl())+'\n\tconfig : '+str(repo.getUrl())+'\n')
-              elif (actRepo.getTag()!=repo.getTag()) : 
-                sys.stdout.write('tag: \n\tcurrent: '+str(actRepo.getTag())+'\n\tconfig : '+str(repo.getTag())+'\n')
+              sys.stdout.write('WARNING: for '+repoPair[0].getLocalName()+' mismatched ')
+              if (str(actRepo.getUrl())!=str(repoPair[0].getUrl())) : 
+                sys.stdout.write('URL: \n\tcurrent: '+str(actRepo.getUrl())+'\n\tconfig : '+str(repoPair[0].getUrl())+'\n')
+              elif (actRepo.getTag()!=repoPair[0].getTag()) : 
+                sys.stdout.write('tag: \n\tcurrent: '+str(actRepo.getTag())+'\n\tconfig : '+str(repoPair[0].getTag())+'\n')
               if (not self.options.force and raw_input("\tThe current repository will be deleted and a new repository will be created, continue? (y)/n: ")) == "n" :
                 sys.stdout.flush()
-                repo.update() # sets CmdDesc to update repository
+                repoPair[0].update() # sets CmdDesc to update repository
               else :
 		cmd=RunCmds.CmdDesc()
-		cmd.setCmd("rm -rf "+os.path.join(repo.getLocalPath(),repo.getLocalName()))
-		cmd.setDesc("removing "+os.path.join(repo.getLocalPath(),repo.getLocalName()))
+		cmd.setCmd("rm -rf "+os.path.join(repoPair[0].getLocalPath(),repoPair[0].getLocalName()))
+		cmd.setDesc("removing "+os.path.join(repoPair[0].getLocalPath(),repoPair[0].getLocalName()))
                 cmdDescVecRef.append(cmd)
-                repo.checkout() # check out repository
+                repoPair[0].checkout() # check out repository
         except (RunCmds.RunnerException), e:
           if self.options.keepGoing:
             sys.stderr.write('ERROR: '+str(e)+'... continuing\n')
@@ -89,14 +89,14 @@ class OpenadUpdate:
             raise e
       else:
         try: 
-          repo.checkout() # check out repository
+          repoPair[0].checkout() # check out repository
         except (Repository.RepositoryException, RunCmds.RunnerException), e:
           if self.options.keepGoing:
             sys.stderr.write('ERROR: '+str(e)+'... continuing\n')
             continue
           else:
             raise e
-      cmdDescVecRef.append(repo.cmdDesc)
+      cmdDescVecRef.append(repoPair[0].cmdDesc)
     RunCmds.Runner(self.runCmdsDebug,self.options.interactive, self.logfnm, self.options.keepGoing).doit(cmdDescVecRef)
     sys.exit(0);
 
