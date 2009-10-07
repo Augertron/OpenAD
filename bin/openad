@@ -106,7 +106,7 @@ class RunOpenAD:
         else:
           ppOpt+="-m r "
         if self.extension=='.f90':
-          ppOpt+="--free "
+          ppOpt+="--inputFormat=free "
         aCmdDesc=RunCmds.CmdDesc()
         self.stage+='.pre'
         aCmdDesc.setCmd(os.path.join(os.environ['OPENADFORTTK_BASE'],
@@ -271,7 +271,7 @@ class RunOpenAD:
         if self.mode.major==MajorMode.trace: 
           ppOpt+="--noInline "
         if self.extension=='.f90':
-          ppOpt+="--freeOutput "
+          ppOpt+="--outputFormat=free "
         aCmdDesc=RunCmds.CmdDesc()
         aCmdDesc.setCmd(os.path.join(os.environ['OPENADFORTTK_BASE'],
                                      'tools',
