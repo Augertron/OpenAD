@@ -17,7 +17,7 @@ class RepositoryException(Exception):
 
 class Repository:
 
-  def __init__(self,url, localPath, localName,  subdir, tag, var):
+  def __init__(self,url, localPath, localName,  subdir, tag, var, rev=None):
     self.url=url        # the url of the repository
     self.localPath=localPath # absolute path to the local directory in which the working directory 'localName' resides 
     self.localName=localName # the local name
@@ -25,6 +25,7 @@ class Repository:
     self.tag=tag        # interpreted as a tag/branch by default;
     self.var=var        # corresponding environment variable
     self.cmdDesc=CmdDesc() # command description for updates
+    self.rev=rev
 
   def getUrl(self):
     return self.url
@@ -110,8 +111,8 @@ class CVSRepository(Repository):
       tagFile.close()
     return CVSRepository(rsh,url,localPath,localName,subDir,tag,None)
 
-  def __init__(self,rsh,url,localPath,localName,subdir,tag,var):
-    Repository.__init__(self,url,localPath,localName,subdir,tag,var)
+  def __init__(self,rsh,url,localPath,localName,subdir,tag,var, rev=None):
+    Repository.__init__(self,url,localPath,localName,subdir,tag,var,rev)
     self.rsh=rsh
     self.env = 'CVS_RSH="' + rsh + '"'
     self.opt = '-z3 -d'
@@ -221,8 +222,8 @@ class SVNRepository(Repository):
       tag=tag[:-(len(subDir)+1)]
     return SVNRepository(urlRoot,localPath,localName,subDir,tag,None)
 
-  def __init__(self,url,localPath, localName,subdir,tag,var):
-    Repository.__init__(self,url,localPath,localName,subdir,tag,var)
+  def __init__(self,url,localPath, localName,subdir,tag,var, rev=None):
+    Repository.__init__(self,url,localPath,localName,subdir,tag,var,rev)
 
   def kind(self):
     return 'svn'
@@ -261,7 +262,10 @@ class SVNRepository(Repository):
   def update(self):
     if not os.path.exists(os.path.join(self.getLocalRepoPath(),'.svn')):
       raise RepositoryException("directory "+self.getLocalRepoPath()+" has no SVN data")
-    self.cmdDesc.setCmd("cd "+self.getLocalRepoPath()+" && svn update")
+    cmd="cd "+self.getLocalRepoPath()+" && svn update"
+    if self.rev:
+      cmd+=" -r "+self.rev
+    self.cmdDesc.setCmd(cmd)
     self.cmdDesc.setDesc("updating "+self.getLocalRepoPath())
 
   def checkout(self):
@@ -273,7 +277,10 @@ class SVNRepository(Repository):
       url=os.path.join(url,self.getSubdir())
     else:
       name=self.getLocalName()
-    self.cmdDesc.setCmd("svn co "+url+" "+name)
+    cmd="svn co "
+    if self.rev:
+      cmd+="-r "+self.rev+" "
+    self.cmdDesc.setCmd(cmd+url+" "+name)
     self.cmdDesc.setDesc("checking out into "+self.getLocalRepoPath())
 
 class MercurialRepository(Repository):
@@ -303,8 +310,8 @@ class MercurialRepository(Repository):
     (localPath,localName)=os.path.split(dir)
     return MercurialRepository(url,localPath,localName,None,None,None)
 
-  def __init__(self,url,localPath, localName,subdir,tag,var):
-    Repository.__init__(self,url,localPath,localName,subdir,tag,var)
+  def __init__(self,url,localPath, localName,subdir,tag,var,rev=None):
+    Repository.__init__(self,url,localPath,localName,subdir,tag,var,rev)
 
   def kind(self):
     return 'hg'
