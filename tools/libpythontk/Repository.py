@@ -264,7 +264,7 @@ class SVNRepository(Repository):
       raise RepositoryException("directory "+self.getLocalRepoPath()+" has no SVN data")
     cmd="cd "+self.getLocalRepoPath()+" && svn update"
     if self.rev:
-      cmd+=" -r "+self.rev
+      cmd+=" -r "+str(self.rev)
     self.cmdDesc.setCmd(cmd)
     self.cmdDesc.setDesc("updating "+self.getLocalRepoPath())
 

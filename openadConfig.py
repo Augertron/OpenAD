@@ -47,7 +47,7 @@ class openadConfig:
     if includeDev:
       self.OpenADRepos[name]=(Repository.MercurialRepository(ANLMercurialUrl+name,OpenADRoot,name,None,None,'OPENANALYSIS_BASE'),True)
     else:
-      self.OpenADRepos[name]=(Repository.SVNRepository(riceSvnUrl+'open-analysis',OpenADRoot,name,None,'tags/version-openad','OPENANALYSIS_BASE'),True,434)
+      self.OpenADRepos[name]=(Repository.SVNRepository(riceSvnUrl+'open-analysis',OpenADRoot,name,None,'tags/version-openad','OPENANALYSIS_BASE',434),True)
     name="xercesc";       self.orderedRepoList.append(name)
     self.OpenADRepos[name]=(Repository.SVNRepository(riceSvnUrl+name,OpenADRoot,name,None,'tags/version-openad','XERCESC_BASE'),True)
     name="xaifBooster";   self.orderedRepoList.append(name)
