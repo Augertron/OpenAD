@@ -360,7 +360,10 @@ class MercurialRepository(Repository):
   def update(self):
     if not os.path.exists(os.path.join(self.getLocalRepoPath(),'.hg')):
       raise RepositoryException("directory "+self.getLocalRepoPath()+" has no Mercurial data")
-    self.cmdDesc.setCmd("cd "+self.getLocalRepoPath()+" && hg pull -q && hg update")
+    cmd="cd "+self.getLocalRepoPath()+" && hg pull -q && hg update"
+    if self.rev:
+      cmd+=" -r "+str(self.rev)
+    self.cmdDesc.setCmd(cmd)
     self.cmdDesc.setDesc("updating "+self.getLocalRepoPath())
 
   def checkout(self):
@@ -373,7 +376,10 @@ class MercurialRepository(Repository):
       desc+=os.path.join(self.getLocalPath(),self.getLocalName())
     else:
       desc+=self.getLocalName()
-    cmd+="hg clone "+self.getUrl()+" "+self.getLocalRepoPath()
+    cmd+="hg clone "
+    if self.rev:
+      cmd+="-r "+str(self.rev)+" "
+    cmd+=self.getUrl()+" "+self.getLocalRepoPath()
     self.cmdDesc.setCmd(cmd)
     self.cmdDesc.setDesc(desc)
 
