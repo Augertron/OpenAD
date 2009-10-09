@@ -27,6 +27,35 @@ class OpenadUpdate:
     if options.verbose :
       self.runCmdsDebug=2
     self.options=options
+    self.fileRevisions=None
+
+  def parseRevisionFile(self):
+    try: 
+      revisionFileHandle=open(self.options.revisionFile,'r')
+      self.fileRevisions={}
+      for theLine in revisionFileHandle:
+        (lPath,vPair)=theLine.split()  
+        (vType,vVer)=vPair.split(':')
+        if (lPath=='../OpenAD'):
+          lPath='.'
+        if vType=='hg' and vVer[-1]=='+':
+          vVer=vVer[:-1]
+        if vType!='cvs':
+          self.fileRevisions[lPath]=vVer
+    except IOError, e:
+      sys.stderr.write('ERROR: handling specified revision file '+str(self.options.revisionFile)+' '+str(e)+'\n')
+      raise e
+  
+  def getRevisionFromFile(self,localPath):
+    if not self.options.revisionFile:
+      return None
+    if not self.fileRevisions:
+      self.parseRevisionFile()
+    localRelPath=localPath[len(os.environ["OPENADROOT"])+1:]
+    if localRelPath in self.fileRevisions:
+      # print "found "+self.fileRevisions[localRelPath]+" for "+localRelPath
+      return self.fileRevisions[localRelPath]
+    return None
 
   def Run(self):
     oaCfg=openadConfig.openadConfig(self.options.tests,self.options.extras,self.options.development)
@@ -50,7 +79,10 @@ class OpenadUpdate:
                                              repoPair[0].getSubdir())
           if (actRepo.getUrl()==repoPair[0].getUrl()
               and
-              actRepo.getTag()==repoPair[0].getTag()) : 
+              actRepo.getTag()==repoPair[0].getTag()) :
+            fRev=self.getRevisionFromFile(repoPair[0].getLocalRepoPath())
+            if fRev:
+              repoPair[0].rev=fRev
             repoPair[0].update() # sets CmdDesc to update repository
           else:
             if (self.options.development):
@@ -58,6 +90,9 @@ class OpenadUpdate:
                   or
                   actRepo.getTag()!=repoPair[0].getTag()):
                 sys.stdout.write('NOTE: development repo URL '+actRepo.getUrl()+' for '+actRepo.getLocalRepoPath()+'\n')
+              fRev=self.getRevisionFromFile(repoPair[0].getLocalRepoPath())
+              if fRev:
+                actRepo.rev=fRev
               actRepo.update() # sets CmdDesc to update the actual repository
               repoPair=(actRepo,True)
             else:   
@@ -68,12 +103,18 @@ class OpenadUpdate:
                 sys.stdout.write('tag: \n\tcurrent: '+str(actRepo.getTag())+'\n\tconfig : '+str(repoPair[0].getTag())+'\n')
               if (not self.options.force and raw_input("\tThe current repository will be deleted and a new repository will be created, continue? (y)/n: ")) == "n" :
                 sys.stdout.flush()
+                fRev=self.getRevisionFromFile(repoPair[0].getLocalRepoPath())
+                if fRev:
+                  repoPair[0].rev=fRev
                 repoPair[0].update() # sets CmdDesc to update repository
               else :
 		cmd=RunCmds.CmdDesc()
 		cmd.setCmd("rm -rf "+os.path.join(repoPair[0].getLocalPath(),repoPair[0].getLocalName()))
 		cmd.setDesc("removing "+os.path.join(repoPair[0].getLocalPath(),repoPair[0].getLocalName()))
                 cmdDescVecRef.append(cmd)
+                fRev=self.getRevisionFromFile(repoPair[0].getLocalRepoPath())
+                if fRev:
+                  repoPair[0].rev=fRev
                 repoPair[0].checkout() # check out repository
         except (RunCmds.RunnerException), e:
           if self.options.keepGoing:
@@ -119,6 +160,10 @@ def main():
   opt.add_option('-t','--tests',dest='tests',
                  help="include repositories for test cases (requires Mercurial)",
                  action='store_true',default=False)
+  opt.add_option('--revisionFile',dest='revisionFile',
+                 help="takes the output of \'opendadStatus -t\' as  an input file to update to specific component revisions",
+                 metavar='<file_name>',
+                 default=None)
   opt.add_option('-v','--verbose',dest='verbose',
                  help="extra output",
                  action='store_true',default=False)
