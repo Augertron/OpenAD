@@ -279,7 +279,7 @@ class SVNRepository(Repository):
       name=self.getLocalName()
     cmd="svn co "
     if self.rev:
-      cmd+="-r "+str(elf.rev)+" "
+      cmd+="-r "+str(self.rev)+" "
     self.cmdDesc.setCmd(cmd+url+" "+name)
     self.cmdDesc.setDesc("checking out into "+self.getLocalRepoPath())
 
