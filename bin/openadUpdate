@@ -38,6 +38,10 @@ class OpenadUpdate:
         (vType,vVer)=vPair.split(':')
         if (lPath=='../OpenAD'):
           lPath='.'
+        if (lPath=='boost/boost'):
+          # something in the boost setup prevents the update for the latest 
+	  # branch revision on the given branch
+  	  continue
         if vType=='hg' and vVer[-1]=='+':
           vVer=vVer[:-1]
         if vType!='cvs':
@@ -46,14 +50,13 @@ class OpenadUpdate:
       sys.stderr.write('ERROR: handling specified revision file '+str(self.options.revisionFile)+' '+str(e)+'\n')
       raise e
   
-  def getRevisionFromFile(self,localPath):
+  def getRevisionFromFile(self,repo):
     if not self.options.revisionFile:
       return None
     if not self.fileRevisions:
       self.parseRevisionFile()
-    localRelPath=localPath[len(os.environ["OPENADROOT"])+1:]
+    localRelPath=repo.getLocalRepoPath()[len(os.environ["OPENADROOT"])+1:]
     if localRelPath in self.fileRevisions:
-      # print "found "+self.fileRevisions[localRelPath]+" for "+localRelPath
       return self.fileRevisions[localRelPath]
     return None
 
@@ -80,7 +83,7 @@ class OpenadUpdate:
           if (actRepo.getUrl()==repoPair[0].getUrl()
               and
               actRepo.getTag()==repoPair[0].getTag()) :
-            fRev=self.getRevisionFromFile(repoPair[0].getLocalRepoPath())
+            fRev=self.getRevisionFromFile(repoPair[0])
             if fRev:
               repoPair[0].rev=fRev
             repoPair[0].update() # sets CmdDesc to update repository
@@ -90,7 +93,7 @@ class OpenadUpdate:
                   or
                   actRepo.getTag()!=repoPair[0].getTag()):
                 sys.stdout.write('NOTE: development repo URL '+actRepo.getUrl()+' for '+actRepo.getLocalRepoPath()+'\n')
-              fRev=self.getRevisionFromFile(repoPair[0].getLocalRepoPath())
+              fRev=self.getRevisionFromFile(repoPair[0])
               if fRev:
                 actRepo.rev=fRev
               actRepo.update() # sets CmdDesc to update the actual repository
@@ -103,7 +106,7 @@ class OpenadUpdate:
                 sys.stdout.write('tag: \n\tcurrent: '+str(actRepo.getTag())+'\n\tconfig : '+str(repoPair[0].getTag())+'\n')
               if (not self.options.force and raw_input("\tThe current repository will be deleted and a new repository will be created, continue? (y)/n: ")) == "n" :
                 sys.stdout.flush()
-                fRev=self.getRevisionFromFile(repoPair[0].getLocalRepoPath())
+                fRev=self.getRevisionFromFile(repoPair[0])
                 if fRev:
                   repoPair[0].rev=fRev
                 repoPair[0].update() # sets CmdDesc to update repository
@@ -112,7 +115,7 @@ class OpenadUpdate:
 		cmd.setCmd("rm -rf "+os.path.join(repoPair[0].getLocalPath(),repoPair[0].getLocalName()))
 		cmd.setDesc("removing "+os.path.join(repoPair[0].getLocalPath(),repoPair[0].getLocalName()))
                 cmdDescVecRef.append(cmd)
-                fRev=self.getRevisionFromFile(repoPair[0].getLocalRepoPath())
+                fRev=self.getRevisionFromFile(repoPair[0])
                 if fRev:
                   repoPair[0].rev=fRev
                 repoPair[0].checkout() # check out repository
