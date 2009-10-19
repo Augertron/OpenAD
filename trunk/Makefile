@@ -269,9 +269,19 @@ install: uninstall open64_install openadforttk_install xaif_install xaifBooster_
 	mkdir -p ${INST_DIR}/bin
 	cp -f bin/openad ${INST_DIR}/bin
 	chmod a+rx ${INST_DIR}/bin/openad
-	cp -f bin/openadStatus ${INST_DIR}/bin
+	@echo "making custom openadStatus"
+	@echo '#!/bin/sh' >  ${INST_DIR}/bin/openadStatus 
+	@echo 'echo NOTE: this is a binary-only install based on the following component versions' >> ${INST_DIR}/bin/openadStatus 
+	@echo "echo ' " >> ${INST_DIR}/bin/openadStatus
+	@cat ${INST_DIR}/openadStatus.txt >>  ${INST_DIR}/bin/openadStatus
+	@echo "'" >>  ${INST_DIR}/bin/openadStatus
 	chmod a+rx ${INST_DIR}/bin/openadStatus
-	cp -f bin/openadUpdate ${INST_DIR}/bin
+	@echo "making custom openadUpdate"
+	@echo '#!/bin/sh' >  ${INST_DIR}/bin/openadUpdate
+	@echo 'echo ERROR cannot update\; this is a binary-only install based on the following component versions:' >> ${INST_DIR}/bin/openadUpdate
+	@echo "echo ' " >> ${INST_DIR}/bin/openadUpdate
+	@cat ${INST_DIR}/openadStatus.txt >>  ${INST_DIR}/bin/openadUpdate
+	@echo "'" >>  ${INST_DIR}/bin/openadUpdate
 	chmod a+rx ${INST_DIR}/bin/openadUpdate
 	cp -f setenv.csh ${INST_DIR}
 	chmod a+r ${INST_DIR}/setenv.csh
