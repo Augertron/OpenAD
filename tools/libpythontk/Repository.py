@@ -57,6 +57,9 @@ class Repository:
   def pendingUpdate(self):
     return False
 
+  def __str__(self):
+    return self.__class__.__name__+"(localRepoPath="+self.getLocalRepoPath()+")"
+
 class NoRepository(Repository):
   
   @staticmethod
@@ -87,7 +90,7 @@ class NoRepository(Repository):
 
   def outgoing(self):
     return False
-                                          
+
 class CVSRepository(Repository):
 
   @staticmethod
