@@ -94,8 +94,7 @@ def main():
       repsDict=oaCfg.getRepos()
       for v in repsDict.values() :
         if (v[1] and not os.path.exists(v[0].getLocalRepoPath()[len(root)+1:])):
-          sys.stderr.write("required repository "+str(v[0])+" not present")
-          return -1
+          raise RuntimeError("required repository "+str(v[0])+" not present")
       allRepList=[ (repsDict[k][0].getLocalRepoPath()[len(root)+1:] ) for k in oaCfg.orderedRepoList ] 
       repList=[]
       for i in allRepList:
@@ -145,7 +144,7 @@ def main():
           sys.stdout.flush()
           os.chdir(os.environ["OPENADROOT"])
   except RuntimeError, e:
-    print 'caught excetion: ',e
+    print 'ERROR: caught exception: ',e
     return -1
   except IOError, e:
     import errno
