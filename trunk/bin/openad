@@ -54,6 +54,11 @@ class RunOpenAD:
                               "runTimeSupport",
                               "scalarF",
                               "OAD_active.f90")
+        elif self.mode.major==MajorMode.trace:
+          return os.path.join(os.environ["OPENADROOT"],
+                              "runTimeSupport",
+                              "trace",
+                              "OAD_active.f90")
         else : 
           return os.path.join(os.environ["OPENADROOT"],
                               "runTimeSupport",
@@ -129,10 +134,13 @@ class RunOpenAD:
 
     def whirl2xaif(self):
         aCmdDesc=RunCmds.CmdDesc()
+        flags="-n "
+        if self.mode.major==MajorMode.trace: 
+          flags+="-v "
         aCmdDesc.setCmd(os.path.join(os.environ['OPENADFORTTKROOT'],
                                      'bin',
                                      'whirl2xaif')+
-                        " -n -o "+self.baseName+self.stage+".xaif "+self.baseName+self.stage+".B")
+                        " -o "+self.baseName+self.stage+".xaif "+flags+self.baseName+self.stage+".B")
         aCmdDesc.setDesc("analyzing source code and translating to xaif")
         self.commandDescriptions.append(aCmdDesc)
 
