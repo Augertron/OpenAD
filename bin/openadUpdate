@@ -187,6 +187,7 @@ def main():
     oadU.Run()
     if (cfgOldMtime!=os.stat('openadConfig.py').st_mtime):
       sys.stdout.write('NOTE: the update changed the repository configuration, rerunning the update.\n')
+      reload(openadConfig)
       oadU = OpenadUpdate(options)
       oadU.Run()
   except (Repository.RepositoryException, RunCmds.RunnerException), e:
