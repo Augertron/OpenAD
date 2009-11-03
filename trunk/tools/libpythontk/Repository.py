@@ -245,10 +245,14 @@ class SVNRepository(Repository):
     fName=tempfile.mktemp()
     ret=os.system('cd '+self.getLocalRepoPath()+'; svn status -uq | grep -vE \"^M \" > '+fName)
     infoFile=open(fName)
-    lines=infoFile.readlines()
+    mods=False
+    for line in infoFile.readlines():
+      if (line[8]=='*'):
+        mods=True
+        break
     infoFile.close()    
     os.remove(fName)
-    return (len(lines)>1)
+    return (mods)
 
   def outgoing(self):
     return self.locallyModified()
