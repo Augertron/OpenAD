@@ -14,12 +14,23 @@ sys.path.append(os.environ["OPENADROOT"])
 import openadConfig
 sys.path.append(os.path.join(os.environ["OPENADROOT"],"tools","libpythontk"))
 import Repository
+globPingTarget="www.rice.edu"
+globNWTest=True
+globSkipNWTest=False
 
 def netAvail() :
-    ret=os.system("ping -c 1 -q terra.mcs.anl.gov > /dev/null 2>&1")
+    global globSkipNWTest
+    if (globSkipNWTest) : 
+      return True
+    global globNWTest
+    if (not globNWTest): 
+      return False
+    global globPingTarget
+    ret=os.system("ping -c 1 -q "+globPingTarget+" > /dev/null 2>&1")
     if (ret == 0) : 
 	return True
     else :
+        globNWTest=False
 	return False	
 
 def isLink(path):
@@ -63,6 +74,7 @@ def inOut(repo, writeable):
     sys.stdout.flush()
 
 def main():
+  global globPingTarget
   from optparse import OptionParser
   usage = '%prog [options]\n\tdisplays OpenAD repository status\n\tKind:   hg, svn or cvs\n\tR/W:    R=read-only, W=writeable, L=symbolic link\n\tLocal:  C=locally changed , U=locally pending updates (hg only) \n\tRemote: O=outgoing changes , I=incoming changes\n\tA \'?\' is shown when the network/server takes too long.'
   opt = OptionParser(usage=usage)
@@ -71,6 +83,9 @@ def main():
                  action='store_true',default=False)
   opt.add_option('-q','--quick',dest='quick',
                  help="don't check for uncommited changes or pending pushes",
+                 action='store_true',default=False)
+  opt.add_option('-s','--skipNetworkTest',dest='skipNetworkTest',
+                 help="skip the network test (ping "+globPingTarget+") that we do to avoid waiting for repository commands when the network is unavailable, but sometimes pings are being blocked.",
                  action='store_true',default=False)
   opt.add_option('-t','--tagsOnly',dest='tagsOnly',
                  help="only list the repository and a version tag",
@@ -87,7 +102,12 @@ def main():
   doQuick=False
   if (options.verbose):
       sys.stdout.write("running for OPENADROOT="+os.environ["OPENADROOT"]+"\n")
+  if (options.skipNetworkTest): 
+      global globSkipNWTest
+      globSkipNWTest=True
   try:
+      if (not options.tagsOnly and  not netAvail() and not options.skipNetworkTest): 
+	sys.stderr.write("WARNING: cannot ping "+globPingTarget+" - assuming network is unavailable (or try running with -s )\n")
       root=os.environ["OPENADROOT"]
       os.chdir(root)
       oaCfg=openadConfig.openadConfig(True,True,options.development)
