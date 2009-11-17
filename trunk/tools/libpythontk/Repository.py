@@ -247,7 +247,7 @@ class SVNRepository(Repository):
     infoFile=open(fName)
     mods=False
     for line in infoFile.readlines():
-      if (line[8]=='*'):
+      if (line[7]=='*'):
         mods=True
         break
     infoFile.close()    
