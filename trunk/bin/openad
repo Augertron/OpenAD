@@ -52,7 +52,7 @@ class RunOpenAD:
         if self.mode.major==MajorMode.forward:
           return os.path.join(os.environ["OPENADROOT"],
                               "runTimeSupport",
-                              "scalarF",
+                              "scalar",
                               "OAD_active.f90")
         elif self.mode.major==MajorMode.trace:
           return os.path.join(os.environ["OPENADROOT"],

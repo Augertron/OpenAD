@@ -336,14 +336,14 @@ class MercurialRepository(Repository):
 
   def incoming(self):
     fName=tempfile.mktemp()
-    ret=os.system('cd '+self.getLocalRepoPath()+'; hg incoming -q > '+fName)
+    os.system('cd '+self.getLocalRepoPath()+'; hg incoming -q > '+fName)
     info=os.stat(fName)
     os.remove(fName)
     return (info[6]>0)
 
   def outgoing(self):
     fName=tempfile.mktemp()
-    ret=os.system('cd '+self.getLocalRepoPath()+'; hg outgoing -q > '+fName)
+    os.system('cd '+self.getLocalRepoPath()+'; hg outgoing -q > '+fName)
     info=os.stat(fName)
     os.remove(fName)
     return (info[6]>0)
