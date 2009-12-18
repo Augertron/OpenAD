@@ -307,7 +307,7 @@ install: uninstall open64_install openadforttk_install xaif_install xaifBooster_
 	cp -f runTimeSupport/cpToFile/*.f90 runTimeSupport/cpToFile/*.f ${INST_DIR}/runTimeSupport/cpToFile
 	cp -f runTimeSupport/metrics/*.c                                ${INST_DIR}/runTimeSupport/metrics
 	cp -f runTimeSupport/scalar/*.f90                               ${INST_DIR}/runTimeSupport/scalar
-	cp -f runTimeSupport/scalarF/*.f90                              ${INST_DIR}/runTimeSupport/scalarF
+	cp -f runTimeSupport/scalarNDI/*.f90                              ${INST_DIR}/runTimeSupport/scalarNDI
 	cp -f runTimeSupport/simple/*.f90   runTimeSupport/simple/*.f   ${INST_DIR}/runTimeSupport/simple
 	cp -f runTimeSupport/vector/*.f90                               ${INST_DIR}/runTimeSupport/vector
 	chmod -R a+r ${INST_DIR}/runTimeSupport
