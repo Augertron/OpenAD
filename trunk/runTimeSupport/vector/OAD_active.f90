@@ -11,14 +11,14 @@
         public :: active, saxpy, sax, zero_deriv, &
 setderiv, set_neg_deriv, inc_deriv, dec_deriv, &
 convert_p2a_scalar, convert_a2p_scalar, &
-convert_p2a_vector, convert_a2p_vector, & 
-convert_p2a_matrix, convert_a2p_matrix, & 
-convert_p2a_three_tensor, convert_a2p_three_tensor, & 
-convert_p2a_four_tensor, convert_a2p_four_tensor, & 
+convert_p2a_vector, convert_a2p_vector, &
+convert_p2a_matrix, convert_a2p_matrix, &
+convert_p2a_three_tensor, convert_a2p_three_tensor, &
+convert_p2a_four_tensor, convert_a2p_four_tensor, &
 convert_p2a_five_tensor, convert_a2p_five_tensor, & 
-convert_p2a_six_tensor, convert_a2p_six_tensor, & 
-convert_p2a_seven_tensor, convert_a2p_seven_tensor, & 
-oad_allocateMatching 
+convert_p2a_six_tensor, convert_a2p_six_tensor, &
+convert_p2a_seven_tensor, convert_a2p_seven_tensor, &
+oad_allocateMatching, oad_shapeTest
 
         integer :: max_deriv_vec_len
         parameter ( max_deriv_vec_len = 100 )
@@ -29,7 +29,7 @@ oad_allocateMatching
         !
         type active
           sequence
-          real(w2f__8) :: v
+          real(w2f__8) :: v 
           ! initialization does not work for active variables
           ! inside of common block, such as in boxmodel
           ! initialization is required for correct adjoint
@@ -37,13 +37,9 @@ oad_allocateMatching
         end type active
 
         interface saxpy
-          module procedure saxpy_d_a_a, saxpy_i4_a_a, saxpy_i8_a_a
+          module procedure saxpy_d_a_a, saxpy_i8_a_a, saxpy_i4_a_a
         end interface
         
-        interface sax
-          module procedure sax_d_a_a, sax_i8_a_a
-        end interface
-
         interface setderiv
           module procedure setderiv_a_a
           module procedure setderiv_av_av
@@ -66,8 +62,16 @@ oad_allocateMatching
 
         interface zero_deriv
           module procedure zero_deriv_a
+          module procedure zero_deriv_av
+          module procedure zero_deriv_am
+          module procedure zero_deriv_am3
+          module procedure zero_deriv_am4
         end interface
         
+        interface sax
+          module procedure sax_d_a_a, sax_i8_a_a, sax_i4_a_a
+        end interface
+
         interface convert_p2a_scalar
           module procedure convert_sp2a_scalar_impl
           module procedure convert_p2a_scalar_impl
@@ -141,7 +145,31 @@ oad_allocateMatching
         end interface
 
         interface oad_allocateMatching
-          module procedure oad_allocateMatchingV
+          module procedure oad_allocateMatching_pv2av
+          module procedure oad_allocateMatching_av
+          module procedure oad_allocateMatching_pv
+          module procedure oad_allocateMatching_p4bv
+          module procedure oad_allocateMatching_am
+          module procedure oad_allocateMatching_pm
+          module procedure oad_allocateMatching_p4bm
+          module procedure oad_allocateMatching_at4
+          module procedure oad_allocateMatching_pt4
+          module procedure oad_allocateMatching_at5
+          module procedure oad_allocateMatching_pt5
+        end interface 
+
+        interface oad_shapeTest
+          module procedure oad_shapeTest_pv2av
+          module procedure oad_shapeTest_av
+          module procedure oad_shapeTest_pv
+          module procedure oad_shapeTest_p4bv
+          module procedure oad_shapeTest_am
+          module procedure oad_shapeTest_pm
+          module procedure oad_shapeTest_p4bm
+          module procedure oad_shapeTest_at4
+          module procedure oad_shapeTest_pt4
+          module procedure oad_shapeTest_at5
+          module procedure oad_shapeTest_pt5
         end interface 
 
         contains
@@ -197,6 +225,16 @@ oad_allocateMatching
             y%d(i) = x%d(i)*a
           end do
         end subroutine sax_d_a_a
+
+        subroutine sax_i4_a_a(a,x,y)
+          integer(kind=w2f__i4), intent(in) :: a
+          type(active), intent(in) :: x
+          type(active), intent(inout) :: y
+          integer :: i
+          do i=1,max_deriv_vec_len
+            y%d(i) = x%d(i)*a
+          end do
+        end subroutine sax_i4_a_a
 
         subroutine sax_i8_a_a(a,x,y)
           integer(kind=w2f__i8), intent(in) :: a
@@ -310,11 +348,42 @@ oad_allocateMatching
         subroutine zero_deriv_a(x)
           type(active), intent(inout) :: x
           integer :: i
-          !do i=1,x%n
-          do i=1,max_deriv_vec_len
-            x%d(i) = 0.0d0
-          end do
+          do i = 1,max_deriv_vec_len
+             x%d(i)=0.0d0
+          end do 
         end subroutine zero_deriv_a
+
+        subroutine zero_deriv_av(x)
+          type(active), dimension(:), intent(inout) :: x
+          integer :: i
+          do i = 1,max_deriv_vec_len
+             x%d(i)=0.0d0
+          end do 
+        end subroutine zero_deriv_av
+
+        subroutine zero_deriv_am(x)
+          type(active), dimension(:,:), intent(inout) :: x
+          integer :: i
+          do i = 1,max_deriv_vec_len
+             x%d(i)=0.0d0
+          end do 
+        end subroutine zero_deriv_am
+
+        subroutine zero_deriv_am3(x)
+          type(active), dimension(:,:,:), intent(inout) :: x
+          integer :: i
+          do i = 1,max_deriv_vec_len
+             x%d(i)=0.0d0
+          end do 
+        end subroutine zero_deriv_am3
+
+        subroutine zero_deriv_am4(x)
+          type(active), dimension(:,:,:,:), intent(inout) :: x
+          integer :: i
+          do i = 1,max_deriv_vec_len
+             x%d(i)=0.0d0
+          end do 
+        end subroutine zero_deriv_am4
 
         !
         ! active/passive conversions
@@ -511,12 +580,175 @@ oad_allocateMatching
           convertTo%v=convertFrom
         end subroutine
 
-        subroutine oad_allocateMatchingV(toBeAllocated,allocateMatching)
+        subroutine oad_allocateMatching_pv2av(toBeAllocated,allocateMatching)
+          implicit none
+          type(active), dimension(:), allocatable :: toBeAllocated
+          real(w2f__8), dimension(:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+        end subroutine
+
+        subroutine oad_allocateMatching_av(toBeAllocated,allocateMatching)
           implicit none
           type(active), dimension(:), allocatable :: toBeAllocated
           type(active), dimension(:) :: allocateMatching
-          allocate(toBeAllocated(size(allocateMatching)));
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+        end subroutine
+
+        subroutine oad_allocateMatching_pv(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__8), dimension(:), allocatable :: toBeAllocated
+          type(active), dimension(:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+        end subroutine
+
+        subroutine oad_allocateMatching_p4bv(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__4), dimension(:), allocatable :: toBeAllocated
+          type(active), dimension(:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+        end subroutine
+
+        subroutine oad_allocateMatching_am(toBeAllocated,allocateMatching)
+          implicit none
+          type(active), dimension(:,:), allocatable :: toBeAllocated
+          type(active), dimension(:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2)))
+        end subroutine
+
+        subroutine oad_allocateMatching_pm(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__8), dimension(:,:), allocatable :: toBeAllocated
+          type(active), dimension(:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2)))
+        end subroutine
+
+        subroutine oad_allocateMatching_p4bm(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__4), dimension(:,:), allocatable :: toBeAllocated
+          type(active), dimension(:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2)))
+        end subroutine
+
+        subroutine oad_allocateMatching_at4(toBeAllocated,allocateMatching)
+          implicit none
+          type(active), dimension(:,:,:,:), allocatable :: toBeAllocated
+          type(active), dimension(:,:,:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2),&
+               size(allocateMatching,3),&
+               size(allocateMatching,4)))
+        end subroutine
+
+        subroutine oad_allocateMatching_pt4(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__8), dimension(:,:,:,:), allocatable :: toBeAllocated
+          type(active), dimension(:,:,:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2),&
+               size(allocateMatching,3),&
+               size(allocateMatching,4)))
+        end subroutine
+
+        subroutine oad_allocateMatching_at5(toBeAllocated,allocateMatching)
+          implicit none
+          type(active), dimension(:,:,:,:,:), allocatable :: toBeAllocated
+          type(active), dimension(:,:,:,:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2),&
+               size(allocateMatching,3),&
+               size(allocateMatching,4),&
+               size(allocateMatching,5)))
+        end subroutine
+
+        subroutine oad_allocateMatching_pt5(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__8), dimension(:,:,:,:,:), allocatable :: toBeAllocated
+          type(active), dimension(:,:,:,:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2),&
+               size(allocateMatching,3),&
+               size(allocateMatching,4),&
+               size(allocateMatching,5)))
+        end subroutine
+ 
+        subroutine oad_shapeTest_pv2av(allocatedVar,origVar)
+          implicit none
+          type(active), dimension(:), allocatable :: allocatedVar
+          real(w2f__8), dimension(:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) stop "ERROR: OAD run time library detected shape change"
+        end subroutine
+
+        subroutine oad_shapeTest_av(allocatedVar,origVar)
+          implicit none
+          type(active), dimension(:), allocatable :: allocatedVar
+          type(active), dimension(:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) stop "ERROR: OAD run time library detected shape change"
+        end subroutine
+
+        subroutine oad_shapeTest_pv(allocatedVar,origVar)
+          implicit none
+          real(w2f__8), dimension(:), allocatable :: allocatedVar
+          type(active), dimension(:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) stop "ERROR: OAD run time library detected shape change"
+        end subroutine
+
+        subroutine oad_shapeTest_p4bv(allocatedVar,origVar)
+          implicit none
+          real(w2f__4), dimension(:), allocatable :: allocatedVar
+          type(active), dimension(:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) stop "ERROR: OAD run time library detected shape change"
+        end subroutine
+
+        subroutine oad_shapeTest_am(allocatedVar,origVar)
+          implicit none
+          type(active), dimension(:,:), allocatable :: allocatedVar
+          type(active), dimension(:,:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) stop "ERROR: OAD run time library detected shape change"
+        end subroutine
+
+        subroutine oad_shapeTest_pm(allocatedVar,origVar)
+          implicit none
+          real(w2f__8), dimension(:,:), allocatable :: allocatedVar
+          type(active), dimension(:,:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) stop "ERROR: OAD run time library detected shape change"
+        end subroutine
+
+        subroutine oad_shapeTest_p4bm(allocatedVar,origVar)
+          implicit none
+          real(w2f__4), dimension(:,:), allocatable :: allocatedVar
+          type(active), dimension(:,:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) stop "ERROR: OAD run time library detected shape change"
+        end subroutine
+
+        subroutine oad_shapeTest_at4(allocatedVar,origVar)
+          implicit none
+          type(active), dimension(:,:,:,:), allocatable :: allocatedVar
+          type(active), dimension(:,:,:,:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) stop "ERROR: OAD run time library detected shape change"
+        end subroutine
+
+        subroutine oad_shapeTest_pt4(allocatedVar,origVar)
+          implicit none
+          real(w2f__8), dimension(:,:,:,:), allocatable :: allocatedVar
+          type(active), dimension(:,:,:,:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) stop "ERROR: OAD run time library detected shape change"
+        end subroutine
+
+        subroutine oad_shapeTest_at5(allocatedVar,origVar)
+          implicit none
+          type(active), dimension(:,:,:,:,:), allocatable :: allocatedVar
+          type(active), dimension(:,:,:,:,:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) stop "ERROR: OAD run time library detected shape change"
+        end subroutine
+
+        subroutine oad_shapeTest_pt5(allocatedVar,origVar)
+          implicit none
+          real(w2f__8), dimension(:,:,:,:,:), allocatable :: allocatedVar
+          type(active), dimension(:,:,:,:,:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) stop "ERROR: OAD run time library detected shape change"
         end subroutine
 
         end module OAD_active
-
