@@ -7,7 +7,9 @@
 
         use w2f__types
         implicit none
-        private
+
+        private :: runTimeErrorStop, shapeChange
+
         public :: active, saxpy, sax, zero_deriv, &
 setderiv, set_neg_deriv, inc_deriv, dec_deriv, &
 convert_p2a_scalar, convert_a2p_scalar, &
@@ -19,6 +21,8 @@ convert_p2a_five_tensor, convert_a2p_five_tensor, &
 convert_p2a_six_tensor, convert_a2p_six_tensor, &
 convert_p2a_seven_tensor, convert_a2p_seven_tensor, &
 oad_allocateMatching, oad_shapeTest
+
+        integer, parameter :: shapeChange=0
 
         integer :: max_deriv_vec_len
         parameter ( max_deriv_vec_len = 100 )
@@ -170,6 +174,10 @@ oad_allocateMatching, oad_shapeTest
           module procedure oad_shapeTest_pt4
           module procedure oad_shapeTest_at5
           module procedure oad_shapeTest_pt5
+        end interface 
+
+        interface runTimeErrorStop
+          module procedure runTimeErrorStopI
         end interface 
 
         contains
@@ -678,77 +686,86 @@ oad_allocateMatching, oad_shapeTest
           implicit none
           type(active), dimension(:), allocatable :: allocatedVar
           real(w2f__8), dimension(:) :: origVar
-          if (.not. all(shape(allocatedVar)==shape(origVar))) stop "ERROR: OAD run time library detected shape change"
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
         end subroutine
 
         subroutine oad_shapeTest_av(allocatedVar,origVar)
           implicit none
           type(active), dimension(:), allocatable :: allocatedVar
           type(active), dimension(:) :: origVar
-          if (.not. all(shape(allocatedVar)==shape(origVar))) stop "ERROR: OAD run time library detected shape change"
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
         end subroutine
 
         subroutine oad_shapeTest_pv(allocatedVar,origVar)
           implicit none
           real(w2f__8), dimension(:), allocatable :: allocatedVar
           type(active), dimension(:) :: origVar
-          if (.not. all(shape(allocatedVar)==shape(origVar))) stop "ERROR: OAD run time library detected shape change"
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
         end subroutine
 
         subroutine oad_shapeTest_p4bv(allocatedVar,origVar)
           implicit none
           real(w2f__4), dimension(:), allocatable :: allocatedVar
           type(active), dimension(:) :: origVar
-          if (.not. all(shape(allocatedVar)==shape(origVar))) stop "ERROR: OAD run time library detected shape change"
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
         end subroutine
 
         subroutine oad_shapeTest_am(allocatedVar,origVar)
           implicit none
           type(active), dimension(:,:), allocatable :: allocatedVar
           type(active), dimension(:,:) :: origVar
-          if (.not. all(shape(allocatedVar)==shape(origVar))) stop "ERROR: OAD run time library detected shape change"
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
         end subroutine
 
         subroutine oad_shapeTest_pm(allocatedVar,origVar)
           implicit none
           real(w2f__8), dimension(:,:), allocatable :: allocatedVar
           type(active), dimension(:,:) :: origVar
-          if (.not. all(shape(allocatedVar)==shape(origVar))) stop "ERROR: OAD run time library detected shape change"
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
         end subroutine
 
         subroutine oad_shapeTest_p4bm(allocatedVar,origVar)
           implicit none
           real(w2f__4), dimension(:,:), allocatable :: allocatedVar
           type(active), dimension(:,:) :: origVar
-          if (.not. all(shape(allocatedVar)==shape(origVar))) stop "ERROR: OAD run time library detected shape change"
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
         end subroutine
 
         subroutine oad_shapeTest_at4(allocatedVar,origVar)
           implicit none
           type(active), dimension(:,:,:,:), allocatable :: allocatedVar
           type(active), dimension(:,:,:,:) :: origVar
-          if (.not. all(shape(allocatedVar)==shape(origVar))) stop "ERROR: OAD run time library detected shape change"
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
         end subroutine
 
         subroutine oad_shapeTest_pt4(allocatedVar,origVar)
           implicit none
           real(w2f__8), dimension(:,:,:,:), allocatable :: allocatedVar
           type(active), dimension(:,:,:,:) :: origVar
-          if (.not. all(shape(allocatedVar)==shape(origVar))) stop "ERROR: OAD run time library detected shape change"
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
         end subroutine
 
         subroutine oad_shapeTest_at5(allocatedVar,origVar)
           implicit none
           type(active), dimension(:,:,:,:,:), allocatable :: allocatedVar
           type(active), dimension(:,:,:,:,:) :: origVar
-          if (.not. all(shape(allocatedVar)==shape(origVar))) stop "ERROR: OAD run time library detected shape change"
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
         end subroutine
 
         subroutine oad_shapeTest_pt5(allocatedVar,origVar)
           implicit none
           real(w2f__8), dimension(:,:,:,:,:), allocatable :: allocatedVar
           type(active), dimension(:,:,:,:,:) :: origVar
-          if (.not. all(shape(allocatedVar)==shape(origVar))) stop "ERROR: OAD run time library detected shape change"
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange) 
+        end subroutine
+
+        subroutine runTimeErrorStopI(mesgId)
+          implicit none
+	  integer mesgId
+          select case (mesgId) 
+          case (shapeChange)
+             stop "ERROR: OAD run time library: detected shape change"
+             end select 
         end subroutine
 
         end module OAD_active
