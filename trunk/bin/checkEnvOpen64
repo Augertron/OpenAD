@@ -1,0 +1,20 @@
+#! /usr/bin/env python
+##########################################################
+# This file is part of OpenAD released under the LGPL.   #
+# The full COPYRIGHT notice can be found in the top      #
+# level directory of the OpenAD distribution             #
+##########################################################
+
+import os
+import sys
+for e in ["CFLAGS","CXXFLAGS"]: 
+    if (os.environ.has_key(e)):
+        msg="ERROR: the environment variable "+e+" is set to "
+        if (os.environ[e]=="") : 
+            msg += "an empty string"
+        else: 
+            msg +=os.environ[e]
+        msg += " which conflicts with the Open64 build system. It must be explicitly removed from the catalogue of environment variables with \"unset "+e+"\"\n"
+        sys.stderr.write(msg)
+        sys.exit(-1)
+
