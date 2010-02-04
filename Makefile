@@ -98,6 +98,7 @@ endif
 build_Open64: build_Open64_fe build_Open64_be build_Open64_tools
 
 build_Open64_fe: 
+	bin/checkEnvOpen64
 	cd $(OPEN64ROOT)/crayf90/sgi && $(MAKE) 
 
 build_Open64_be: 
