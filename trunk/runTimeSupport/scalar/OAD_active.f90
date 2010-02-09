@@ -38,10 +38,11 @@ oad_allocateMatching, oad_shapeTest
           ! inside of common block, such as in boxmodel
           ! initialization is required for correct adjoint
           real(w2f__8) :: d=0.0
-        end type active
+        end type
 
         interface saxpy
           module procedure saxpy_d_a_a, saxpy_i8_a_a, saxpy_i4_a_a
+          module procedure saxpy_d_a_a_v, saxpy_i8_a_a_v, saxpy_i4_a_a_v
         end interface
         
         interface setderiv
@@ -74,6 +75,7 @@ oad_allocateMatching, oad_shapeTest
         
         interface sax
           module procedure sax_d_a_a, sax_i8_a_a, sax_i4_a_a
+          module procedure sax_d_a_a_v, sax_i8_a_a_v, sax_i4_a_a_v
         end interface
 
         interface convert_p2a_scalar
@@ -191,21 +193,42 @@ oad_allocateMatching, oad_shapeTest
           type(active), intent(in) :: x
           type(active), intent(inout) :: y
           y%d=y%d+x%d*a
-        end subroutine saxpy_d_a_a
+        end subroutine
 
         subroutine saxpy_i4_a_a(a,x,y)
           integer(kind=w2f__i4), intent(in) :: a
           type(active), intent(in) :: x
           type(active), intent(inout) :: y
           y%d=y%d+x%d*a
-        end subroutine saxpy_i4_a_a
+        end subroutine
         
         subroutine saxpy_i8_a_a(a,x,y)
           integer(kind=w2f__i8), intent(in) :: a
           type(active), intent(in) :: x
           type(active), intent(inout) :: y
           y%d=y%d+x%d*a
-        end subroutine saxpy_i8_a_a
+        end subroutine
+
+        subroutine saxpy_d_a_a_v(a,x,y)
+          real(w2f__8), dimension(:), intent(in) :: a
+          type(active), dimension(:), intent(in) :: x
+          type(active), dimension(:), intent(inout) :: y
+          y%d=y%d+x%d*a
+        end subroutine
+
+        subroutine saxpy_i4_a_a_v(a,x,y)
+          integer(kind=w2f__i4), dimension(:), intent(in) :: a
+          type(active), dimension(:), intent(in) :: x
+          type(active), dimension(:), intent(inout) :: y
+          y%d=y%d+x%d*a
+        end subroutine
+        
+        subroutine saxpy_i8_a_a_v(a,x,y)
+          integer(kind=w2f__i8), dimension(:), intent(in) :: a
+          type(active), dimension(:), intent(in) :: x
+          type(active), dimension(:), intent(inout) :: y
+          y%d=y%d+x%d*a
+        end subroutine
 
         !
         ! chain rule saxpy to be used in forward and reverse modes
@@ -219,21 +242,42 @@ oad_allocateMatching, oad_shapeTest
           type(active), intent(in) :: x
           type(active), intent(inout) :: y
           y%d=x%d*a
-        end subroutine sax_d_a_a
+        end subroutine
 
         subroutine sax_i4_a_a(a,x,y)
           integer(kind=w2f__i4), intent(in) :: a
           type(active), intent(in) :: x
           type(active), intent(inout) :: y
           y%d=x%d*a
-        end subroutine sax_i4_a_a
+        end subroutine
 
         subroutine sax_i8_a_a(a,x,y)
           integer(kind=w2f__i8), intent(in) :: a
           type(active), intent(in) :: x
           type(active), intent(inout) :: y
           y%d=x%d*a
-        end subroutine sax_i8_a_a
+        end subroutine
+        
+        subroutine sax_d_a_a_v(a,x,y)
+          real(w2f__8), dimension(:), intent(in) :: a
+          type(active), dimension(:), intent(in) :: x
+          type(active), dimension(:), intent(inout) :: y
+          y%d=x%d*a
+        end subroutine
+
+        subroutine sax_i4_a_a_v(a,x,y)
+          integer(kind=w2f__i4), dimension(:), intent(in) :: a
+          type(active), dimension(:), intent(in) :: x
+          type(active), dimension(:), intent(inout) :: y
+          y%d=x%d*a
+        end subroutine
+
+        subroutine sax_i8_a_a_v(a,x,y)
+          integer(kind=w2f__i8), dimension(:), intent(in) :: a
+          type(active), dimension(:), intent(in) :: x
+          type(active), dimension(:), intent(inout) :: y
+          y%d=x%d*a
+        end subroutine
         
         !
         ! set derivative of y to be equal to derivative of x
@@ -245,13 +289,13 @@ oad_allocateMatching, oad_shapeTest
           type(active), intent(inout) :: y
           type(active), intent(in) :: x
           y%d=x%d
-        end subroutine setderiv_a_a
+        end subroutine 
 
         subroutine setderiv_av_av(y,x)
           type(active), intent(inout), dimension(:) :: y
           type(active), intent(in), dimension(:) :: x
           y%d=x%d
-        end subroutine setderiv_av_av
+        end subroutine 
 
         !
         ! set the derivative of y to be the negated derivative of x
@@ -263,13 +307,13 @@ oad_allocateMatching, oad_shapeTest
           type(active), intent(inout) :: y
           type(active), intent(in) :: x
           y%d = -x%d
-        end subroutine set_neg_deriv_a_a
+        end subroutine 
 
         subroutine set_neg_deriv_av_av(y,x)
           type(active), intent(inout), dimension(:) :: y
           type(active), intent(in), dimension(:) :: x
           y%d = -x%d
-        end subroutine set_neg_deriv_av_av
+        end subroutine 
 
         !
         ! increment the derivative of y by the derivative of x
@@ -281,13 +325,13 @@ oad_allocateMatching, oad_shapeTest
           type(active), intent(inout) :: y
           type(active), intent(in) :: x
           y%d = y%d + x%d
-        end subroutine inc_deriv_a_a
+        end subroutine 
 
         subroutine inc_deriv_av_av(y,x)
           type(active), intent(inout), dimension(:) :: y
           type(active), intent(in), dimension(:) :: x
           y%d = y%d + x%d
-        end subroutine inc_deriv_av_av
+        end subroutine 
 
         !
         ! decrement the derivative of y by the derivative of x
@@ -299,13 +343,13 @@ oad_allocateMatching, oad_shapeTest
           type(active), intent(inout) :: y
           type(active), intent(in) :: x
           y%d = y%d - x%d
-        end subroutine dec_deriv_a_a
+        end subroutine 
 
         subroutine dec_deriv_av_av(y,x)
           type(active), intent(inout), dimension(:) :: y
           type(active), intent(in), dimension(:) :: x
           y%d = y%d - x%d
-        end subroutine dec_deriv_av_av
+        end subroutine 
 
         !
         ! set derivative components to 0.0
@@ -313,27 +357,27 @@ oad_allocateMatching, oad_shapeTest
         subroutine zero_deriv_a(x)
           type(active), intent(inout) :: x
           x%d=0.0d0
-        end subroutine zero_deriv_a
+        end subroutine 
 
         subroutine zero_deriv_av(x)
           type(active), dimension(:), intent(inout) :: x
           x%d=0.0d0
-        end subroutine zero_deriv_av
+        end subroutine 
 
         subroutine zero_deriv_am(x)
           type(active), dimension(:,:), intent(inout) :: x
           x%d = 0.0d0
-        end subroutine zero_deriv_am
+        end subroutine 
 
         subroutine zero_deriv_am3(x)
           type(active), dimension(:,:,:), intent(inout) :: x
           x%d = 0.0d0
-        end subroutine zero_deriv_am3
+        end subroutine 
 
         subroutine zero_deriv_am4(x)
           type(active), dimension(:,:,:,:), intent(inout) :: x
           x%d = 0.0d0
-        end subroutine zero_deriv_am4
+        end subroutine 
 
         !
         ! active/passive conversions
@@ -710,4 +754,4 @@ oad_allocateMatching, oad_shapeTest
              end select 
         end subroutine
 
-        end module OAD_active
+        end module
