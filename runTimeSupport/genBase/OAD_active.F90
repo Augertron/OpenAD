@@ -1,5 +1,3 @@
-
-
 !#########################################################
 ! This file is part of OpenAD released under the LGPL.   #
 ! The full COPYRIGHT notice can be found in the top      #
@@ -10,16 +8,36 @@
         implicit none
         private :: runTimeErrorStop, shapeChange
         public :: active
-
+#ifndef TRACE
         public :: saxpy, sax, zero_deriv, setderiv
         public :: set_neg_deriv, inc_deriv, dec_deriv
-
+#endif
         public :: oad_convert, oad_allocateMatching, oad_shapeTest
-
+#ifndef TRACE
         integer :: count_mult = 0
         integer :: count_add = 0
-
+#endif
         integer, parameter :: shapeChange=0
+#ifdef VECTOR
+        integer :: max_deriv_vec_len
+        parameter ( max_deriv_vec_len = 100 )
+# define VECTOR_DIM , dimension(max_deriv_vec_len)
+# define VECTOR_LOOP_VAR integer :: i
+# define VECTOR_LOOP_BEGIN do i=1,max_deriv_vec_len
+# define VECTOR_LOOP_END end do
+# define DELEM d(i)
+#else 
+# define VECTOR_DIM 
+# define VECTOR_LOOP_VAR
+# define VECTOR_LOOP_BEGIN
+# define VECTOR_LOOP_END
+# define DELEM d
+#endif
+#ifdef SCALARNDI
+# define DINIT
+#else
+# define DINIT =0.0d0
+#endif
 
         !
         ! active needs to be a sequence type
@@ -28,11 +46,14 @@
         type active
           sequence
           real(w2f__8) :: v 
+#ifndef TRACE
           ! initialization does not work for active variables
           ! inside of common block, such as in boxmodel
           ! initialization is required for correct adjoint
-          real(w2f__8)  :: d =0.0d0
+          real(w2f__8) VECTOR_DIM :: d DINIT
+#endif
         end type
+#ifndef TRACE
         interface saxpy
           module procedure saxpy_d0_a0_a0, saxpy_l0_a0_a0, saxpy_i0_a0_a0
           module procedure saxpy_d1_a1_a1, saxpy_l1_a1_a1, saxpy_i1_a1_a1
@@ -71,6 +92,7 @@
           module procedure sax_d1_a1_a1, sax_l1_a1_a1, sax_i1_a1_a1
         end interface
 
+#endif
         interface oad_convert
           module procedure convert_d0_a0
           module procedure convert_d1_a1
@@ -88,6 +110,7 @@
           module procedure convert_a5_d5
           module procedure convert_a6_d6
           module procedure convert_a7_d7
+#ifndef DEFAULT_R8
           module procedure convert_r0_a0
           module procedure convert_r1_a1
           module procedure convert_r2_a2
@@ -104,6 +127,7 @@
           module procedure convert_a5_r5
           module procedure convert_a6_r6
           module procedure convert_a7_r7
+#endif
         end interface
 
         interface oad_allocateMatching
@@ -116,8 +140,10 @@
           module procedure allocateMatching_d4_a4
           module procedure allocateMatching_a5_a5
           module procedure allocateMatching_d5_a5
+#ifndef DEFAULT_R8
           module procedure allocateMatching_r1_a1
           module procedure allocateMatching_r2_a2
+#endif
         end interface 
 
         interface oad_shapeTest
@@ -130,8 +156,10 @@
           module procedure shapeTest_d4_a4
           module procedure shapeTest_a5_a5
           module procedure shapeTest_d5_a5
+#ifndef DEFAULT_R8
           module procedure shapeTest_r1_a1
           module procedure shapeTest_r2_a2
+#endif
         end interface 
 
         interface runTimeErrorStop
@@ -139,6 +167,7 @@
         end interface 
 
         contains
+#ifndef TRACE
         !
         ! chain rule saxpy to be used in forward and reverse modes
         !
@@ -147,60 +176,60 @@
           real(w2f__8), intent(in) :: a
           type(active), intent(in) :: x
           type(active), intent(inout) :: y
-          
-          
-            y%d = y%d + x%d*a
-          
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM = y%DELEM + x%DELEM*a
+          VECTOR_LOOP_END
         end subroutine
 
         subroutine saxpy_i0_a0_a0(a,x,y)
           integer(kind=w2f__i4), intent(in) :: a
           type(active), intent(in) :: x
           type(active), intent(inout) :: y
-          
-          
-            y%d = y%d + x%d*a
-          
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM = y%DELEM + x%DELEM*a
+          VECTOR_LOOP_END
         end subroutine
         
         subroutine saxpy_l0_a0_a0(a,x,y)
           integer(kind=w2f__i8), intent(in) :: a
           type(active), intent(in) :: x
           type(active), intent(inout) :: y
-          
-          
-            y%d = y%d + x%d*a
-          
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM = y%DELEM + x%DELEM*a
+          VECTOR_LOOP_END
         end subroutine
 
         subroutine saxpy_d1_a1_a1(a,x,y)
           real(w2f__8), dimension(:), intent(in) :: a
           type(active), dimension(:), intent(in) :: x
           type(active), dimension(:), intent(inout) :: y
-          
-          
-            y%d=y%d+x%d*a
-          
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=y%DELEM+x%DELEM*a
+          VECTOR_LOOP_END
         end subroutine
 
         subroutine saxpy_i1_a1_a1(a,x,y)
           integer(kind=w2f__i4), dimension(:), intent(in) :: a
           type(active), dimension(:), intent(in) :: x
           type(active), dimension(:), intent(inout) :: y
-          
-          
-            y%d=y%d+x%d*a
-          
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=y%DELEM+x%DELEM*a
+          VECTOR_LOOP_END
         end subroutine
         
         subroutine saxpy_l1_a1_a1(a,x,y)
           integer(kind=w2f__i8), dimension(:), intent(in) :: a
           type(active), dimension(:), intent(in) :: x
           type(active), dimension(:), intent(inout) :: y
-          
-          
-            y%d=y%d+x%d*a
-          
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=y%DELEM+x%DELEM*a
+          VECTOR_LOOP_END
         end subroutine
 
         !
@@ -214,60 +243,60 @@
           real(w2f__8), intent(in) :: a
           type(active), intent(in) :: x
           type(active), intent(inout) :: y
-          
-          
-            y%d = x%d*a
-          
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM = x%DELEM*a
+          VECTOR_LOOP_END
         end subroutine
 
         subroutine sax_i0_a0_a0(a,x,y)
           integer(kind=w2f__i4), intent(in) :: a
           type(active), intent(in) :: x
           type(active), intent(inout) :: y
-          
-          
-            y%d = x%d*a
-          
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM = x%DELEM*a
+          VECTOR_LOOP_END
         end subroutine
 
         subroutine sax_l0_a0_a0(a,x,y)
           integer(kind=w2f__i8), intent(in) :: a
           type(active), intent(in) :: x
           type(active), intent(inout) :: y
-          
-          
-            y%d = x%d*a
-          
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM = x%DELEM*a
+          VECTOR_LOOP_END
         end subroutine
         
         subroutine sax_d1_a1_a1(a,x,y)
           real(w2f__8), dimension(:), intent(in) :: a
           type(active), dimension(:), intent(in) :: x
           type(active), dimension(:), intent(inout) :: y
-          
-          
-            y%d=x%d*a
-          
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=x%DELEM*a
+          VECTOR_LOOP_END
         end subroutine
 
         subroutine sax_i1_a1_a1(a,x,y)
           integer(kind=w2f__i4), dimension(:), intent(in) :: a
           type(active), dimension(:), intent(in) :: x
           type(active), dimension(:), intent(inout) :: y
-          
-          
-            y%d=x%d*a
-          
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=x%DELEM*a
+          VECTOR_LOOP_END
         end subroutine
 
         subroutine sax_l1_a1_a1(a,x,y)
           integer(kind=w2f__i8), dimension(:), intent(in) :: a
           type(active), dimension(:), intent(in) :: x
           type(active), dimension(:), intent(inout) :: y
-          
-          
-            y%d=x%d*a
-          
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=x%DELEM*a
+          VECTOR_LOOP_END
         end subroutine
 
         !
@@ -279,19 +308,19 @@
         subroutine setderiv_a0_a0(y,x)
           type(active), intent(inout) :: y
           type(active), intent(in) :: x
-          
-          
-            y%d = x%d
-          
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM = x%DELEM
+          VECTOR_LOOP_END
         end subroutine
 
         subroutine setderiv_a1_a1(y,x)
           type(active), intent(inout), dimension(:) :: y
           type(active), intent(in), dimension(:) :: x
-          
-          
-            y%d = x%d
-          
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM = x%DELEM
+          VECTOR_LOOP_END
         end subroutine
 
         !
@@ -303,19 +332,19 @@
         subroutine set_neg_deriv_a0_a0(y,x)
           type(active), intent(inout) :: y
           type(active), intent(in) :: x
-          
-          
-            y%d = -x%d
-          
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM = -x%DELEM
+          VECTOR_LOOP_END
         end subroutine
 
         subroutine set_neg_deriv_a1_a1(y,x)
           type(active), intent(inout), dimension(:) :: y
           type(active), intent(in), dimension(:) :: x
-          
-          
-            y%d = -x%d
-          
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM = -x%DELEM
+          VECTOR_LOOP_END
         end subroutine
 
         !
@@ -327,19 +356,19 @@
         subroutine inc_deriv_a0_a0(y,x)
           type(active), intent(inout) :: y
           type(active), intent(in) :: x
-          
-          
-            y%d = y%d + x%d
-          
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM = y%DELEM + x%DELEM
+          VECTOR_LOOP_END
         end subroutine
 
         subroutine inc_deriv_a1_a1(y,x)
           type(active), intent(inout), dimension(:) :: y
           type(active), intent(in), dimension(:) :: x
-          
-          
-            y%d = y%d + x%d
-          
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM = y%DELEM + x%DELEM
+          VECTOR_LOOP_END
         end subroutine
 
         !
@@ -351,19 +380,19 @@
         subroutine dec_deriv_a0_a0(y,x)
           type(active), intent(inout) :: y
           type(active), intent(in) :: x
-          
-          
-            y%d = y%d - x%d
-          
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM = y%DELEM - x%DELEM
+          VECTOR_LOOP_END
         end subroutine
 
         subroutine dec_deriv_a1_a1(y,x)
           type(active), intent(inout), dimension(:) :: y
           type(active), intent(in), dimension(:) :: x
-          
-          
-            y%d = y%d - x%d
-          
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM = y%DELEM - x%DELEM
+          VECTOR_LOOP_END
         end subroutine
         
         !
@@ -371,44 +400,45 @@
         !
         subroutine zero_deriv_a0(x)
           type(active), intent(inout) :: x
-          
-          
-             x%d=0.0d0
-           
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+             x%DELEM=0.0d0
+          VECTOR_LOOP_END 
         end subroutine
 
         subroutine zero_deriv_a1(x)
           type(active), dimension(:), intent(inout) :: x
-          
-          
-             x%d=0.0d0
-           
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+             x%DELEM=0.0d0
+          VECTOR_LOOP_END 
         end subroutine
 
         subroutine zero_deriv_a2(x)
           type(active), dimension(:,:), intent(inout) :: x
-          
-          
-             x%d=0.0d0
-           
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+             x%DELEM=0.0d0
+          VECTOR_LOOP_END 
         end subroutine
 
         subroutine zero_deriv_a3(x)
           type(active), dimension(:,:,:), intent(inout) :: x
-          
-          
-             x%d=0.0d0
-           
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+             x%DELEM=0.0d0
+          VECTOR_LOOP_END 
         end subroutine
 
         subroutine zero_deriv_a4(x)
           type(active), dimension(:,:,:,:), intent(inout) :: x
-          
-          
-             x%d=0.0d0
-           
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+             x%DELEM=0.0d0
+          VECTOR_LOOP_END 
         end subroutine
 
+#endif
         !
         ! conversions
         !
@@ -493,6 +523,7 @@
           real(w2f__8), dimension(:,:,:,:,:,:,:), intent(in) :: convertFrom
           convertTo%v=convertFrom
         end subroutine
+#ifndef DEFAULT_R8
         subroutine convert_r0_a0(convertTo, convertFrom)
           real(w2f__4), intent(out) :: convertTo
           type(active), intent(in) :: convertFrom
@@ -574,6 +605,7 @@
           real(w2f__4), dimension(:,:,:,:,:,:,:), intent(in) :: convertFrom
           convertTo%v=convertFrom
         end subroutine
+#endif
         !
         ! allocations
         !
@@ -647,6 +679,7 @@
                size(allocateMatching,4),&
                size(allocateMatching,5)))
         end subroutine
+#ifndef DEFAULT_R8
         subroutine allocateMatching_r1_a1(toBeAllocated,allocateMatching)
           implicit none
           real(w2f__4), dimension(:), allocatable :: toBeAllocated
@@ -660,6 +693,7 @@
           if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2)))
         end subroutine
+#endif
         !
         ! shape tests
         !
@@ -717,6 +751,7 @@
           type(active), dimension(:,:,:,:,:) :: origVar
           if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange) 
         end subroutine
+#ifndef DEFAULT_R8
         subroutine shapeTest_r1_a1(allocatedVar,origVar)
           implicit none
           real(w2f__4), dimension(:), allocatable :: allocatedVar
@@ -729,6 +764,7 @@
           type(active), dimension(:,:) :: origVar
           if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
         end subroutine
+#endif
         subroutine runTimeErrorStopI(mesgId)
           implicit none
 	  integer mesgId

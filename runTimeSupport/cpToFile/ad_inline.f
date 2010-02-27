@@ -3,9 +3,11 @@
 ! The full COPYRIGHT notice can be found in the top      #
 ! level directory of the OpenAD distribution             #
 !#########################################################
+
 C taping --------------------------------------------
 
-      subroutine push(x)
+
+      subroutine push_s0(x)
 C $OpenAD$ INLINE DECLS
       use OpenAD_tape
       implicit none
@@ -15,7 +17,7 @@ C $OpenAD$ END DECLS
       oad_dt(oad_dt_ptr)=x; oad_dt_ptr=oad_dt_ptr+1
       end subroutine 
 
-      subroutine pop(x)
+      subroutine pop_s0(x)
 C $OpenAD$ INLINE DECLS
       use OpenAD_tape
       implicit none
@@ -25,11 +27,31 @@ C $OpenAD$ END DECLS
       x=oad_dt(oad_dt_ptr)
       end subroutine
 
+      subroutine push_s1(x)
+C $OpenAD$ INLINE DECLS
+      use OpenAD_tape
+      implicit none
+      double precision :: x(:)
+C $OpenAD$ END DECLS
+      if(oad_dt_sz .lt. oad_dt_ptr+size(x)) call oad_dt_grow()
+      oad_dt(oad_dt_ptr:)=x(:); oad_dt_ptr=oad_dt_ptr+size(x)
+      end subroutine 
+
+      subroutine pop_s1(x)
+C $OpenAD$ INLINE DECLS
+      use OpenAD_tape
+      implicit none
+      double precision :: x(:)
+C $OpenAD$ END DECLS
+      oad_dt_ptr=oad_dt_ptr-size(x)
+      x(:)=oad_dt(oad_dt_ptr:)
+      end subroutine
+
       subroutine apush(x)
 C $OpenAD$ INLINE DECLS
       use OpenAD_tape
       implicit none
-      double precision :: x
+      type(active) :: x
 C $OpenAD$ END DECLS
       if(oad_dt_sz .lt. oad_dt_ptr) call oad_dt_grow()
       oad_dt(oad_dt_ptr)=x%v; oad_dt_ptr=oad_dt_ptr+1
@@ -39,7 +61,7 @@ C $OpenAD$ END DECLS
 C $OpenAD$ INLINE DECLS
       use OpenAD_tape
       implicit none
-      type(active):: x
+      type(active) :: x
 C $OpenAD$ END DECLS
       oad_dt_ptr=oad_dt_ptr-1
       x%v=oad_dt(oad_dt_ptr)
@@ -113,7 +135,7 @@ C $OpenAD$ INLINE DECLS
       type(active), intent(in) :: x
       type(active), intent(inout) :: y
 C $OpenAD$ END DECLS
-      y%d=y%d+x%d*a
+      y%d=y%d+x%d*(a)
       end subroutine
 
       subroutine zeroderiv(x)
@@ -138,6 +160,14 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
       x%d=x%d+y%d
       end subroutine
+
+      subroutine decderiv(y,x)
+C $OpenAD$ INLINE DECLS
+      type(active), intent(out) :: x
+      type(active), intent(in) :: y
+C $OpenAD$ END DECLS
+      x%d = x%d - y%d
+      end subroutine decderiv
 
 C Checkpointing stuff ---------------------------------------
 
