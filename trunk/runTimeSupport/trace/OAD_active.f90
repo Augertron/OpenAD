@@ -1,25 +1,23 @@
+
+
 !#########################################################
 ! This file is part of OpenAD released under the LGPL.   #
 ! The full COPYRIGHT notice can be found in the top      #
 ! level directory of the OpenAD distribution             #
 !#########################################################
         module OAD_active
-
         use w2f__types
         implicit none
-
         private :: runTimeErrorStop, shapeChange
+        public :: active
 
-        public :: active,  &
-convert_p2a_scalar, convert_a2p_scalar, &
-convert_p2a_vector, convert_a2p_vector, &
-convert_p2a_matrix, convert_a2p_matrix, &
-convert_p2a_three_tensor, convert_a2p_three_tensor, &
-convert_p2a_four_tensor, convert_a2p_four_tensor, &
-convert_p2a_five_tensor, convert_a2p_five_tensor, & 
-convert_p2a_six_tensor, convert_a2p_six_tensor, &
-convert_p2a_seven_tensor, convert_a2p_seven_tensor, &
-oad_allocateMatching, oad_shapeTest
+
+
+
+        public :: oad_convert, oad_allocateMatching, oad_shapeTest
+
+
+
 
         integer, parameter :: shapeChange=0
 
@@ -30,106 +28,68 @@ oad_allocateMatching, oad_shapeTest
         type active
           sequence
           real(w2f__8) :: v 
-        end type active
-
-        interface convert_p2a_scalar
-          module procedure convert_sp2a_scalar_impl
-          module procedure convert_p2a_scalar_impl
-        end interface
-        interface convert_a2p_scalar
-          module procedure convert_a2sp_scalar_impl
-          module procedure convert_a2p_scalar_impl
-        end interface
-
-        interface convert_p2a_vector
-          module procedure convert_sp2a_vector_impl
-          module procedure convert_p2a_vector_impl
-        end interface
-        interface convert_a2p_vector
-          module procedure convert_a2sp_vector_impl
-          module procedure convert_a2p_vector_impl
-        end interface
-
-        interface convert_p2a_matrix
-          module procedure convert_sp2a_matrix_impl
-          module procedure convert_p2a_matrix_impl
-        end interface
-        interface convert_a2p_matrix
-          module procedure convert_a2sp_matrix_impl
-          module procedure convert_a2p_matrix_impl
-        end interface
-
-        interface convert_p2a_three_tensor
-          module procedure convert_sp2a_three_tensor_impl
-          module procedure convert_p2a_three_tensor_impl
-        end interface
-        interface convert_a2p_three_tensor
-          module procedure convert_a2sp_three_tensor_impl
-          module procedure convert_a2p_three_tensor_impl
-        end interface
-
-        interface convert_p2a_four_tensor
-          module procedure convert_sp2a_four_tensor_impl
-          module procedure convert_p2a_four_tensor_impl
-        end interface
-        interface convert_a2p_four_tensor
-          module procedure convert_a2sp_four_tensor_impl
-          module procedure convert_a2p_four_tensor_impl
-        end interface
-
-        interface convert_p2a_five_tensor
-          module procedure convert_sp2a_five_tensor_impl
-          module procedure convert_p2a_five_tensor_impl
-        end interface
-        interface convert_a2p_five_tensor
-          module procedure convert_a2sp_five_tensor_impl
-          module procedure convert_a2p_five_tensor_impl
-        end interface
-
-        interface convert_p2a_six_tensor
-          module procedure convert_sp2a_six_tensor_impl
-          module procedure convert_p2a_six_tensor_impl
-        end interface
-        interface convert_a2p_six_tensor
-          module procedure convert_a2sp_six_tensor_impl
-          module procedure convert_a2p_six_tensor_impl
-        end interface
-
-        interface convert_p2a_seven_tensor
-          module procedure convert_sp2a_seven_tensor_impl
-          module procedure convert_p2a_seven_tensor_impl
-        end interface
-        interface convert_a2p_seven_tensor
-          module procedure convert_a2sp_seven_tensor_impl
-          module procedure convert_a2p_seven_tensor_impl
+        end type
+        interface oad_convert
+          module procedure convert_d0_a0
+          module procedure convert_d1_a1
+          module procedure convert_d2_a2
+          module procedure convert_d3_a3
+          module procedure convert_d4_a4
+          module procedure convert_d5_a5
+          module procedure convert_d6_a6
+          module procedure convert_d7_a7
+          module procedure convert_a0_d0
+          module procedure convert_a1_d1
+          module procedure convert_a2_d2
+          module procedure convert_a3_d3
+          module procedure convert_a4_d4
+          module procedure convert_a5_d5
+          module procedure convert_a6_d6
+          module procedure convert_a7_d7
+          module procedure convert_r0_a0
+          module procedure convert_r1_a1
+          module procedure convert_r2_a2
+          module procedure convert_r3_a3
+          module procedure convert_r4_a4
+          module procedure convert_r5_a5
+          module procedure convert_r6_a6
+          module procedure convert_r7_a7
+          module procedure convert_a0_r0
+          module procedure convert_a1_r1
+          module procedure convert_a2_r2
+          module procedure convert_a3_r3
+          module procedure convert_a4_r4
+          module procedure convert_a5_r5
+          module procedure convert_a6_r6
+          module procedure convert_a7_r7
         end interface
 
         interface oad_allocateMatching
-          module procedure oad_allocateMatching_pv2av
-          module procedure oad_allocateMatching_av
-          module procedure oad_allocateMatching_pv
-          module procedure oad_allocateMatching_p4bv
-          module procedure oad_allocateMatching_am
-          module procedure oad_allocateMatching_pm
-          module procedure oad_allocateMatching_p4bm
-          module procedure oad_allocateMatching_at4
-          module procedure oad_allocateMatching_pt4
-          module procedure oad_allocateMatching_at5
-          module procedure oad_allocateMatching_pt5
+          module procedure allocateMatching_a1_d1
+          module procedure allocateMatching_a1_a1
+          module procedure allocateMatching_d1_a1
+          module procedure allocateMatching_a2_a2
+          module procedure allocateMatching_d2_a2
+          module procedure allocateMatching_a4_a4
+          module procedure allocateMatching_d4_a4
+          module procedure allocateMatching_a5_a5
+          module procedure allocateMatching_d5_a5
+          module procedure allocateMatching_r1_a1
+          module procedure allocateMatching_r2_a2
         end interface 
 
         interface oad_shapeTest
-          module procedure oad_shapeTest_pv2av
-          module procedure oad_shapeTest_av
-          module procedure oad_shapeTest_pv
-          module procedure oad_shapeTest_p4bv
-          module procedure oad_shapeTest_am
-          module procedure oad_shapeTest_pm
-          module procedure oad_shapeTest_p4bm
-          module procedure oad_shapeTest_at4
-          module procedure oad_shapeTest_pt4
-          module procedure oad_shapeTest_at5
-          module procedure oad_shapeTest_pt5
+          module procedure shapeTest_a1_d1
+          module procedure shapeTest_a1_a1
+          module procedure shapeTest_d1_a1
+          module procedure shapeTest_a2_a2
+          module procedure shapeTest_d2_a2
+          module procedure shapeTest_a4_a4
+          module procedure shapeTest_d4_a4
+          module procedure shapeTest_a5_a5
+          module procedure shapeTest_d5_a5
+          module procedure shapeTest_r1_a1
+          module procedure shapeTest_r2_a2
         end interface 
 
         interface runTimeErrorStop
@@ -137,255 +97,207 @@ oad_allocateMatching, oad_shapeTest
         end interface 
 
         contains
-
         !
-        ! active/passive conversions
+        ! conversions
         !
-        subroutine convert_a2sp_scalar_impl(convertTo, convertFrom)
-          real(w2f__4), intent(out) :: convertTo
-          type(active), intent(in) :: convertFrom
-          convertTo=convertFrom%v
-        end subroutine
-
-        subroutine convert_a2p_scalar_impl(convertTo, convertFrom)
+        subroutine convert_d0_a0(convertTo, convertFrom)
           real(w2f__8), intent(out) :: convertTo
           type(active), intent(in) :: convertFrom
           convertTo=convertFrom%v
         end subroutine
-
-        subroutine convert_sp2a_scalar_impl(convertTo, convertFrom)
-          real(w2f__4), intent(in) :: convertFrom
-          type(active), intent(inout) :: convertTo
-          convertTo%v=convertFrom
-        end subroutine 
-
-        subroutine convert_p2a_scalar_impl(convertTo, convertFrom)
-          real(w2f__8), intent(in) :: convertFrom
-          type(active), intent(inout) :: convertTo
-          convertTo%v=convertFrom
-        end subroutine 
-
-        subroutine convert_a2sp_vector_impl(convertTo, convertFrom)
-          type(active), dimension(:), intent(in) :: convertFrom
-          real(w2f__4), dimension(:), intent(out) :: convertTo
-          convertTo=convertFrom%v
-        end subroutine
-
-        subroutine convert_a2p_vector_impl(convertTo, convertFrom)
-          type(active), dimension(:), intent(in) :: convertFrom
+        subroutine convert_d1_a1(convertTo, convertFrom)
           real(w2f__8), dimension(:), intent(out) :: convertTo
+          type(active), dimension(:), intent(in) :: convertFrom
           convertTo=convertFrom%v
         end subroutine
-
-        subroutine convert_sp2a_vector_impl(convertTo, convertFrom)
-          real(w2f__4), dimension(:), intent(in) :: convertFrom
-          type(active), dimension(:), intent(inout) :: convertTo
-          convertTo%v=convertFrom
-        end subroutine
-
-        subroutine convert_p2a_vector_impl(convertTo, convertFrom)
-          real(w2f__8), dimension(:), intent(in) :: convertFrom
-          type(active), dimension(:), intent(inout) :: convertTo
-          convertTo%v=convertFrom
-        end subroutine
-
-        subroutine convert_a2sp_matrix_impl(convertTo, convertFrom)
-          type(active), dimension(:,:), intent(in) :: convertFrom
-          real(w2f__4), dimension(:,:), intent(out) :: convertTo
-          convertTo=convertFrom%v
-        end subroutine
-
-        subroutine convert_sp2a_matrix_impl(convertTo, convertFrom)
-          real(w2f__4), dimension(:,:), intent(in) :: convertFrom
-          type(active), dimension(:,:), intent(inout) :: convertTo
-          convertTo%v=convertFrom
-        end subroutine
-
-        subroutine convert_a2p_matrix_impl(convertTo, convertFrom)
-          type(active), dimension(:,:), intent(in) :: convertFrom
+        subroutine convert_d2_a2(convertTo, convertFrom)
           real(w2f__8), dimension(:,:), intent(out) :: convertTo
+          type(active), dimension(:,:), intent(in) :: convertFrom
           convertTo=convertFrom%v
         end subroutine
-
-        subroutine convert_p2a_matrix_impl(convertTo, convertFrom)
-          real(w2f__8), dimension(:,:), intent(in) :: convertFrom
-          type(active), dimension(:,:), intent(inout) :: convertTo
-          convertTo%v=convertFrom
-        end subroutine
-
-        subroutine convert_a2sp_three_tensor_impl(convertTo, convertFrom)
-          type(active), dimension(:,:,:), intent(in) :: convertFrom
-          real(w2f__4), dimension(:,:,:), intent(out) :: convertTo
-          convertTo=convertFrom%v
-        end subroutine
-
-        subroutine convert_a2p_three_tensor_impl(convertTo, convertFrom)
-          type(active), dimension(:,:,:), intent(in) :: convertFrom
+        subroutine convert_d3_a3(convertTo, convertFrom)
           real(w2f__8), dimension(:,:,:), intent(out) :: convertTo
+          type(active), dimension(:,:,:), intent(in) :: convertFrom
           convertTo=convertFrom%v
         end subroutine
-
-        subroutine convert_sp2a_three_tensor_impl(convertTo, convertFrom)
-          real(w2f__4), dimension(:,:,:), intent(in) :: convertFrom
-          type(active), dimension(:,:,:), intent(inout) :: convertTo
-          convertTo%v=convertFrom
-        end subroutine
-        
-        subroutine convert_p2a_three_tensor_impl(convertTo, convertFrom)
-          real(w2f__8), dimension(:,:,:), intent(in) :: convertFrom
-          type(active), dimension(:,:,:), intent(inout) :: convertTo
-          convertTo%v=convertFrom
-        end subroutine
-        
-        subroutine convert_a2sp_four_tensor_impl(convertTo, convertFrom)
-          type(active), dimension(:,:,:,:), intent(in) :: convertFrom
-          real(w2f__4), dimension(:,:,:,:), intent(out) :: convertTo
-          convertTo=convertFrom%v
-        end subroutine
-
-        subroutine convert_a2p_four_tensor_impl(convertTo, convertFrom)
-          type(active), dimension(:,:,:,:), intent(in) :: convertFrom
+        subroutine convert_d4_a4(convertTo, convertFrom)
           real(w2f__8), dimension(:,:,:,:), intent(out) :: convertTo
+          type(active), dimension(:,:,:,:), intent(in) :: convertFrom
           convertTo=convertFrom%v
         end subroutine
-
-        subroutine convert_sp2a_four_tensor_impl(convertTo, convertFrom)
-          real(w2f__4), dimension(:,:,:,:), intent(in) :: convertFrom
-          type(active), dimension(:,:,:,:), intent(inout) :: convertTo
-          convertTo%v=convertFrom
-        end subroutine
-
-        subroutine convert_p2a_four_tensor_impl(convertTo, convertFrom)
-          real(w2f__8), dimension(:,:,:,:), intent(in) :: convertFrom
-          type(active), dimension(:,:,:,:), intent(inout) :: convertTo
-          convertTo%v=convertFrom
-        end subroutine
-
-        subroutine convert_a2sp_five_tensor_impl(convertTo, convertFrom)
-          type(active), dimension(:,:,:,:,:), intent(in) :: convertFrom
-          real(w2f__4), dimension(:,:,:,:,:), intent(out) :: convertTo
-          convertTo=convertFrom%v
-        end subroutine
-
-        subroutine convert_a2p_five_tensor_impl(convertTo, convertFrom)
-          type(active), dimension(:,:,:,:,:), intent(in) :: convertFrom
+        subroutine convert_d5_a5(convertTo, convertFrom)
           real(w2f__8), dimension(:,:,:,:,:), intent(out) :: convertTo
+          type(active), dimension(:,:,:,:,:), intent(in) :: convertFrom
           convertTo=convertFrom%v
         end subroutine
-
-        subroutine convert_sp2a_five_tensor_impl(convertTo, convertFrom)
-          real(w2f__4), dimension(:,:,:,:,:), intent(in) :: convertFrom
-          type(active), dimension(:,:,:,:,:), intent(inout) :: convertTo
-          convertTo%v=convertFrom
-        end subroutine
-
-        subroutine convert_p2a_five_tensor_impl(convertTo, convertFrom)
-          real(w2f__8), dimension(:,:,:,:,:), intent(in) :: convertFrom
-          type(active), dimension(:,:,:,:,:), intent(inout) :: convertTo
-          convertTo%v=convertFrom
-        end subroutine
-        
-        subroutine convert_a2sp_six_tensor_impl(convertTo, convertFrom)
-          type(active), dimension(:,:,:,:,:,:), intent(in) :: convertFrom
-          real(w2f__4), dimension(:,:,:,:,:,:), intent(out) :: convertTo
-          convertTo=convertFrom%v
-        end subroutine
-
-        subroutine convert_a2p_six_tensor_impl(convertTo, convertFrom)
-          type(active), dimension(:,:,:,:,:,:), intent(in) :: convertFrom
+        subroutine convert_d6_a6(convertTo, convertFrom)
           real(w2f__8), dimension(:,:,:,:,:,:), intent(out) :: convertTo
+          type(active), dimension(:,:,:,:,:,:), intent(in) :: convertFrom
           convertTo=convertFrom%v
         end subroutine
-
-        subroutine convert_sp2a_six_tensor_impl(convertTo, convertFrom)
-          real(w2f__4), dimension(:,:,:,:,:,:), intent(in) :: convertFrom
-          type(active), dimension(:,:,:,:,:,:), intent(inout) :: convertTo
-          convertTo%v=convertFrom
-        end subroutine
-
-        subroutine convert_p2a_six_tensor_impl(convertTo, convertFrom)
-          real(w2f__8), dimension(:,:,:,:,:,:), intent(in) :: convertFrom
-          type(active), dimension(:,:,:,:,:,:), intent(inout) :: convertTo
-          convertTo%v=convertFrom
-        end subroutine
-        
-        subroutine convert_a2sp_seven_tensor_impl(convertTo, convertFrom)
-          type(active), dimension(:,:,:,:,:,:,:), intent(in) :: convertFrom
-          real(w2f__4), dimension(:,:,:,:,:,:,:), intent(out) :: convertTo
-          convertTo=convertFrom%v
-        end subroutine
-
-        subroutine convert_a2p_seven_tensor_impl(convertTo, convertFrom)
-          type(active), dimension(:,:,:,:,:,:,:), intent(in) :: convertFrom
+        subroutine convert_d7_a7(convertTo, convertFrom)
           real(w2f__8), dimension(:,:,:,:,:,:,:), intent(out) :: convertTo
+          type(active), dimension(:,:,:,:,:,:,:), intent(in) :: convertFrom
           convertTo=convertFrom%v
         end subroutine
 
-        subroutine convert_sp2a_seven_tensor_impl(convertTo, convertFrom)
-          real(w2f__4), dimension(:,:,:,:,:,:,:), intent(in) :: convertFrom
-          type(active), dimension(:,:,:,:,:,:,:), intent(inout) :: convertTo
+        subroutine convert_a0_d0(convertTo, convertFrom)
+          type(active), intent(inout) :: convertTo
+          real(w2f__8), intent(in) :: convertFrom
           convertTo%v=convertFrom
         end subroutine
-
-        subroutine convert_p2a_seven_tensor_impl(convertTo, convertFrom)
+        subroutine convert_a1_d1(convertTo, convertFrom)
+          type(active), dimension(:), intent(inout) :: convertTo
+          real(w2f__8), dimension(:), intent(in) :: convertFrom
+          convertTo%v=convertFrom
+        end subroutine
+        subroutine convert_a2_d2(convertTo, convertFrom)
+          type(active), dimension(:,:), intent(inout) :: convertTo
+          real(w2f__8), dimension(:,:), intent(in) :: convertFrom
+          convertTo%v=convertFrom
+        end subroutine
+        subroutine convert_a3_d3(convertTo, convertFrom)
+          type(active), dimension(:,:,:), intent(inout) :: convertTo
+          real(w2f__8), dimension(:,:,:), intent(in) :: convertFrom
+          convertTo%v=convertFrom
+        end subroutine
+        subroutine convert_a4_d4(convertTo, convertFrom)
+          type(active), dimension(:,:,:,:), intent(inout) :: convertTo
+          real(w2f__8), dimension(:,:,:,:), intent(in) :: convertFrom
+          convertTo%v=convertFrom
+        end subroutine
+        subroutine convert_a5_d5(convertTo, convertFrom)
+          type(active), dimension(:,:,:,:,:), intent(inout) :: convertTo
+          real(w2f__8), dimension(:,:,:,:,:), intent(in) :: convertFrom
+          convertTo%v=convertFrom
+        end subroutine
+        subroutine convert_a6_d6(convertTo, convertFrom)
+          type(active), dimension(:,:,:,:,:,:), intent(inout) :: convertTo
+          real(w2f__8), dimension(:,:,:,:,:,:), intent(in) :: convertFrom
+          convertTo%v=convertFrom
+        end subroutine
+        subroutine convert_a7_d7(convertTo, convertFrom)
+          type(active), dimension(:,:,:,:,:,:,:), intent(inout) :: convertTo
           real(w2f__8), dimension(:,:,:,:,:,:,:), intent(in) :: convertFrom
-          type(active), dimension(:,:,:,:,:,:,:), intent(inout) :: convertTo
           convertTo%v=convertFrom
         end subroutine
+        subroutine convert_r0_a0(convertTo, convertFrom)
+          real(w2f__4), intent(out) :: convertTo
+          type(active), intent(in) :: convertFrom
+          convertTo=convertFrom%v
+        end subroutine
+        subroutine convert_r1_a1(convertTo, convertFrom)
+          real(w2f__4), dimension(:), intent(out) :: convertTo
+          type(active), dimension(:), intent(in) :: convertFrom
+          convertTo=convertFrom%v
+        end subroutine
+        subroutine convert_r2_a2(convertTo, convertFrom)
+          real(w2f__4), dimension(:,:), intent(out) :: convertTo
+          type(active), dimension(:,:), intent(in) :: convertFrom
+          convertTo=convertFrom%v
+        end subroutine
+        subroutine convert_r3_a3(convertTo, convertFrom)
+          real(w2f__4), dimension(:,:,:), intent(out) :: convertTo
+          type(active), dimension(:,:,:), intent(in) :: convertFrom
+          convertTo=convertFrom%v
+        end subroutine
+        subroutine convert_r4_a4(convertTo, convertFrom)
+          real(w2f__4), dimension(:,:,:,:), intent(out) :: convertTo
+          type(active), dimension(:,:,:,:), intent(in) :: convertFrom
+          convertTo=convertFrom%v
+        end subroutine
+        subroutine convert_r5_a5(convertTo, convertFrom)
+          real(w2f__4), dimension(:,:,:,:,:), intent(out) :: convertTo
+          type(active), dimension(:,:,:,:,:), intent(in) :: convertFrom
+          convertTo=convertFrom%v
+        end subroutine
+        subroutine convert_r6_a6(convertTo, convertFrom)
+          real(w2f__4), dimension(:,:,:,:,:,:), intent(out) :: convertTo
+          type(active), dimension(:,:,:,:,:,:), intent(in) :: convertFrom
+          convertTo=convertFrom%v
+        end subroutine
+        subroutine convert_r7_a7(convertTo, convertFrom)
+          real(w2f__4), dimension(:,:,:,:,:,:,:), intent(out) :: convertTo
+          type(active), dimension(:,:,:,:,:,:,:), intent(in) :: convertFrom
+          convertTo=convertFrom%v
+        end subroutine
 
-        subroutine oad_allocateMatching_pv2av(toBeAllocated,allocateMatching)
+        subroutine convert_a0_r0(convertTo, convertFrom)
+          type(active), intent(inout) :: convertTo
+          real(w2f__4), intent(in) :: convertFrom
+          convertTo%v=convertFrom
+        end subroutine
+        subroutine convert_a1_r1(convertTo, convertFrom)
+          type(active), dimension(:), intent(inout) :: convertTo
+          real(w2f__4), dimension(:), intent(in) :: convertFrom
+          convertTo%v=convertFrom
+        end subroutine
+        subroutine convert_a2_r2(convertTo, convertFrom)
+          type(active), dimension(:,:), intent(inout) :: convertTo
+          real(w2f__4), dimension(:,:), intent(in) :: convertFrom
+          convertTo%v=convertFrom
+        end subroutine
+        subroutine convert_a3_r3(convertTo, convertFrom)
+          type(active), dimension(:,:,:), intent(inout) :: convertTo
+          real(w2f__4), dimension(:,:,:), intent(in) :: convertFrom
+          convertTo%v=convertFrom
+        end subroutine
+        subroutine convert_a4_r4(convertTo, convertFrom)
+          type(active), dimension(:,:,:,:), intent(inout) :: convertTo
+          real(w2f__4), dimension(:,:,:,:), intent(in) :: convertFrom
+          convertTo%v=convertFrom
+        end subroutine
+        subroutine convert_a5_r5(convertTo, convertFrom)
+          type(active), dimension(:,:,:,:,:), intent(inout) :: convertTo
+          real(w2f__4), dimension(:,:,:,:,:), intent(in) :: convertFrom
+          convertTo%v=convertFrom
+        end subroutine
+        subroutine convert_a6_r6(convertTo, convertFrom)
+          type(active), dimension(:,:,:,:,:,:), intent(inout) :: convertTo
+          real(w2f__4), dimension(:,:,:,:,:,:), intent(in) :: convertFrom
+          convertTo%v=convertFrom
+        end subroutine
+        subroutine convert_a7_r7(convertTo, convertFrom)
+          type(active), dimension(:,:,:,:,:,:,:), intent(inout) :: convertTo
+          real(w2f__4), dimension(:,:,:,:,:,:,:), intent(in) :: convertFrom
+          convertTo%v=convertFrom
+        end subroutine
+        !
+        ! allocations
+        !
+        subroutine allocateMatching_a1_d1(toBeAllocated,allocateMatching)
           implicit none
           type(active), dimension(:), allocatable :: toBeAllocated
           real(w2f__8), dimension(:) :: allocateMatching
           if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
         end subroutine
-
-        subroutine oad_allocateMatching_av(toBeAllocated,allocateMatching)
+        subroutine allocateMatching_a1_a1(toBeAllocated,allocateMatching)
           implicit none
           type(active), dimension(:), allocatable :: toBeAllocated
           type(active), dimension(:) :: allocateMatching
           if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
         end subroutine
-
-        subroutine oad_allocateMatching_pv(toBeAllocated,allocateMatching)
+        subroutine allocateMatching_d1_a1(toBeAllocated,allocateMatching)
           implicit none
           real(w2f__8), dimension(:), allocatable :: toBeAllocated
           type(active), dimension(:) :: allocateMatching
           if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
         end subroutine
-
-        subroutine oad_allocateMatching_p4bv(toBeAllocated,allocateMatching)
-          implicit none
-          real(w2f__4), dimension(:), allocatable :: toBeAllocated
-          type(active), dimension(:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
-        end subroutine
-
-        subroutine oad_allocateMatching_am(toBeAllocated,allocateMatching)
+        subroutine allocateMatching_a2_a2(toBeAllocated,allocateMatching)
           implicit none
           type(active), dimension(:,:), allocatable :: toBeAllocated
           type(active), dimension(:,:) :: allocateMatching
           if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2)))
         end subroutine
-
-        subroutine oad_allocateMatching_pm(toBeAllocated,allocateMatching)
+        subroutine allocateMatching_d2_a2(toBeAllocated,allocateMatching)
           implicit none
           real(w2f__8), dimension(:,:), allocatable :: toBeAllocated
           type(active), dimension(:,:) :: allocateMatching
           if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2)))
         end subroutine
-
-        subroutine oad_allocateMatching_p4bm(toBeAllocated,allocateMatching)
-          implicit none
-          real(w2f__4), dimension(:,:), allocatable :: toBeAllocated
-          type(active), dimension(:,:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
-               size(allocateMatching,2)))
-        end subroutine
-
-        subroutine oad_allocateMatching_at4(toBeAllocated,allocateMatching)
+        subroutine allocateMatching_a4_a4(toBeAllocated,allocateMatching)
           implicit none
           type(active), dimension(:,:,:,:), allocatable :: toBeAllocated
           type(active), dimension(:,:,:,:) :: allocateMatching
@@ -394,8 +306,7 @@ oad_allocateMatching, oad_shapeTest
                size(allocateMatching,3),&
                size(allocateMatching,4)))
         end subroutine
-
-        subroutine oad_allocateMatching_pt4(toBeAllocated,allocateMatching)
+        subroutine allocateMatching_d4_a4(toBeAllocated,allocateMatching)
           implicit none
           real(w2f__8), dimension(:,:,:,:), allocatable :: toBeAllocated
           type(active), dimension(:,:,:,:) :: allocateMatching
@@ -404,8 +315,7 @@ oad_allocateMatching, oad_shapeTest
                size(allocateMatching,3),&
                size(allocateMatching,4)))
         end subroutine
-
-        subroutine oad_allocateMatching_at5(toBeAllocated,allocateMatching)
+        subroutine allocateMatching_a5_a5(toBeAllocated,allocateMatching)
           implicit none
           type(active), dimension(:,:,:,:,:), allocatable :: toBeAllocated
           type(active), dimension(:,:,:,:,:) :: allocateMatching
@@ -415,8 +325,7 @@ oad_allocateMatching, oad_shapeTest
                size(allocateMatching,4),&
                size(allocateMatching,5)))
         end subroutine
-
-        subroutine oad_allocateMatching_pt5(toBeAllocated,allocateMatching)
+        subroutine allocateMatching_d5_a5(toBeAllocated,allocateMatching)
           implicit none
           real(w2f__8), dimension(:,:,:,:,:), allocatable :: toBeAllocated
           type(active), dimension(:,:,:,:,:) :: allocateMatching
@@ -426,84 +335,88 @@ oad_allocateMatching, oad_shapeTest
                size(allocateMatching,4),&
                size(allocateMatching,5)))
         end subroutine
- 
-        subroutine oad_shapeTest_pv2av(allocatedVar,origVar)
+        subroutine allocateMatching_r1_a1(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__4), dimension(:), allocatable :: toBeAllocated
+          type(active), dimension(:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+        end subroutine
+        subroutine allocateMatching_r2_a2(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__4), dimension(:,:), allocatable :: toBeAllocated
+          type(active), dimension(:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2)))
+        end subroutine
+        !
+        ! shape tests
+        !
+        subroutine shapeTest_a1_d1(allocatedVar,origVar)
           implicit none
           type(active), dimension(:), allocatable :: allocatedVar
           real(w2f__8), dimension(:) :: origVar
           if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
         end subroutine
-
-        subroutine oad_shapeTest_av(allocatedVar,origVar)
+        subroutine shapeTest_a1_a1(allocatedVar,origVar)
           implicit none
           type(active), dimension(:), allocatable :: allocatedVar
           type(active), dimension(:) :: origVar
           if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
         end subroutine
-
-        subroutine oad_shapeTest_pv(allocatedVar,origVar)
+        subroutine shapeTest_d1_a1(allocatedVar,origVar)
           implicit none
           real(w2f__8), dimension(:), allocatable :: allocatedVar
           type(active), dimension(:) :: origVar
           if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
         end subroutine
-
-        subroutine oad_shapeTest_p4bv(allocatedVar,origVar)
-          implicit none
-          real(w2f__4), dimension(:), allocatable :: allocatedVar
-          type(active), dimension(:) :: origVar
-          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
-        end subroutine
-
-        subroutine oad_shapeTest_am(allocatedVar,origVar)
+        subroutine shapeTest_a2_a2(allocatedVar,origVar)
           implicit none
           type(active), dimension(:,:), allocatable :: allocatedVar
           type(active), dimension(:,:) :: origVar
           if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
         end subroutine
-
-        subroutine oad_shapeTest_pm(allocatedVar,origVar)
+        subroutine shapeTest_d2_a2(allocatedVar,origVar)
           implicit none
           real(w2f__8), dimension(:,:), allocatable :: allocatedVar
           type(active), dimension(:,:) :: origVar
           if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
         end subroutine
-
-        subroutine oad_shapeTest_p4bm(allocatedVar,origVar)
-          implicit none
-          real(w2f__4), dimension(:,:), allocatable :: allocatedVar
-          type(active), dimension(:,:) :: origVar
-          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
-        end subroutine
-
-        subroutine oad_shapeTest_at4(allocatedVar,origVar)
+        subroutine shapeTest_a4_a4(allocatedVar,origVar)
           implicit none
           type(active), dimension(:,:,:,:), allocatable :: allocatedVar
           type(active), dimension(:,:,:,:) :: origVar
           if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
         end subroutine
-
-        subroutine oad_shapeTest_pt4(allocatedVar,origVar)
+        subroutine shapeTest_d4_a4(allocatedVar,origVar)
           implicit none
           real(w2f__8), dimension(:,:,:,:), allocatable :: allocatedVar
           type(active), dimension(:,:,:,:) :: origVar
           if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
         end subroutine
-
-        subroutine oad_shapeTest_at5(allocatedVar,origVar)
+        subroutine shapeTest_a5_a5(allocatedVar,origVar)
           implicit none
           type(active), dimension(:,:,:,:,:), allocatable :: allocatedVar
           type(active), dimension(:,:,:,:,:) :: origVar
           if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
         end subroutine
-
-        subroutine oad_shapeTest_pt5(allocatedVar,origVar)
+        subroutine shapeTest_d5_a5(allocatedVar,origVar)
           implicit none
           real(w2f__8), dimension(:,:,:,:,:), allocatable :: allocatedVar
           type(active), dimension(:,:,:,:,:) :: origVar
           if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange) 
         end subroutine
-
+        subroutine shapeTest_r1_a1(allocatedVar,origVar)
+          implicit none
+          real(w2f__4), dimension(:), allocatable :: allocatedVar
+          type(active), dimension(:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
+        end subroutine
+        subroutine shapeTest_r2_a2(allocatedVar,origVar)
+          implicit none
+          real(w2f__4), dimension(:,:), allocatable :: allocatedVar
+          type(active), dimension(:,:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
+        end subroutine
         subroutine runTimeErrorStopI(mesgId)
           implicit none
 	  integer mesgId
@@ -513,4 +426,4 @@ oad_allocateMatching, oad_shapeTest
              end select 
         end subroutine
 
-        end module OAD_active
+        end module
