@@ -41,6 +41,9 @@
         interface setderiv
           module procedure setderiv_a0_a0
           module procedure setderiv_a1_a1
+          module procedure setderiv_a2_a2
+          ! the following variants are NON-SYMMETRIC (forward-only)
+          module procedure setderiv_a1_a0
         end interface
 
         interface set_neg_deriv
@@ -294,6 +297,18 @@
           
         end subroutine
 
+        subroutine setderiv_a2_a2(y,x)
+          type(active), intent(inout), dimension(:,:) :: y
+          type(active), intent(in), dimension(:,:) :: x
+            y%d = x%d
+        end subroutine
+
+        subroutine setderiv_a1_a0(y,x)
+          ! NB: this variant is NON-SYMMETRIC (forward only)
+          type(active), intent(inout), dimension(:) :: y
+          type(active), intent(in) :: x
+            y%d = x%d
+        end subroutine
         !
         ! set the derivative of y to be the negated derivative of x
         ! note: making y inout allows for already existing active
