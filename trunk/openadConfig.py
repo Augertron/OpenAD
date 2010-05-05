@@ -88,6 +88,7 @@ class openadConfig:
     
     platformToOpen64TargTable = {'alpha-OSFI'  : 'targ_alpha_tru64',
                                  'x86-Linux'   : 'targ_ia32_ia64_linux',
+                                 'x86-MacOS'   : 'targ_ia32_ia64_linux',
                                  'x86_64-Linux': 'targ_ia64_ia64_linux',
                                  'x86-Cygwin'  : 'targ_ia32_ia64_linux',
                                  'ia64-Linux'  : 'targ_ia64_ia64_linux',
