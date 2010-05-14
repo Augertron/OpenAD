@@ -24,6 +24,9 @@ endif
 ifeq ($(PLATFORM),ia64-Linux)
   XERCESPLATFORM = LINUX
 endif
+ifeq ($(PLATFORM),x86-MacOS)
+  XERCESPLATFORM = x86-MacOS
+endif
 ifeq ($(PLATFORM),opteron-Linux)
   XERCESPLATFORM = LINUX
 endif
