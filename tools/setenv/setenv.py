@@ -74,7 +74,10 @@ class setenv:
       print self.libsetenv_instance.genAppendEnvVar('PATH', path)
     else:
       ldlib=os.environ['OPEN64ROOT']+'/whirl2f'
-      print self.libsetenv_instance.genAppendEnvVar('LD_LIBRARY_PATH', ldlib)
+      ldPathName='LD_LIBRARY_PATH'
+      if (config.platform=='x86-MacOS'):
+        ldPathName='DY'+ldPathName
+      print self.libsetenv_instance.genAppendEnvVar(ldPathName, ldlib)
     # aliases
     for var,val in config.Aliases.items():
       try:
