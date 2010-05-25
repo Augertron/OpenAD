@@ -11,7 +11,7 @@ module OAD_rev
   public :: modeType, our_rev_mode, OAD_revInit, &
 OAD_revPlain, OAD_revTape, OAD_revAdjoint, & 
 OAD_revStorePlain, OAD_revRestoreTape
-  
+
   type modeType
      logical :: arg_store=.FALSE.
      logical :: arg_restore=.FALSE.
@@ -21,9 +21,9 @@ OAD_revStorePlain, OAD_revRestoreTape
      logical :: tape=.FALSE.
      logical :: adjoint=.FALSE.
   end type modeType
-  
+
   type(modeType), save :: our_rev_mode
-  
+
   interface OAD_revInit
      module procedure init
   end interface
