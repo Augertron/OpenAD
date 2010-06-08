@@ -86,6 +86,8 @@ class OpenadUpdate:
             fRev=self.getRevisionFromFile(repoPair[0])
             if fRev:
               repoPair[0].rev=fRev
+	    if  self.options.force : 
+	      repoPair[0].force=True
             repoPair[0].update() # sets CmdDesc to update repository
           else:
             if (self.options.development):

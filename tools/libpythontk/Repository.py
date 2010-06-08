@@ -17,7 +17,7 @@ class RepositoryException(Exception):
 
 class Repository:
 
-  def __init__(self,url, localPath, localName,  subdir, tag, var, rev=None):
+  def __init__(self,url, localPath, localName,  subdir, tag, var, rev=None, force=False):
     self.url=url        # the url of the repository
     self.localPath=localPath # absolute path to the local directory in which the working directory 'localName' resides 
     self.localName=localName # the local name
@@ -26,6 +26,7 @@ class Repository:
     self.var=var        # corresponding environment variable
     self.cmdDesc=CmdDesc() # command description for updates
     self.rev=rev
+    self.force=force
 
   def getUrl(self):
     return self.url
@@ -270,6 +271,8 @@ class SVNRepository(Repository):
     if not os.path.exists(os.path.join(self.getLocalRepoPath(),'.svn')):
       raise RepositoryException("directory "+self.getLocalRepoPath()+" has no SVN data")
     cmd="cd "+self.getLocalRepoPath()+" && svn update"
+    if self.force: 
+	cmd+=" --accept theirs-full"
     if self.rev:
       cmd+=" -r "+str(self.rev)
     self.cmdDesc.setCmd(cmd)
