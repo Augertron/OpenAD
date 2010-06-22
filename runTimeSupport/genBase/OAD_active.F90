@@ -12,7 +12,8 @@
         public :: saxpy, sax, zero_deriv, setderiv
         public :: set_neg_deriv, inc_deriv, dec_deriv
 #endif
-        public :: oad_convert, oad_allocateMatching, oad_shapeTest
+        public :: oad_convert
+        public :: oad_allocateMatching, oad_allocateShape, oad_shapeTest
 #ifndef TRACE
         integer :: count_mult = 0
         integer :: count_add = 0
@@ -56,12 +57,28 @@
 #ifndef TRACE
         interface saxpy
           module procedure saxpy_d0_a0_a0, saxpy_l0_a0_a0, saxpy_i0_a0_a0
-          module procedure saxpy_d1_a1_a1, saxpy_l1_a1_a1, saxpy_i1_a1_a1
+          module procedure saxpy_d0_a0_a1
+          module procedure saxpy_d0_a1_a1
+          module procedure saxpy_d0_a2_a2
+          module procedure saxpy_d1_a0_a1
+          module procedure saxpy_d1_a1_a1, saxpy_l1_a1_a1, saxpy_i1_a1_a1,  saxpy_a1_a1_a1
+          module procedure saxpy_d2_a0_a2
+          module procedure saxpy_d2_a2_a2
+# ifndef DEFAULT_R8
+          module procedure saxpy_r0_a0_a0
+          module procedure saxpy_r0_a1_a1
+          module procedure saxpy_r1_a0_a1
+          module procedure saxpy_r1_a1_a1
+# endif
         end interface
         
         interface setderiv
           module procedure setderiv_a0_a0
+          module procedure setderiv_a1_a0
           module procedure setderiv_a1_a1
+          module procedure setderiv_a2_a0
+          module procedure setderiv_a2_a2
+          module procedure setderiv_a3_a3
         end interface
 
         interface set_neg_deriv
@@ -72,11 +89,13 @@
         interface inc_deriv
           module procedure inc_deriv_a0_a0
           module procedure inc_deriv_a1_a1
+          module procedure inc_deriv_a2_a2
         end interface inc_deriv
 
         interface dec_deriv
           module procedure dec_deriv_a0_a0
           module procedure dec_deriv_a1_a1
+          module procedure dec_deriv_a2_a2
         end interface dec_deriv
 
         interface zero_deriv
@@ -89,7 +108,17 @@
 
         interface sax
           module procedure sax_d0_a0_a0, sax_l0_a0_a0, sax_i0_a0_a0
+          module procedure sax_d0_a0_a1
+          module procedure sax_d0_a0_a2
+          module procedure sax_d0_a1_a1
+          module procedure sax_d0_a2_a2
+          module procedure sax_d1_a0_a1
           module procedure sax_d1_a1_a1, sax_l1_a1_a1, sax_i1_a1_a1
+          module procedure sax_d2_a0_a2
+          module procedure sax_d2_a2_a2
+# ifndef DEFAULT_R8
+          module procedure sax_r0_a0_a0
+# endif
         end interface
 
 #endif
@@ -131,20 +160,38 @@
         end interface
 
         interface oad_allocateMatching
+          module procedure allocateMatching_d1_d1
           module procedure allocateMatching_a1_d1
-          module procedure allocateMatching_a1_a1
           module procedure allocateMatching_d1_a1
-          module procedure allocateMatching_a2_a2
+          module procedure allocateMatching_a1_a1
+          module procedure allocateMatching_d2_d2
+          module procedure allocateMatching_a2_d2
           module procedure allocateMatching_d2_a2
+          module procedure allocateMatching_a2_a2
+          module procedure allocateMatching_d3_d3
+          module procedure allocateMatching_a3_d3
+          module procedure allocateMatching_d3_a3
+          module procedure allocateMatching_a3_a3
           module procedure allocateMatching_a4_a4
           module procedure allocateMatching_d4_a4
-          module procedure allocateMatching_a5_a5
-          module procedure allocateMatching_d5_a5
+          module procedure allocateMatching_d5_d5
           module procedure allocateMatching_a5_d5
+          module procedure allocateMatching_d5_a5
+          module procedure allocateMatching_a5_a5
 #ifndef DEFAULT_R8
+          module procedure allocateMatching_r1_r1
+          module procedure allocateMatching_d1_r1
+          module procedure allocateMatching_r1_d1
+          module procedure allocateMatching_a1_r1
           module procedure allocateMatching_r1_a1
+          module procedure allocateMatching_a2_r2
           module procedure allocateMatching_r2_a2
 #endif
+        end interface 
+
+        interface oad_allocateShape
+          module procedure allocateShape_d1
+          module procedure allocateShape_d2
         end interface 
 
         interface oad_shapeTest
@@ -153,6 +200,8 @@
           module procedure shapeTest_d1_a1
           module procedure shapeTest_a2_a2
           module procedure shapeTest_d2_a2
+          module procedure shapeTest_a3_a3
+          module procedure shapeTest_d3_a3
           module procedure shapeTest_a4_a4
           module procedure shapeTest_d4_a4
           module procedure shapeTest_a5_a5
@@ -173,37 +222,69 @@
         !
         ! chain rule saxpy to be used in forward and reverse modes
         !
-        
         subroutine saxpy_d0_a0_a0(a,x,y)
           real(w2f__8), intent(in) :: a
           type(active), intent(in) :: x
           type(active), intent(inout) :: y
           VECTOR_LOOP_VAR
           VECTOR_LOOP_BEGIN
-            y%DELEM = y%DELEM + x%DELEM*a
+            y%DELEM=y%DELEM + x%DELEM*a
           VECTOR_LOOP_END
         end subroutine
-
-        subroutine saxpy_i0_a0_a0(a,x,y)
-          integer(kind=w2f__i4), intent(in) :: a
-          type(active), intent(in) :: x
-          type(active), intent(inout) :: y
-          VECTOR_LOOP_VAR
-          VECTOR_LOOP_BEGIN
-            y%DELEM = y%DELEM + x%DELEM*a
-          VECTOR_LOOP_END
-        end subroutine
-        
         subroutine saxpy_l0_a0_a0(a,x,y)
           integer(kind=w2f__i8), intent(in) :: a
           type(active), intent(in) :: x
           type(active), intent(inout) :: y
           VECTOR_LOOP_VAR
           VECTOR_LOOP_BEGIN
-            y%DELEM = y%DELEM + x%DELEM*a
+            y%DELEM=y%DELEM + x%DELEM*a
           VECTOR_LOOP_END
         end subroutine
-
+        subroutine saxpy_i0_a0_a0(a,x,y)
+          integer(kind=w2f__i4), intent(in) :: a
+          type(active), intent(in) :: x
+          type(active), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=y%DELEM + x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
+        subroutine saxpy_d0_a0_a1(a,x,y)
+          real(w2f__8), intent(in) :: a
+          type(active), intent(in) :: x
+          type(active), dimension(:), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=y%DELEM + x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
+        subroutine saxpy_d0_a1_a1(a,x,y)
+          real(w2f__8), intent(in) :: a
+          type(active), dimension(:), intent(in) :: x
+          type(active), dimension(:), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=y%DELEM + x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
+        subroutine saxpy_d0_a2_a2(a,x,y)
+          real(w2f__8), intent(in) :: a
+          type(active), dimension(:,:), intent(in) :: x
+          type(active), dimension(:,:), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=y%DELEM + x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
+        subroutine saxpy_d1_a0_a1(a,x,y)
+          real(w2f__8), dimension(:), intent(in) :: a
+          type(active), intent(in) :: x
+          type(active), dimension(:), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=y%DELEM+x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
         subroutine saxpy_d1_a1_a1(a,x,y)
           real(w2f__8), dimension(:), intent(in) :: a
           type(active), dimension(:), intent(in) :: x
@@ -213,17 +294,6 @@
             y%DELEM=y%DELEM+x%DELEM*a
           VECTOR_LOOP_END
         end subroutine
-
-        subroutine saxpy_i1_a1_a1(a,x,y)
-          integer(kind=w2f__i4), dimension(:), intent(in) :: a
-          type(active), dimension(:), intent(in) :: x
-          type(active), dimension(:), intent(inout) :: y
-          VECTOR_LOOP_VAR
-          VECTOR_LOOP_BEGIN
-            y%DELEM=y%DELEM+x%DELEM*a
-          VECTOR_LOOP_END
-        end subroutine
-        
         subroutine saxpy_l1_a1_a1(a,x,y)
           integer(kind=w2f__i8), dimension(:), intent(in) :: a
           type(active), dimension(:), intent(in) :: x
@@ -233,44 +303,158 @@
             y%DELEM=y%DELEM+x%DELEM*a
           VECTOR_LOOP_END
         end subroutine
-
+        subroutine saxpy_i1_a1_a1(a,x,y)
+          integer(kind=w2f__i4), dimension(:), intent(in) :: a
+          type(active), dimension(:), intent(in) :: x
+          type(active), dimension(:), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=y%DELEM+x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
+        subroutine saxpy_a1_a1_a1(a,x,y)
+          type(active), dimension(:), intent(in) :: a
+          type(active), dimension(:), intent(in) :: x
+          type(active), dimension(:), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=y%DELEM+x%DELEM*a%v
+          VECTOR_LOOP_END
+        end subroutine
+        subroutine saxpy_d2_a0_a2(a,x,y)
+          real(w2f__8), dimension(:,:), intent(in) :: a
+          type(active), intent(in) :: x
+          type(active), dimension(:,:), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=y%DELEM + x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
+        subroutine saxpy_d2_a2_a2(a,x,y)
+          real(w2f__8), dimension(:,:), intent(in) :: a
+          type(active), dimension(:,:), intent(in) :: x
+          type(active), dimension(:,:), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=y%DELEM + x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
+# ifndef DEFAULT_R8
+        subroutine saxpy_r0_a0_a0(a,x,y)
+          real(w2f__4), intent(in) :: a
+          type(active), intent(in) :: x
+          type(active), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=y%DELEM + x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
+        subroutine saxpy_r0_a1_a1(a,x,y)
+          real(w2f__4), intent(in) :: a
+          type(active), dimension(:), intent(in) :: x
+          type(active), dimension(:), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=y%DELEM + x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
+        subroutine saxpy_r1_a0_a1(a,x,y)
+          real(w2f__4), dimension(:), intent(in) :: a
+          type(active), intent(in) :: x
+          type(active), dimension(:), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=y%DELEM + x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
+        subroutine saxpy_r1_a1_a1(a,x,y)
+          real(w2f__4), dimension(:), intent(in) :: a
+          type(active), dimension(:), intent(in) :: x
+          type(active), dimension(:), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=y%DELEM+x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
+# endif
         !
         ! chain rule saxpy to be used in forward and reverse modes
         ! derivative component of y is equal to zero initially
         ! note: y needs to be inout as otherwise value component gets
         ! zeroed out
         !
-        
         subroutine sax_d0_a0_a0(a,x,y)
           real(w2f__8), intent(in) :: a
           type(active), intent(in) :: x
           type(active), intent(inout) :: y
           VECTOR_LOOP_VAR
           VECTOR_LOOP_BEGIN
-            y%DELEM = x%DELEM*a
+            y%DELEM=x%DELEM*a
           VECTOR_LOOP_END
         end subroutine
-
-        subroutine sax_i0_a0_a0(a,x,y)
-          integer(kind=w2f__i4), intent(in) :: a
-          type(active), intent(in) :: x
-          type(active), intent(inout) :: y
-          VECTOR_LOOP_VAR
-          VECTOR_LOOP_BEGIN
-            y%DELEM = x%DELEM*a
-          VECTOR_LOOP_END
-        end subroutine
-
         subroutine sax_l0_a0_a0(a,x,y)
           integer(kind=w2f__i8), intent(in) :: a
           type(active), intent(in) :: x
           type(active), intent(inout) :: y
           VECTOR_LOOP_VAR
           VECTOR_LOOP_BEGIN
+            y%DELEM=x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
+        subroutine sax_i0_a0_a0(a,x,y)
+          integer(kind=w2f__i4), intent(in) :: a
+          type(active), intent(in) :: x
+          type(active), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
+        subroutine sax_d0_a0_a1(a,x,y)
+          real(w2f__8), intent(in) :: a
+          type(active), intent(in) :: x
+          type(active), dimension(:), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
+        subroutine sax_d0_a0_a2(a,x,y)
+          real(w2f__8), intent(in) :: a
+          type(active), intent(in) :: x
+          type(active), dimension(:,:), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
             y%DELEM = x%DELEM*a
           VECTOR_LOOP_END
         end subroutine
-        
+        subroutine sax_d0_a1_a1(a,x,y)
+          real(w2f__8), intent(in) :: a
+          type(active), dimension(:), intent(in) :: x
+          type(active), dimension(:), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
+        subroutine sax_d0_a2_a2(a,x,y)
+          real(w2f__8), intent(in) :: a
+          type(active), dimension(:,:), intent(in) :: x
+          type(active), dimension(:,:), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
+        subroutine sax_d1_a0_a1(a,x,y)
+          real(w2f__8), dimension(:), intent(in) :: a
+          type(active), intent(in) :: x
+          type(active), dimension(:), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
         subroutine sax_d1_a1_a1(a,x,y)
           real(w2f__8), dimension(:), intent(in) :: a
           type(active), dimension(:), intent(in) :: x
@@ -280,17 +464,6 @@
             y%DELEM=x%DELEM*a
           VECTOR_LOOP_END
         end subroutine
-
-        subroutine sax_i1_a1_a1(a,x,y)
-          integer(kind=w2f__i4), dimension(:), intent(in) :: a
-          type(active), dimension(:), intent(in) :: x
-          type(active), dimension(:), intent(inout) :: y
-          VECTOR_LOOP_VAR
-          VECTOR_LOOP_BEGIN
-            y%DELEM=x%DELEM*a
-          VECTOR_LOOP_END
-        end subroutine
-
         subroutine sax_l1_a1_a1(a,x,y)
           integer(kind=w2f__i8), dimension(:), intent(in) :: a
           type(active), dimension(:), intent(in) :: x
@@ -300,13 +473,49 @@
             y%DELEM=x%DELEM*a
           VECTOR_LOOP_END
         end subroutine
-
+        subroutine sax_i1_a1_a1(a,x,y)
+          integer(kind=w2f__i4), dimension(:), intent(in) :: a
+          type(active), dimension(:), intent(in) :: x
+          type(active), dimension(:), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
+        subroutine sax_d2_a0_a2(a,x,y)
+          real(w2f__8), dimension(:,:), intent(in) :: a
+          type(active), intent(in) :: x
+          type(active), dimension(:,:), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
+        subroutine sax_d2_a2_a2(a,x,y)
+          real(w2f__8), dimension(:,:), intent(in) :: a
+          type(active), dimension(:,:), intent(in) :: x
+          type(active), dimension(:,:), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
+# ifndef DEFAULT_R8
+        subroutine sax_r0_a0_a0(a,x,y)
+          real(w2f__4), intent(in) :: a
+          type(active), intent(in) :: x
+          type(active), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
+# endif
         !
         ! set derivative of y to be equal to derivative of x
         ! note: making y inout allows for already existing active
         ! variables to become the target of a derivative assignment
         !
-        
         subroutine setderiv_a0_a0(y,x)
           type(active), intent(inout) :: y
           type(active), intent(in) :: x
@@ -315,7 +524,14 @@
             y%DELEM = x%DELEM
           VECTOR_LOOP_END
         end subroutine
-
+        subroutine setderiv_a1_a0(y,x)
+          type(active), intent(inout), dimension(:) :: y
+          type(active), intent(in) :: x
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM = x%DELEM
+          VECTOR_LOOP_END
+        end subroutine
         subroutine setderiv_a1_a1(y,x)
           type(active), intent(inout), dimension(:) :: y
           type(active), intent(in), dimension(:) :: x
@@ -324,7 +540,30 @@
             y%DELEM = x%DELEM
           VECTOR_LOOP_END
         end subroutine
-
+        subroutine setderiv_a2_a0(y,x)
+          type(active), intent(inout), dimension(:,:) :: y
+          type(active), intent(in) :: x
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM = x%DELEM
+          VECTOR_LOOP_END
+        end subroutine
+        subroutine setderiv_a2_a2(y,x)
+          type(active), intent(inout), dimension(:,:) :: y
+          type(active), intent(in), dimension(:,:) :: x
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM = x%DELEM
+          VECTOR_LOOP_END
+        end subroutine
+        subroutine setderiv_a3_a3(y,x)
+          type(active), intent(inout), dimension(:,:,:) :: y
+          type(active), intent(in), dimension(:,:,:) :: x
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM = x%DELEM
+          VECTOR_LOOP_END
+        end subroutine
         !
         ! set the derivative of y to be the negated derivative of x
         ! note: making y inout allows for already existing active
@@ -360,7 +599,7 @@
           type(active), intent(in) :: x
           VECTOR_LOOP_VAR
           VECTOR_LOOP_BEGIN
-            y%DELEM = y%DELEM + x%DELEM
+            y%DELEM=y%DELEM + x%DELEM
           VECTOR_LOOP_END
         end subroutine
 
@@ -369,7 +608,16 @@
           type(active), intent(in), dimension(:) :: x
           VECTOR_LOOP_VAR
           VECTOR_LOOP_BEGIN
-            y%DELEM = y%DELEM + x%DELEM
+            y%DELEM=y%DELEM + x%DELEM
+          VECTOR_LOOP_END
+        end subroutine
+
+        subroutine inc_deriv_a2_a2(y,x)
+          type(active), intent(inout), dimension(:,:) :: y
+          type(active), intent(in), dimension(:,:) :: x
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=y%DELEM + x%DELEM
           VECTOR_LOOP_END
         end subroutine
 
@@ -384,7 +632,7 @@
           type(active), intent(in) :: x
           VECTOR_LOOP_VAR
           VECTOR_LOOP_BEGIN
-            y%DELEM = y%DELEM - x%DELEM
+            y%DELEM=y%DELEM - x%DELEM
           VECTOR_LOOP_END
         end subroutine
 
@@ -393,7 +641,16 @@
           type(active), intent(in), dimension(:) :: x
           VECTOR_LOOP_VAR
           VECTOR_LOOP_BEGIN
-            y%DELEM = y%DELEM - x%DELEM
+            y%DELEM=y%DELEM - x%DELEM
+          VECTOR_LOOP_END
+        end subroutine
+        
+        subroutine dec_deriv_a2_a2(y,x)
+          type(active), intent(inout), dimension(:,:) :: y
+          type(active), intent(in), dimension(:,:) :: x
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=y%DELEM - x%DELEM
           VECTOR_LOOP_END
         end subroutine
         
@@ -611,16 +868,16 @@
         !
         ! allocations
         !
+        subroutine allocateMatching_d1_d1(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__8), dimension(:), allocatable :: toBeAllocated
+          real(w2f__8), dimension(:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+        end subroutine
         subroutine allocateMatching_a1_d1(toBeAllocated,allocateMatching)
           implicit none
           type(active), dimension(:), allocatable :: toBeAllocated
           real(w2f__8), dimension(:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
-        end subroutine
-        subroutine allocateMatching_a1_a1(toBeAllocated,allocateMatching)
-          implicit none
-          type(active), dimension(:), allocatable :: toBeAllocated
-          type(active), dimension(:) :: allocateMatching
           if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
         end subroutine
         subroutine allocateMatching_d1_a1(toBeAllocated,allocateMatching)
@@ -629,10 +886,23 @@
           type(active), dimension(:) :: allocateMatching
           if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
         end subroutine
-        subroutine allocateMatching_a2_a2(toBeAllocated,allocateMatching)
+        subroutine allocateMatching_a1_a1(toBeAllocated,allocateMatching)
+          implicit none
+          type(active), dimension(:), allocatable :: toBeAllocated
+          type(active), dimension(:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+        end subroutine
+        subroutine allocateMatching_d2_d2(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__8), dimension(:,:), allocatable :: toBeAllocated
+          real(w2f__8), dimension(:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2)))
+        end subroutine
+        subroutine allocateMatching_a2_d2(toBeAllocated,allocateMatching)
           implicit none
           type(active), dimension(:,:), allocatable :: toBeAllocated
-          type(active), dimension(:,:) :: allocateMatching
+          real(w2f__8), dimension(:,:) :: allocateMatching
           if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2)))
         end subroutine
@@ -642,6 +912,45 @@
           type(active), dimension(:,:) :: allocateMatching
           if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2)))
+        end subroutine
+        subroutine allocateMatching_a2_a2(toBeAllocated,allocateMatching)
+          implicit none
+          type(active), dimension(:,:), allocatable :: toBeAllocated
+          type(active), dimension(:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2)))
+        end subroutine
+        subroutine allocateMatching_d3_d3(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__8), dimension(:,:,:), allocatable :: toBeAllocated
+          real(w2f__8), dimension(:,:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2),&
+               size(allocateMatching,3)))
+        end subroutine
+        subroutine allocateMatching_a3_d3(toBeAllocated,allocateMatching)
+          implicit none
+          type(active), dimension(:,:,:), allocatable :: toBeAllocated
+          real(w2f__8), dimension(:,:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2),&
+               size(allocateMatching,3)))
+        end subroutine
+        subroutine allocateMatching_d3_a3(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__8), dimension(:,:,:), allocatable :: toBeAllocated
+          type(active), dimension(:,:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2),&
+               size(allocateMatching,3)))
+        end subroutine
+        subroutine allocateMatching_a3_a3(toBeAllocated,allocateMatching)
+          implicit none
+          type(active), dimension(:,:,:), allocatable :: toBeAllocated
+          type(active), dimension(:,:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2),&
+               size(allocateMatching,3)))
         end subroutine
         subroutine allocateMatching_a4_a4(toBeAllocated,allocateMatching)
           implicit none
@@ -661,20 +970,10 @@
                size(allocateMatching,3),&
                size(allocateMatching,4)))
         end subroutine
-        subroutine allocateMatching_a5_a5(toBeAllocated,allocateMatching)
-          implicit none
-          type(active), dimension(:,:,:,:,:), allocatable :: toBeAllocated
-          type(active), dimension(:,:,:,:,:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
-               size(allocateMatching,2),&
-               size(allocateMatching,3),&
-               size(allocateMatching,4),&
-               size(allocateMatching,5)))
-        end subroutine
-        subroutine allocateMatching_d5_a5(toBeAllocated,allocateMatching)
+        subroutine allocateMatching_d5_d5(toBeAllocated,allocateMatching)
           implicit none
           real(w2f__8), dimension(:,:,:,:,:), allocatable :: toBeAllocated
-          type(active), dimension(:,:,:,:,:) :: allocateMatching
+          real(w2f__8), dimension(:,:,:,:,:) :: allocateMatching
           if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2),&
                size(allocateMatching,3),&
@@ -691,12 +990,63 @@
                size(allocateMatching,4),&
                size(allocateMatching,5)))
         end subroutine
+        subroutine allocateMatching_d5_a5(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__8), dimension(:,:,:,:,:), allocatable :: toBeAllocated
+          type(active), dimension(:,:,:,:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2),&
+               size(allocateMatching,3),&
+               size(allocateMatching,4),&
+               size(allocateMatching,5)))
+        end subroutine
+        subroutine allocateMatching_a5_a5(toBeAllocated,allocateMatching)
+          implicit none
+          type(active), dimension(:,:,:,:,:), allocatable :: toBeAllocated
+          type(active), dimension(:,:,:,:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2),&
+               size(allocateMatching,3),&
+               size(allocateMatching,4),&
+               size(allocateMatching,5)))
+        end subroutine
 #ifndef DEFAULT_R8
+        subroutine allocateMatching_r1_r1(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__4), dimension(:), allocatable :: toBeAllocated
+          real(w2f__4), dimension(:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+        end subroutine
+        subroutine allocateMatching_d1_r1(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__8), dimension(:), allocatable :: toBeAllocated
+          real(w2f__4), dimension(:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+        end subroutine
+        subroutine allocateMatching_r1_d1(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__4), dimension(:), allocatable :: toBeAllocated
+          real(w2f__8), dimension(:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+        end subroutine
+        subroutine allocateMatching_a1_r1(toBeAllocated,allocateMatching)
+          implicit none
+          type(active), dimension(:), allocatable :: toBeAllocated
+          real(w2f__4), dimension(:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+        end subroutine
         subroutine allocateMatching_r1_a1(toBeAllocated,allocateMatching)
           implicit none
           real(w2f__4), dimension(:), allocatable :: toBeAllocated
           type(active), dimension(:) :: allocateMatching
           if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+        end subroutine
+        subroutine allocateMatching_a2_r2(toBeAllocated,allocateMatching)
+          implicit none
+          type(active), dimension(:,:), allocatable :: toBeAllocated
+          real(w2f__4), dimension(:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2)))
         end subroutine
         subroutine allocateMatching_r2_a2(toBeAllocated,allocateMatching)
           implicit none
@@ -706,6 +1056,21 @@
                size(allocateMatching,2)))
         end subroutine
 #endif
+        !
+        ! allocate shape
+        !
+        subroutine allocateShape_d1(toBeAllocated,s1)
+          implicit none
+          real(w2f__8), dimension(:), allocatable :: toBeAllocated
+          integer(w2f__i8) :: s1
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(s1))
+        end subroutine
+        subroutine allocateShape_d2(toBeAllocated,s1,s2)
+          implicit none
+          real(w2f__8), dimension(:,:), allocatable :: toBeAllocated
+          integer(w2f__i8) :: s1,s2
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(s1,s2))
+        end subroutine
         !
         ! shape tests
         !
@@ -737,6 +1102,18 @@
           implicit none
           real(w2f__8), dimension(:,:), allocatable :: allocatedVar
           type(active), dimension(:,:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
+        end subroutine
+        subroutine shapeTest_a3_a3(allocatedVar,origVar)
+          implicit none
+          type(active), dimension(:,:,:), allocatable :: allocatedVar
+          type(active), dimension(:,:,:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
+        end subroutine
+        subroutine shapeTest_d3_a3(allocatedVar,origVar)
+          implicit none
+          real(w2f__8), dimension(:,:,:), allocatable :: allocatedVar
+          type(active), dimension(:,:,:) :: origVar
           if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
         end subroutine
         subroutine shapeTest_a4_a4(allocatedVar,origVar)
@@ -785,7 +1162,7 @@
 #endif
         subroutine runTimeErrorStopI(mesgId)
           implicit none
-	  integer mesgId
+          integer mesgId
           select case (mesgId) 
           case (shapeChange)
              stop "ERROR: OAD run time library: detected shape change"
