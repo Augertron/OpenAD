@@ -14,7 +14,8 @@
 
 
 
-        public :: oad_convert, oad_allocateMatching, oad_shapeTest
+        public :: oad_convert
+        public :: oad_allocateMatching, oad_allocateShape, oad_shapeTest
 
 
 
@@ -65,17 +66,36 @@
         end interface
 
         interface oad_allocateMatching
+          module procedure allocateMatching_d1_d1
           module procedure allocateMatching_a1_d1
-          module procedure allocateMatching_a1_a1
           module procedure allocateMatching_d1_a1
-          module procedure allocateMatching_a2_a2
+          module procedure allocateMatching_a1_a1
+          module procedure allocateMatching_d2_d2
+          module procedure allocateMatching_a2_d2
           module procedure allocateMatching_d2_a2
+          module procedure allocateMatching_a2_a2
+          module procedure allocateMatching_d3_d3
+          module procedure allocateMatching_a3_d3
+          module procedure allocateMatching_d3_a3
+          module procedure allocateMatching_a3_a3
           module procedure allocateMatching_a4_a4
           module procedure allocateMatching_d4_a4
-          module procedure allocateMatching_a5_a5
+          module procedure allocateMatching_d5_d5
+          module procedure allocateMatching_a5_d5
           module procedure allocateMatching_d5_a5
+          module procedure allocateMatching_a5_a5
+          module procedure allocateMatching_r1_r1
+          module procedure allocateMatching_d1_r1
+          module procedure allocateMatching_r1_d1
+          module procedure allocateMatching_a1_r1
           module procedure allocateMatching_r1_a1
+          module procedure allocateMatching_a2_r2
           module procedure allocateMatching_r2_a2
+        end interface 
+
+        interface oad_allocateShape
+          module procedure allocateShape_d1
+          module procedure allocateShape_d2
         end interface 
 
         interface oad_shapeTest
@@ -84,10 +104,13 @@
           module procedure shapeTest_d1_a1
           module procedure shapeTest_a2_a2
           module procedure shapeTest_d2_a2
+          module procedure shapeTest_a3_a3
+          module procedure shapeTest_d3_a3
           module procedure shapeTest_a4_a4
           module procedure shapeTest_d4_a4
           module procedure shapeTest_a5_a5
           module procedure shapeTest_d5_a5
+          module procedure shapeTest_a5_d5
           module procedure shapeTest_r1_a1
           module procedure shapeTest_r2_a2
         end interface 
@@ -265,16 +288,16 @@
         !
         ! allocations
         !
+        subroutine allocateMatching_d1_d1(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__8), dimension(:), allocatable :: toBeAllocated
+          real(w2f__8), dimension(:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+        end subroutine
         subroutine allocateMatching_a1_d1(toBeAllocated,allocateMatching)
           implicit none
           type(active), dimension(:), allocatable :: toBeAllocated
           real(w2f__8), dimension(:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
-        end subroutine
-        subroutine allocateMatching_a1_a1(toBeAllocated,allocateMatching)
-          implicit none
-          type(active), dimension(:), allocatable :: toBeAllocated
-          type(active), dimension(:) :: allocateMatching
           if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
         end subroutine
         subroutine allocateMatching_d1_a1(toBeAllocated,allocateMatching)
@@ -283,10 +306,23 @@
           type(active), dimension(:) :: allocateMatching
           if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
         end subroutine
-        subroutine allocateMatching_a2_a2(toBeAllocated,allocateMatching)
+        subroutine allocateMatching_a1_a1(toBeAllocated,allocateMatching)
+          implicit none
+          type(active), dimension(:), allocatable :: toBeAllocated
+          type(active), dimension(:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+        end subroutine
+        subroutine allocateMatching_d2_d2(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__8), dimension(:,:), allocatable :: toBeAllocated
+          real(w2f__8), dimension(:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2)))
+        end subroutine
+        subroutine allocateMatching_a2_d2(toBeAllocated,allocateMatching)
           implicit none
           type(active), dimension(:,:), allocatable :: toBeAllocated
-          type(active), dimension(:,:) :: allocateMatching
+          real(w2f__8), dimension(:,:) :: allocateMatching
           if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2)))
         end subroutine
@@ -296,6 +332,45 @@
           type(active), dimension(:,:) :: allocateMatching
           if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2)))
+        end subroutine
+        subroutine allocateMatching_a2_a2(toBeAllocated,allocateMatching)
+          implicit none
+          type(active), dimension(:,:), allocatable :: toBeAllocated
+          type(active), dimension(:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2)))
+        end subroutine
+        subroutine allocateMatching_d3_d3(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__8), dimension(:,:,:), allocatable :: toBeAllocated
+          real(w2f__8), dimension(:,:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2),&
+               size(allocateMatching,3)))
+        end subroutine
+        subroutine allocateMatching_a3_d3(toBeAllocated,allocateMatching)
+          implicit none
+          type(active), dimension(:,:,:), allocatable :: toBeAllocated
+          real(w2f__8), dimension(:,:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2),&
+               size(allocateMatching,3)))
+        end subroutine
+        subroutine allocateMatching_d3_a3(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__8), dimension(:,:,:), allocatable :: toBeAllocated
+          type(active), dimension(:,:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2),&
+               size(allocateMatching,3)))
+        end subroutine
+        subroutine allocateMatching_a3_a3(toBeAllocated,allocateMatching)
+          implicit none
+          type(active), dimension(:,:,:), allocatable :: toBeAllocated
+          type(active), dimension(:,:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2),&
+               size(allocateMatching,3)))
         end subroutine
         subroutine allocateMatching_a4_a4(toBeAllocated,allocateMatching)
           implicit none
@@ -315,10 +390,20 @@
                size(allocateMatching,3),&
                size(allocateMatching,4)))
         end subroutine
-        subroutine allocateMatching_a5_a5(toBeAllocated,allocateMatching)
+        subroutine allocateMatching_d5_d5(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__8), dimension(:,:,:,:,:), allocatable :: toBeAllocated
+          real(w2f__8), dimension(:,:,:,:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2),&
+               size(allocateMatching,3),&
+               size(allocateMatching,4),&
+               size(allocateMatching,5)))
+        end subroutine
+        subroutine allocateMatching_a5_d5(toBeAllocated,allocateMatching)
           implicit none
           type(active), dimension(:,:,:,:,:), allocatable :: toBeAllocated
-          type(active), dimension(:,:,:,:,:) :: allocateMatching
+          real(w2f__8), dimension(:,:,:,:,:) :: allocateMatching
           if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2),&
                size(allocateMatching,3),&
@@ -335,11 +420,52 @@
                size(allocateMatching,4),&
                size(allocateMatching,5)))
         end subroutine
+        subroutine allocateMatching_a5_a5(toBeAllocated,allocateMatching)
+          implicit none
+          type(active), dimension(:,:,:,:,:), allocatable :: toBeAllocated
+          type(active), dimension(:,:,:,:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2),&
+               size(allocateMatching,3),&
+               size(allocateMatching,4),&
+               size(allocateMatching,5)))
+        end subroutine
+        subroutine allocateMatching_r1_r1(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__4), dimension(:), allocatable :: toBeAllocated
+          real(w2f__4), dimension(:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+        end subroutine
+        subroutine allocateMatching_d1_r1(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__8), dimension(:), allocatable :: toBeAllocated
+          real(w2f__4), dimension(:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+        end subroutine
+        subroutine allocateMatching_r1_d1(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__4), dimension(:), allocatable :: toBeAllocated
+          real(w2f__8), dimension(:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+        end subroutine
+        subroutine allocateMatching_a1_r1(toBeAllocated,allocateMatching)
+          implicit none
+          type(active), dimension(:), allocatable :: toBeAllocated
+          real(w2f__4), dimension(:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+        end subroutine
         subroutine allocateMatching_r1_a1(toBeAllocated,allocateMatching)
           implicit none
           real(w2f__4), dimension(:), allocatable :: toBeAllocated
           type(active), dimension(:) :: allocateMatching
           if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+        end subroutine
+        subroutine allocateMatching_a2_r2(toBeAllocated,allocateMatching)
+          implicit none
+          type(active), dimension(:,:), allocatable :: toBeAllocated
+          real(w2f__4), dimension(:,:) :: allocateMatching
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2)))
         end subroutine
         subroutine allocateMatching_r2_a2(toBeAllocated,allocateMatching)
           implicit none
@@ -347,6 +473,21 @@
           type(active), dimension(:,:) :: allocateMatching
           if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2)))
+        end subroutine
+        !
+        ! allocate shape
+        !
+        subroutine allocateShape_d1(toBeAllocated,s1)
+          implicit none
+          real(w2f__8), dimension(:), allocatable :: toBeAllocated
+          integer(w2f__i8) :: s1
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(s1))
+        end subroutine
+        subroutine allocateShape_d2(toBeAllocated,s1,s2)
+          implicit none
+          real(w2f__8), dimension(:,:), allocatable :: toBeAllocated
+          integer(w2f__i8) :: s1,s2
+          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(s1,s2))
         end subroutine
         !
         ! shape tests
@@ -381,6 +522,18 @@
           type(active), dimension(:,:) :: origVar
           if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
         end subroutine
+        subroutine shapeTest_a3_a3(allocatedVar,origVar)
+          implicit none
+          type(active), dimension(:,:,:), allocatable :: allocatedVar
+          type(active), dimension(:,:,:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
+        end subroutine
+        subroutine shapeTest_d3_a3(allocatedVar,origVar)
+          implicit none
+          real(w2f__8), dimension(:,:,:), allocatable :: allocatedVar
+          type(active), dimension(:,:,:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
+        end subroutine
         subroutine shapeTest_a4_a4(allocatedVar,origVar)
           implicit none
           type(active), dimension(:,:,:,:), allocatable :: allocatedVar
@@ -405,6 +558,12 @@
           type(active), dimension(:,:,:,:,:) :: origVar
           if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange) 
         end subroutine
+        subroutine shapeTest_a5_d5(allocatedVar,origVar)
+          implicit none
+          type(active), dimension(:,:,:,:,:), allocatable :: allocatedVar
+          real(w2f__8), dimension(:,:,:,:,:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange) 
+        end subroutine
         subroutine shapeTest_r1_a1(allocatedVar,origVar)
           implicit none
           real(w2f__4), dimension(:), allocatable :: allocatedVar
@@ -419,7 +578,7 @@
         end subroutine
         subroutine runTimeErrorStopI(mesgId)
           implicit none
-	  integer mesgId
+          integer mesgId
           select case (mesgId) 
           case (shapeChange)
              stop "ERROR: OAD run time library: detected shape change"
