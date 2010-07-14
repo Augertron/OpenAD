@@ -9,7 +9,7 @@ module OAD_cp
 
   private :: cp_file_number, cp_open
 
-  public :: cp_io_unit,  cp_init, cp_write_open, cp_read_open, cp_close
+  public :: cp_io_unit, cp_init, cp_write_open, cp_read_open, cp_close, cp_fNumber
 
   integer :: cp_file_number, cp_io_unit
 
@@ -38,7 +38,7 @@ module OAD_cp
   interface cp_findunit
      module procedure findunit_i
   end interface
-
+  
 contains
 
   subroutine init_i
@@ -49,6 +49,7 @@ contains
   subroutine write_open_i()
     implicit none
     call cp_open()
+!    print *, 'writing ', cp_file_number
     cp_file_number=cp_file_number+1
   end subroutine 
 
@@ -56,12 +57,14 @@ contains
     implicit none
     integer X
     cp_file_number=X
+!    print *, 'writing ', cp_file_number
     call cp_open()
   end subroutine 
 
   subroutine read_open_i()
     implicit none
     cp_file_number=cp_file_number-1
+!    print *, 'reading ', cp_file_number
     call cp_open()
   end subroutine 
 
@@ -69,6 +72,7 @@ contains
     implicit none
     integer X
     cp_file_number=X
+!    print *, 'reading ', cp_file_number
     call cp_open()
   end subroutine 
 
@@ -79,7 +83,6 @@ contains
     ! get unit
     rank=0
     call cp_findunit()
-    print *, 'OAD opening CP file ', cp_file_number
     ! construct the file name
     write(fname,'(A,I5.5)') 'oad_cp.',cp_file_number
     open( UNIT=cp_io_unit,FILE=TRIM(fname),FORM="UNFORMATTED",STATUS='UNKNOWN' )
@@ -124,5 +127,10 @@ contains
        stop 'ABNORMAL END: S/R OAD_cp:findunit_i'
     endif
   end subroutine
+
+  function cp_fNumber()
+    integer cp_fNumber
+    cp_fNumber=cp_file_number
+  end function 
 
 end module 
