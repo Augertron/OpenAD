@@ -396,6 +396,22 @@ C $OpenAD$ END DECLS
 	read(cp_io_unit) x
       end subroutine 
 
+      subroutine cp_arg_store_integer_matrix(x)
+C $OpenAD$ INLINE DECLS
+      implicit none
+      integer, dimension(:,:) :: x
+C $OpenAD$ END DECLS
+	write(cp_io_unit) x
+      end subroutine 
+
+      subroutine cp_arg_restore_integer_matrix(x)
+C $OpenAD$ INLINE DECLS
+      implicit none
+      integer, dimension(:,:) :: x
+C $OpenAD$ END DECLS
+	read(cp_io_unit) x
+      end subroutine 
+
       subroutine cp_arg_store_integer_three_tensor(x)
 C $OpenAD$ INLINE DECLS
       implicit none

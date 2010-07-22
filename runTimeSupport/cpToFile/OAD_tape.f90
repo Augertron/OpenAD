@@ -15,7 +15,8 @@ module OAD_tape
        oad_lt, oad_lt_ptr, oad_lt_sz, oad_lt_grow, &
        oad_st, oad_st_ptr, oad_st_sz, oad_st_grow, &
        oad_tape_init, &
-       oad_dump_tapestats
+       oad_dump_tapestats, & 
+       oad_tape_push, oad_tape_pop
        
   double precision, dimension(:), allocatable :: oad_dt, dtt
   integer, dimension(:), allocatable :: oad_it, itt
@@ -49,6 +50,16 @@ module OAD_tape
 
   interface oad_st_grow
     module procedure st_grow
+  end interface
+
+  interface oad_tape_push
+     module procedure push_i0
+     module procedure push_d1, push_i1
+  end interface
+
+  interface oad_tape_pop
+     module procedure pop_i0
+     module procedure pop_d1, pop_i1
   end interface
 
 contains
@@ -170,5 +181,47 @@ contains
     deallocate(stt)
     oad_st_sz=oad_st_sz+increment
   end subroutine st_grow
+
+  subroutine push_i0(v)
+    implicit none
+    integer :: v
+    if(oad_it_sz .lt. oad_it_ptr+1) call oad_it_grow()
+    oad_it(oad_it_ptr)=v; oad_it_ptr=oad_it_ptr+1
+  end subroutine push_i0
+
+  subroutine pop_i0(v)
+    implicit none
+    integer :: v
+    oad_it_ptr=oad_it_ptr-1
+    v=oad_it(oad_it_ptr)
+  end subroutine pop_i0
+
+  subroutine push_d1(v)
+    implicit none
+    double precision :: v(:)
+    if(oad_dt_sz .lt. oad_dt_ptr+size(v)) call oad_dt_grow()
+    oad_dt(oad_dt_ptr:)=v(:); oad_dt_ptr=oad_dt_ptr+size(v)
+  end subroutine push_d1
+
+  subroutine push_i1(v)
+    implicit none
+    integer :: v(:)
+    if(oad_it_sz .lt. oad_it_ptr+size(v)) call oad_it_grow()
+    oad_it(oad_it_ptr:)=v(:); oad_it_ptr=oad_it_ptr+size(v)
+  end subroutine push_i1
+
+  subroutine pop_d1(v)
+    implicit none
+    double precision :: v(:)
+    oad_dt_ptr=oad_dt_ptr-size(v)
+    v(:)=oad_dt(oad_dt_ptr:)
+  end subroutine pop_d1
+  
+  subroutine pop_i1(v)
+    implicit none
+    integer :: v(:)
+    oad_it_ptr=oad_it_ptr-size(v)
+    v(:)=oad_it(oad_it_ptr:)
+  end subroutine pop_i1
 
 end module
