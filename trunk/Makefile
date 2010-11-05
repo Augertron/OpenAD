@@ -350,6 +350,8 @@ openadforttk_install:
 	cp -f  ${OPENADROOT}/OpenADFortTk/tools/SourceProcessing/PP/*.py            ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/PP/
 	cp -f  ${OPENADROOT}/OpenADFortTk/tools/SourceProcessing/postProcess.py     ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/
 	chmod a+rx ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/postProcess.py
+	cp -f  ${OPENADROOT}/OpenADFortTk/tools/SourceProcessing/transformFile.py     ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/
+	chmod a+rx ${INST_DIR}/OpenADFortTk/tools/SourceProcessing/transformFile.py
 
 xaif_install: 
 # we do this here because xaif does not have Makefiles
