@@ -176,6 +176,8 @@ def main():
                  help="only for developers!: adjust updates for Mercurial development repositories",
                  action='store_true',default=False)
   (options, args) = opt.parse_args()
+  if (args): 
+    opt.error("accepts given arguments ("+' '.join(map(str,args))+") only for a preceding option")
   if (options.verbose):
     sys.stdout.write("running for OPENADROOT="+os.environ["OPENADROOT"])
   if (options.force):
