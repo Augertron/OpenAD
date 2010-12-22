@@ -44,7 +44,33 @@ C $OpenAD$ INLINE DECLS
       double precision :: x(:)
 C $OpenAD$ END DECLS
       oad_dt_ptr=oad_dt_ptr-size(x)
-      x(:)=oad_dt(oad_dt_ptr:)
+      x=oad_dt(oad_dt_ptr:)
+      end subroutine
+
+      subroutine push_s2(x)
+C $OpenAD$ INLINE DECLS
+      use OpenAD_tape
+      implicit none
+      double precision :: x(:,:)
+C $OpenAD$ END DECLS
+      oad_chunk_size=size(x,1)*size(x,2)
+      if(oad_dt_sz .lt. oad_dt_ptr+oad_chunk_size) 
+     + call oad_dt_grow()
+      oad_dt(oad_dt_ptr:oad_chunk_size+oad_chunk_size-1)=
+     +reshape(x,(/oad_chunk_size/))
+      oad_dt_ptr=oad_dt_ptr+oad_chunk_size
+      end subroutine 
+
+      subroutine pop_s2(x)
+C $OpenAD$ INLINE DECLS
+      use OpenAD_tape
+      implicit none
+      double precision :: x(:,:)
+C $OpenAD$ END DECLS
+      oad_chunk_size=size(x,1)*size(x,2)
+      oad_dt_ptr=oad_dt_ptr-oad_chunk_size
+        x=reshape(oad_dt(oad_dt_ptr:oad_dt_ptr+oad_chunk_size-1),
+     +shape(x))
       end subroutine
 
       subroutine apush(x)
