@@ -17,6 +17,9 @@ sys.path.append(os.path.join(os.environ["OPENADROOT"],"tools","libpythontk"))
 import RunCmds
 import Repository
 
+class ParseException(Exception):
+  pass
+
 class OpenadUpdate:
   def __init__(self,options):
     dir = os.getcwd();
@@ -34,8 +37,15 @@ class OpenadUpdate:
       revisionFileHandle=open(self.options.revisionFile,'r')
       self.fileRevisions={}
       for theLine in revisionFileHandle:
-        (lPath,vPair)=theLine.split()  
-        (vType,vVer)=vPair.split(':')
+        (lPath,vPair)=theLine.split()
+        splitPair=vPair.split(':')
+        vType=None
+        vVer=None
+        if (len(splitPair) in [2,3]):
+          vType=splitPair[0]
+          vVer=splitPair[-1]
+        else: 
+          raise ParseException('problem parsing specified revision file on line: '+theLine)
         if (lPath=='../OpenAD'):
           lPath='.'
         if (lPath=='boost/boost'):
@@ -194,7 +204,7 @@ def main():
       reload(openadConfig)
       oadU = OpenadUpdate(options)
       oadU.Run()
-  except (Repository.RepositoryException, RunCmds.RunnerException), e:
+  except (Repository.RepositoryException, RunCmds.RunnerException, ParseException), e:
     sys.stderr.write('ERROR: '+str(e)+'\n')
     opt.print_help()
     return 1
