@@ -210,6 +210,8 @@
 #ifndef DEFAULT_R8
           module procedure shapeTest_r1_a1
           module procedure shapeTest_r2_a2
+          module procedure shapeTest_a1_r1
+          module procedure shapeTest_a2_r2
 #endif
         end interface 
 
@@ -1157,6 +1159,18 @@
           implicit none
           real(w2f__4), dimension(:,:), allocatable :: allocatedVar
           type(active), dimension(:,:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
+        end subroutine
+        subroutine shapeTest_a1_r1(allocatedVar,origVar)
+          implicit none
+          type(active), dimension(:), allocatable :: allocatedVar
+          real(w2f__4), dimension(:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
+        end subroutine
+        subroutine shapeTest_a2_r2(allocatedVar,origVar)
+          implicit none
+          type(active), dimension(:,:), allocatable :: allocatedVar
+          real(w2f__4), dimension(:,:) :: origVar
           if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
         end subroutine
 #endif
