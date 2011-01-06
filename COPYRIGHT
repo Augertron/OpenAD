@@ -4,7 +4,7 @@
  OpenAD top level directory structure, scripts, and run time support 
  ---------------
  Distributed under the BSD license as follows:
- Copyright (c) 2003-2009, The University of Chicago
+ Copyright (c) 2003-2011, The University of Chicago
  All rights reserved.
 
  Redistribution and use in source and binary forms, 
@@ -33,7 +33,7 @@
  The OpenAD top level directory structure provides scripts, run time support files and 
  skeleton into which the components of the OpenAD tool chain are inserted.
  For further details on licensing please refer to the licenses of the individual components:
-     *  Open64 (Fortran90 front-end)
+    * Open64 (Fortran90 front-end)
     * OpenAnalysis (analysis engine)
     * OpenADFortTk (translation between whirl and xaif)
     * XAIF (intermediate representation)
