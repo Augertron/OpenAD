@@ -838,59 +838,68 @@
           implicit none
           real(w2f__8), dimension(:), allocatable :: toBeAllocated
           real(w2f__8), dimension(:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching)))
         end subroutine
         subroutine allocateMatching_a1_d1(toBeAllocated,allocateMatching)
           implicit none
           type(active), dimension(:), allocatable :: toBeAllocated
           real(w2f__8), dimension(:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching)))
         end subroutine
         subroutine allocateMatching_d1_a1(toBeAllocated,allocateMatching)
           implicit none
           real(w2f__8), dimension(:), allocatable :: toBeAllocated
           type(active), dimension(:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching)))
         end subroutine
         subroutine allocateMatching_a1_a1(toBeAllocated,allocateMatching)
           implicit none
           type(active), dimension(:), allocatable :: toBeAllocated
           type(active), dimension(:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching)))
         end subroutine
         subroutine allocateMatching_d2_d2(toBeAllocated,allocateMatching)
           implicit none
           real(w2f__8), dimension(:,:), allocatable :: toBeAllocated
           real(w2f__8), dimension(:,:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2)))
         end subroutine
         subroutine allocateMatching_a2_d2(toBeAllocated,allocateMatching)
           implicit none
           type(active), dimension(:,:), allocatable :: toBeAllocated
           real(w2f__8), dimension(:,:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2)))
         end subroutine
         subroutine allocateMatching_d2_a2(toBeAllocated,allocateMatching)
           implicit none
           real(w2f__8), dimension(:,:), allocatable :: toBeAllocated
           type(active), dimension(:,:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2)))
         end subroutine
         subroutine allocateMatching_a2_a2(toBeAllocated,allocateMatching)
           implicit none
           type(active), dimension(:,:), allocatable :: toBeAllocated
           type(active), dimension(:,:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2)))
         end subroutine
         subroutine allocateMatching_d3_d3(toBeAllocated,allocateMatching)
           implicit none
           real(w2f__8), dimension(:,:,:), allocatable :: toBeAllocated
           real(w2f__8), dimension(:,:,:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2),&
                size(allocateMatching,3)))
         end subroutine
@@ -898,7 +907,8 @@
           implicit none
           type(active), dimension(:,:,:), allocatable :: toBeAllocated
           real(w2f__8), dimension(:,:,:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2),&
                size(allocateMatching,3)))
         end subroutine
@@ -906,7 +916,8 @@
           implicit none
           real(w2f__8), dimension(:,:,:), allocatable :: toBeAllocated
           type(active), dimension(:,:,:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2),&
                size(allocateMatching,3)))
         end subroutine
@@ -914,7 +925,8 @@
           implicit none
           type(active), dimension(:,:,:), allocatable :: toBeAllocated
           type(active), dimension(:,:,:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2),&
                size(allocateMatching,3)))
         end subroutine
@@ -922,7 +934,8 @@
           implicit none
           type(active), dimension(:,:,:,:), allocatable :: toBeAllocated
           type(active), dimension(:,:,:,:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2),&
                size(allocateMatching,3),&
                size(allocateMatching,4)))
@@ -931,7 +944,8 @@
           implicit none
           real(w2f__8), dimension(:,:,:,:), allocatable :: toBeAllocated
           type(active), dimension(:,:,:,:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2),&
                size(allocateMatching,3),&
                size(allocateMatching,4)))
@@ -940,7 +954,8 @@
           implicit none
           real(w2f__8), dimension(:,:,:,:,:), allocatable :: toBeAllocated
           real(w2f__8), dimension(:,:,:,:,:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2),&
                size(allocateMatching,3),&
                size(allocateMatching,4),&
@@ -950,7 +965,8 @@
           implicit none
           type(active), dimension(:,:,:,:,:), allocatable :: toBeAllocated
           real(w2f__8), dimension(:,:,:,:,:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2),&
                size(allocateMatching,3),&
                size(allocateMatching,4),&
@@ -960,7 +976,8 @@
           implicit none
           real(w2f__8), dimension(:,:,:,:,:), allocatable :: toBeAllocated
           type(active), dimension(:,:,:,:,:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2),&
                size(allocateMatching,3),&
                size(allocateMatching,4),&
@@ -970,7 +987,8 @@
           implicit none
           type(active), dimension(:,:,:,:,:), allocatable :: toBeAllocated
           type(active), dimension(:,:,:,:,:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2),&
                size(allocateMatching,3),&
                size(allocateMatching,4),&
@@ -980,44 +998,51 @@
           implicit none
           real(w2f__4), dimension(:), allocatable :: toBeAllocated
           real(w2f__4), dimension(:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching)))
         end subroutine
         subroutine allocateMatching_d1_r1(toBeAllocated,allocateMatching)
           implicit none
           real(w2f__8), dimension(:), allocatable :: toBeAllocated
           real(w2f__4), dimension(:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching)))
         end subroutine
         subroutine allocateMatching_r1_d1(toBeAllocated,allocateMatching)
           implicit none
           real(w2f__4), dimension(:), allocatable :: toBeAllocated
           real(w2f__8), dimension(:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching)))
         end subroutine
         subroutine allocateMatching_a1_r1(toBeAllocated,allocateMatching)
           implicit none
           type(active), dimension(:), allocatable :: toBeAllocated
           real(w2f__4), dimension(:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching)))
         end subroutine
         subroutine allocateMatching_r1_a1(toBeAllocated,allocateMatching)
           implicit none
           real(w2f__4), dimension(:), allocatable :: toBeAllocated
           type(active), dimension(:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching)))
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching)))
         end subroutine
         subroutine allocateMatching_a2_r2(toBeAllocated,allocateMatching)
           implicit none
           type(active), dimension(:,:), allocatable :: toBeAllocated
           real(w2f__4), dimension(:,:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2)))
         end subroutine
         subroutine allocateMatching_r2_a2(toBeAllocated,allocateMatching)
           implicit none
           real(w2f__4), dimension(:,:), allocatable :: toBeAllocated
           type(active), dimension(:,:) :: allocateMatching
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(size(allocateMatching,1), &
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching,1), &
                size(allocateMatching,2)))
         end subroutine
         !
@@ -1027,13 +1052,15 @@
           implicit none
           real(w2f__8), dimension(:), allocatable :: toBeAllocated
           integer(w2f__i8) :: s1
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(s1))
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(s1))
         end subroutine
         subroutine allocateShape_d2(toBeAllocated,s1,s2)
           implicit none
           real(w2f__8), dimension(:,:), allocatable :: toBeAllocated
           integer(w2f__i8) :: s1,s2
-          if (.not. allocated(toBeAllocated)) allocate(toBeAllocated(s1,s2))
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(s1,s2))
         end subroutine
         !
         ! shape tests
