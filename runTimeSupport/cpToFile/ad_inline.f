@@ -93,7 +93,7 @@ C $OpenAD$ END DECLS
       x%v=oad_dt(oad_dt_ptr)
       end subroutine
 
-      subroutine push_i(x)
+      subroutine push_i_s0(x)
 C $OpenAD$ INLINE DECLS
       use OpenAD_tape
       implicit none
@@ -103,7 +103,7 @@ C $OpenAD$ END DECLS
       oad_it(oad_it_ptr)=x; oad_it_ptr=oad_it_ptr+1
       end subroutine 
 
-      subroutine pop_i(x)
+      subroutine pop_i_s0(x)
 C $OpenAD$ INLINE DECLS
       use OpenAD_tape
       implicit none
@@ -111,6 +111,52 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
       oad_it_ptr=oad_it_ptr-1
       x=oad_it(oad_it_ptr)
+      end subroutine
+
+      subroutine push_i_s1(x)
+C $OpenAD$ INLINE DECLS
+      use OpenAD_tape
+      implicit none
+      integer :: x(:)
+C $OpenAD$ END DECLS
+      if(oad_it_sz .lt. oad_it_ptr+size(x)) call oad_it_grow()
+      oad_it(oad_it_ptr:)=x(:); oad_it_ptr=oad_it_ptr+size(x)
+      end subroutine 
+
+      subroutine pop_i_s1(x)
+C $OpenAD$ INLINE DECLS
+      use OpenAD_tape
+      implicit none
+      integer :: x(:)
+C $OpenAD$ END DECLS
+      oad_it_ptr=oad_it_ptr-size(x)
+      x=oad_it(oad_it_ptr:)
+      end subroutine
+
+      subroutine push_i_s2(x)
+C $OpenAD$ INLINE DECLS
+      use OpenAD_tape
+      implicit none
+      integer :: x(:,:)
+C $OpenAD$ END DECLS
+      oad_chunk_size=size(x,1)*size(x,2)
+      if(oad_it_sz .lt. oad_it_ptr+oad_chunk_size) 
+     + call oad_it_grow()
+      oad_it(oad_it_ptr:oad_chunk_size+oad_chunk_size-1)=
+     +reshape(x,(/oad_chunk_size/))
+      oad_it_ptr=oad_it_ptr+oad_chunk_size
+      end subroutine 
+
+      subroutine pop_i_s2(x)
+C $OpenAD$ INLINE DECLS
+      use OpenAD_tape
+      implicit none
+      integer :: x(:,:)
+C $OpenAD$ END DECLS
+      oad_chunk_size=size(x,1)*size(x,2)
+      oad_it_ptr=oad_it_ptr-oad_chunk_size
+        x=reshape(oad_it(oad_it_ptr:oad_it_ptr+oad_chunk_size-1),
+     +shape(x))
       end subroutine
 
       subroutine push_b(x)

@@ -125,7 +125,7 @@ C $OpenAD$ END DECLS
         x%v=double_tape(double_tape_pointer)
       end subroutine
 
-      subroutine push_i(x)
+      subroutine push_i_s0(x)
 C $OpenAD$ INLINE DECLS
       use OpenAD_tape
       implicit none
@@ -135,7 +135,7 @@ C $OpenAD$ END DECLS
         integer_tape_pointer=integer_tape_pointer+1
       end subroutine 
 
-      subroutine pop_i(x)
+      subroutine pop_i_s0(x)
 C $OpenAD$ INLINE DECLS
       use OpenAD_tape
       implicit none
@@ -143,6 +143,46 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
         integer_tape_pointer=integer_tape_pointer-1
         x=integer_tape(integer_tape_pointer)
+      end subroutine
+
+      subroutine push_i_s1(x)
+C $OpenAD$ INLINE DECLS
+      use OpenAD_tape
+      implicit none
+      integer :: x(:)
+C $OpenAD$ END DECLS
+        integer_tape(integer_tape_pointer:integer_tape_pointer+size(x)-1)=x(:)
+        integer_tape_pointer=integer_tape_pointer+size(x)
+      end subroutine 
+
+      subroutine pop_i_s1(x)
+C $OpenAD$ INLINE DECLS
+      use OpenAD_tape
+      implicit none
+      integer :: x(:)
+C $OpenAD$ END DECLS
+        integer_tape_pointer=integer_tape_pointer-size(x)
+        x(:)=integer_tape(integer_tape_pointer:)
+      end subroutine
+
+      subroutine push_i_s2(x)
+C $OpenAD$ INLINE DECLS
+      use OpenAD_tape
+      implicit none
+      integer :: x(:,:)
+C $OpenAD$ END DECLS
+        integer_tape(integer_tape_pointer:)=reshape(x,(/size(x,1)*size(x,2)/))
+        integer_tape_pointer=integer_tape_pointer+(size(x,1)*size(x,2))
+      end subroutine 
+
+      subroutine pop_i_s2(x)
+C $OpenAD$ INLINE DECLS
+      use OpenAD_tape
+      implicit none
+      integer :: x(:,:)
+C $OpenAD$ END DECLS
+        integer_tape_pointer=integer_tape_pointer-(size(x,1)*size(x,2))
+        x(:,:)=reshape(integer_tape(integer_tape_pointer:),shape(x))
       end subroutine
 
       subroutine push_b(x)
