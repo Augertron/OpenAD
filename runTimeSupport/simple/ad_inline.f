@@ -82,7 +82,7 @@ C $OpenAD$ INLINE DECLS
       double precision :: x(:)
 C $OpenAD$ END DECLS
         double_tape_pointer=double_tape_pointer-size(x)
-        x(:)=double_tape(double_tape_pointer:)
+        x(:)=double_tape(double_tape_pointer:double_tape_pointer+size(x)-1)
       end subroutine
 
       subroutine push_s2(x)
@@ -162,7 +162,7 @@ C $OpenAD$ INLINE DECLS
       integer :: x(:)
 C $OpenAD$ END DECLS
         integer_tape_pointer=integer_tape_pointer-size(x)
-        x(:)=integer_tape(integer_tape_pointer:)
+        x(:)=integer_tape(integer_tape_pointer:integer_tape_pointer+size(x)-1)
       end subroutine
 
       subroutine push_i_s2(x)
