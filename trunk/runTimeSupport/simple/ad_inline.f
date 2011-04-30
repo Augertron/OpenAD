@@ -91,7 +91,8 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision :: x(:,:)
 C $OpenAD$ END DECLS
-        double_tape(double_tape_pointer:)=reshape(x,(/size(x,1)*size(x,2)/))
+        double_tape(double_tape_pointer:double_tape_pointer+
+     +(size(x,1)*size(x,2))-1)=reshape(x,(/size(x,1)*size(x,2)/))
         double_tape_pointer=double_tape_pointer+(size(x,1)*size(x,2))
       end subroutine 
 
@@ -171,7 +172,8 @@ C $OpenAD$ INLINE DECLS
       implicit none
       integer :: x(:,:)
 C $OpenAD$ END DECLS
-        integer_tape(integer_tape_pointer:)=reshape(x,(/size(x,1)*size(x,2)/))
+        integer_tape(integer_tape_pointer:integer_tape_pointer+
+     +(size(x,1)*size(x,2))-1)=reshape(x,(/size(x,1)*size(x,2)/))
         integer_tape_pointer=integer_tape_pointer+(size(x,1)*size(x,2))
       end subroutine 
 
