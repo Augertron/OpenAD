@@ -248,7 +248,7 @@ C reals -----------------------------------------------------
 C $OpenAD$ INLINE DECLS
       double precision :: x
 C $OpenAD$ END DECLS
-	write(cp_io_unit) x
+	write(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_restore_real_scalar(x)
@@ -256,14 +256,14 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision :: x
 C $OpenAD$ END DECLS
-	read(cp_io_unit) x
+	read(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_store_real_scalar_a(x)
 C $OpenAD$ INLINE DECLS
       double precision :: x
 C $OpenAD$ END DECLS
-	write(cp_io_unit) x%v
+	write(unit=cp_io_unit) x%v
       end subroutine 
 
       subroutine cp_arg_restore_real_scalar_a(x)
@@ -271,7 +271,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision :: x
 C $OpenAD$ END DECLS
-      	read(cp_io_unit) x%v
+      	read(unit=cp_io_unit) x%v
       end subroutine 
       
       subroutine cp_arg_store_real_vector(x)
@@ -279,7 +279,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision, dimension(:) :: x
 C $OpenAD$ END DECLS
-	write(cp_io_unit) x
+	write(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_restore_real_vector(x)
@@ -287,7 +287,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision, dimension(:) :: x
 C $OpenAD$ END DECLS
-      	read(cp_io_unit) x
+      	read(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_store_real_vector_a(x)
@@ -295,7 +295,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision, dimension(:) :: x
 C $OpenAD$ END DECLS
-	write(cp_io_unit) x%v
+	write(unit=cp_io_unit) x%v
       end subroutine 
 
       subroutine cp_arg_restore_real_vector_a(x)
@@ -303,7 +303,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision, dimension(:) :: x
 C $OpenAD$ END DECLS
-      	read(cp_io_unit) x%v
+      	read(unit=cp_io_unit) x%v
       end subroutine 
 
       subroutine cp_arg_store_real_matrix(x)
@@ -311,7 +311,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision, dimension(::) :: x
 C $OpenAD$ END DECLS
-	write(cp_io_unit) x
+	write(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_restore_real_matrix(x)
@@ -319,7 +319,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision, dimension(::) :: x
 C $OpenAD$ END DECLS
-        read(cp_io_unit) x
+        read(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_store_real_matrix_a(x)
@@ -327,7 +327,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision, dimension(::) :: x
 C $OpenAD$ END DECLS
-	write(cp_io_unit) x%v
+	write(unit=cp_io_unit) x%v
       end subroutine 
 
       subroutine cp_arg_restore_real_matrix_a(x)
@@ -335,7 +335,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision, dimension(::) :: x
 C $OpenAD$ END DECLS
-      	read(cp_io_unit) x%v
+      	read(unit=cp_io_unit) x%v
       end subroutine 
 
       subroutine cp_arg_store_real_three_tensor(x)
@@ -343,7 +343,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision, dimension(::) :: x
 C $OpenAD$ END DECLS
-	write(cp_io_unit) x
+	write(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_store_real_three_tensor_a(x)
@@ -351,7 +351,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision, dimension(::) :: x
 C $OpenAD$ END DECLS
-	write(cp_io_unit) x%v
+	write(unit=cp_io_unit) x%v
       end subroutine 
 
       subroutine cp_arg_restore_real_three_tensor(x)
@@ -359,7 +359,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision, dimension(::) :: x
 C $OpenAD$ END DECLS
-      	read(cp_io_unit) x
+      	read(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_restore_real_three_tensor_a(x)
@@ -367,7 +367,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision, dimension(::) :: x
 C $OpenAD$ END DECLS
-      	read(cp_io_unit) x%v
+      	read(unit=cp_io_unit) x%v
       end subroutine 
 
       subroutine cp_arg_store_real_four_tensor(x)
@@ -375,7 +375,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision, dimension(::) :: x
 C $OpenAD$ END DECLS
-	write(cp_io_unit) x
+	write(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_store_real_four_tensor_a(x)
@@ -383,7 +383,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision, dimension(::) :: x
 C $OpenAD$ END DECLS
-	write(cp_io_unit) x%v
+	write(unit=cp_io_unit) x%v
       end subroutine 
 
       subroutine cp_arg_restore_real_four_tensor(x)
@@ -391,7 +391,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision, dimension(::) :: x
 C $OpenAD$ END DECLS
-	read(cp_io_unit) x
+	read(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_restore_real_four_tensor_a(x)
@@ -399,7 +399,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision, dimension(::) :: x
 C $OpenAD$ END DECLS
-	read(cp_io_unit) x%v
+	read(unit=cp_io_unit) x%v
       end subroutine 
 
       subroutine cp_arg_store_real_five_tensor(x)
@@ -407,7 +407,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision, dimension(::) :: x
 C $OpenAD$ END DECLS
-	write(cp_io_unit) x
+	write(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_store_real_five_tensor_a(x)
@@ -415,7 +415,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision, dimension(::) :: x
 C $OpenAD$ END DECLS
-	write(cp_io_unit) x%v
+	write(unit=cp_io_unit) x%v
       end subroutine 
 
       subroutine cp_arg_restore_real_five_tensor(x)
@@ -423,7 +423,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision, dimension(::) :: x
 C $OpenAD$ END DECLS
-	read(cp_io_unit) x
+	read(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_restore_real_five_tensor_a(x)
@@ -431,7 +431,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       double precision, dimension(::) :: x
 C $OpenAD$ END DECLS
-	read(cp_io_unit) x%v
+	read(unit=cp_io_unit) x%v
       end subroutine 
 
 
@@ -441,7 +441,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       integer :: x
 C $OpenAD$ END DECLS
-	write(cp_io_unit) x
+	write(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_restore_integer_scalar(x)
@@ -449,7 +449,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       integer :: x
 C $OpenAD$ END DECLS
-	read(cp_io_unit) x
+	read(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_store_integer_vector(x)
@@ -457,7 +457,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       integer, dimension(:) :: x
 C $OpenAD$ END DECLS
-	write(cp_io_unit) x
+	write(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_restore_integer_vector(x)
@@ -465,7 +465,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       integer, dimension(:) :: x
 C $OpenAD$ END DECLS
-	read(cp_io_unit) x
+	read(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_store_integer_matrix(x)
@@ -473,7 +473,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       integer, dimension(:,:) :: x
 C $OpenAD$ END DECLS
-	write(cp_io_unit) x
+	write(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_restore_integer_matrix(x)
@@ -481,7 +481,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       integer, dimension(:,:) :: x
 C $OpenAD$ END DECLS
-	read(cp_io_unit) x
+	read(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_store_integer_three_tensor(x)
@@ -489,7 +489,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       integer, dimension(::) :: x
 C $OpenAD$ END DECLS
-	write(cp_io_unit) x
+	write(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_restore_integer_three_tensor(x)
@@ -497,7 +497,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       integer, dimension(::) :: x
 C $OpenAD$ END DECLS
-        read(cp_io_unit) x
+        read(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_store_integer_four_tensor(x)
@@ -505,7 +505,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       integer, dimension(::) :: x
 C $OpenAD$ END DECLS
-        write(cp_io_unit) x
+        write(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_restore_integer_four_tensor(x)
@@ -513,7 +513,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       integer, dimension(::) :: x
 C $OpenAD$ END DECLS
-        read(cp_io_unit) x
+        read(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_store_integer_five_tensor(x)
@@ -521,7 +521,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       integer, dimension(::) :: x
 C $OpenAD$ END DECLS
-        write(cp_io_unit) x
+        write(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_restore_integer_five_tensor(x)
@@ -529,7 +529,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       integer, dimension(::) :: x
 C $OpenAD$ END DECLS
-        read (cp_io_unit) x
+        read (unit=cp_io_unit) x
       end subroutine 
 
 C strings  -----------------------------------------------------
@@ -538,7 +538,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       character*(80) :: x
 C $OpenAD$ END DECLS 
-        write(cp_io_unit) x
+        write(unit=cp_io_unit) x
       end subroutine 
       
       subroutine cp_arg_restore_string_scalar(x)
@@ -546,7 +546,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       character*(80) :: x
 C $OpenAD$ END DECLS
-        read (cp_io_unit) x
+        read (unit=cp_io_unit) x
       end subroutine 
 
 C bools  -----------------------------------------------------
@@ -555,7 +555,7 @@ C $OpenAD$ INLINE DECLS
       implicit none
       logical :: x
 C $OpenAD$ END DECLS
-        write(cp_io_unit) x
+        write(unit=cp_io_unit) x
       end subroutine 
 
       subroutine cp_arg_restore_bool_scalar(x)
@@ -563,5 +563,21 @@ C $OpenAD$ INLINE DECLS
       implicit none
       logical :: x
 C $OpenAD$ END DECLS
-        read (cp_io_unit) x
+        read (unit=cp_io_unit) x
+      end subroutine 
+
+      subroutine cp_arg_store_bool_matrix(x)
+C $OpenAD$ INLINE DECLS
+      implicit none
+      logical, dimension(:,:) :: x
+C $OpenAD$ END DECLS
+	write(unit=cp_io_unit) x
+      end subroutine 
+
+      subroutine cp_arg_restore_bool_matrix(x)
+C $OpenAD$ INLINE DECLS
+      implicit none
+      logical, dimension(:,:) :: x
+C $OpenAD$ END DECLS
+	read(unit=cp_io_unit) x
       end subroutine 
