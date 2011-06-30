@@ -69,8 +69,8 @@ class setenv:
     # PATH and LD_LIBRARY_PATH
     print self.libsetenv_instance.genAppendEnvVar('PATH',os.path.join(os.environ['OPENADFORTTK']+'bin'))
     print self.libsetenv_instance.genAppendEnvVar('PATH',os.path.join(os.environ['OPENADROOT'],'bin'))
-    if(config.platform=='i686-Cygwin'):
-      path = os.environ['XERCESCROOT']+'/bin:'+os.environ['XERCESCROOT']+'/lib:'+os.environ['OPEN64ROOT']+'/be:'+os.environ['OPEN64ROOT']+'whirl2f:'+os.environ['PATH']
+    if(config.platform=='i686-Cygwin' or config.platform=='x86-Cygwin'):
+      path = os.environ['XERCESCROOT']+'/bin:'+os.environ['XERCESCROOT']+'/lib:'+os.environ['OPEN64ROOT']+'/be:'+os.environ['OPEN64ROOT']+'/whirl2f:'+os.environ['PATH']
       print self.libsetenv_instance.genAppendEnvVar('PATH', path)
     else:
       ldlib=os.environ['OPEN64ROOT']+'/whirl2f'
