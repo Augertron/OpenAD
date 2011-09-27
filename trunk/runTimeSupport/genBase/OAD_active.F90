@@ -56,12 +56,17 @@
         end type
 #ifndef TRACE
         interface saxpy
-          module procedure saxpy_d0_a0_a0, saxpy_l0_a0_a0, saxpy_i0_a0_a0
+          module procedure saxpy_d0_a0_a0
+          module procedure saxpy_l0_a0_a0
+          module procedure saxpy_i0_a0_a0
           module procedure saxpy_d0_a0_a1
           module procedure saxpy_d0_a1_a1
           module procedure saxpy_d0_a2_a2
           module procedure saxpy_d1_a0_a1
-          module procedure saxpy_d1_a1_a1, saxpy_l1_a1_a1, saxpy_i1_a1_a1,  saxpy_a1_a1_a1
+          module procedure saxpy_d1_a1_a1 
+          module procedure saxpy_l1_a1_a1 
+          module procedure saxpy_i1_a1_a1
+          module procedure saxpy_a1_a1_a1
           module procedure saxpy_d2_a0_a2
           module procedure saxpy_d2_a2_a2
 # ifndef DEFAULT_R8
@@ -107,13 +112,18 @@
         end interface
 
         interface sax
-          module procedure sax_d0_a0_a0, sax_l0_a0_a0, sax_i0_a0_a0
+          module procedure sax_d0_a0_a0 
+          module procedure sax_l0_a0_a0
+          module procedure sax_i0_a0_a0
           module procedure sax_d0_a0_a1
           module procedure sax_d0_a0_a2
           module procedure sax_d0_a1_a1
           module procedure sax_d0_a2_a2
+          module procedure sax_d0_a3_a3
           module procedure sax_d1_a0_a1
-          module procedure sax_d1_a1_a1, sax_l1_a1_a1, sax_i1_a1_a1
+          module procedure sax_d1_a1_a1 
+          module procedure sax_l1_a1_a1 
+          module procedure sax_i1_a1_a1
           module procedure sax_d2_a0_a2
           module procedure sax_d2_a2_a2
 # ifndef DEFAULT_R8
@@ -444,6 +454,15 @@
           real(w2f__8), intent(in) :: a
           type(active), dimension(:,:), intent(in) :: x
           type(active), dimension(:,:), intent(inout) :: y
+          VECTOR_LOOP_VAR
+          VECTOR_LOOP_BEGIN
+            y%DELEM=x%DELEM*a
+          VECTOR_LOOP_END
+        end subroutine
+        subroutine sax_d0_a3_a3(a,x,y)
+          real(w2f__8), intent(in) :: a
+          type(active), dimension(:,:,:), intent(in) :: x
+          type(active), dimension(:,:,:), intent(inout) :: y
           VECTOR_LOOP_VAR
           VECTOR_LOOP_BEGIN
             y%DELEM=x%DELEM*a
