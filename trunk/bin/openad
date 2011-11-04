@@ -271,7 +271,7 @@ class RunOpenAD:
         self.commandDescriptions.append(aCmdDesc)
 
     def postProcess(self):
-        ppOpt=""
+        ppOpt="--infoUnitFile=w2f__types.f90 "
         if self.mode.major==MajorMode.forward:
           ppOpt+="-m f "
         else:
