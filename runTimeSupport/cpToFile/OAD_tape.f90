@@ -7,8 +7,12 @@ module OAD_tape
 
   implicit none
 
-  private :: increment , dtt, itt, ltt, stt
-
+  private :: increment , dtt, itt, ltt, stt, & 
+       init, dump_tapestats, & 
+       dt_grow, it_grow, lt_grow, st_grow, &
+       push_i0, push_d1, push_i1, & 
+       pop_i0, pop_d1, pop_i1 
+    
   public :: &
        oad_dt, oad_dt_ptr, oad_dt_sz, oad_dt_grow, &
        oad_it, oad_it_ptr, oad_it_sz, oad_it_grow, &
