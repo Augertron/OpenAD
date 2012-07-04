@@ -190,6 +190,10 @@
           module procedure allocateMatching_a5_d5
           module procedure allocateMatching_d5_a5
           module procedure allocateMatching_a5_a5
+          module procedure allocateMatching_d6_d6
+          module procedure allocateMatching_a6_d6
+          module procedure allocateMatching_d6_a6
+          module procedure allocateMatching_a6_a6
 #ifndef DEFAULT_R8
           module procedure allocateMatching_r1_r1
           module procedure allocateMatching_d1_r1
@@ -220,6 +224,9 @@
           module procedure shapeTest_a5_a5
           module procedure shapeTest_d5_a5
           module procedure shapeTest_a5_d5
+          module procedure shapeTest_a6_a6
+          module procedure shapeTest_d6_a6
+          module procedure shapeTest_a6_d6
 #ifndef DEFAULT_R8
           module procedure shapeTest_r1_a1
           module procedure shapeTest_r2_a2
@@ -1052,6 +1059,54 @@
                size(allocateMatching,4),&
                size(allocateMatching,5)))
         end subroutine
+        subroutine allocateMatching_d6_d6(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__8), dimension(:,:,:,:,:,:), allocatable :: toBeAllocated
+          real(w2f__8), dimension(:,:,:,:,:,:) :: allocateMatching
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2),&
+               size(allocateMatching,3),&
+               size(allocateMatching,4),&
+               size(allocateMatching,5),&
+               size(allocateMatching,6)))
+        end subroutine
+        subroutine allocateMatching_a6_d6(toBeAllocated,allocateMatching)
+          implicit none
+          type(active), dimension(:,:,:,:,:,:), allocatable :: toBeAllocated
+          real(w2f__8), dimension(:,:,:,:,:,:) :: allocateMatching
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2),&
+               size(allocateMatching,3),&
+               size(allocateMatching,4),&
+               size(allocateMatching,5),&
+               size(allocateMatching,6)))
+        end subroutine
+        subroutine allocateMatching_d6_a6(toBeAllocated,allocateMatching)
+          implicit none
+          real(w2f__8), dimension(:,:,:,:,:,:), allocatable :: toBeAllocated
+          type(active), dimension(:,:,:,:,:,:) :: allocateMatching
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2),&
+               size(allocateMatching,3),&
+               size(allocateMatching,4),&
+               size(allocateMatching,5),&
+               size(allocateMatching,6)))
+        end subroutine
+        subroutine allocateMatching_a6_a6(toBeAllocated,allocateMatching)
+          implicit none
+          type(active), dimension(:,:,:,:,:,:), allocatable :: toBeAllocated
+          type(active), dimension(:,:,:,:,:,:) :: allocateMatching
+          if (allocated(toBeAllocated)) deallocate(toBeAllocated)
+          allocate(toBeAllocated(size(allocateMatching,1), &
+               size(allocateMatching,2),&
+               size(allocateMatching,3),&
+               size(allocateMatching,4),&
+               size(allocateMatching,5),&
+               size(allocateMatching,6)))
+        end subroutine
 #ifndef DEFAULT_R8
         subroutine allocateMatching_r1_r1(toBeAllocated,allocateMatching)
           implicit none
@@ -1201,6 +1256,24 @@
           implicit none
           type(active), dimension(:,:,:,:,:), allocatable :: allocatedVar
           real(w2f__8), dimension(:,:,:,:,:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange) 
+        end subroutine
+        subroutine shapeTest_a6_a6(allocatedVar,origVar)
+          implicit none
+          type(active), dimension(:,:,:,:,:,:), allocatable :: allocatedVar
+          type(active), dimension(:,:,:,:,:,:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange)
+        end subroutine
+        subroutine shapeTest_d6_a6(allocatedVar,origVar)
+          implicit none
+          real(w2f__8), dimension(:,:,:,:,:,:), allocatable :: allocatedVar
+          type(active), dimension(:,:,:,:,:,:) :: origVar
+          if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange) 
+        end subroutine
+        subroutine shapeTest_a6_d6(allocatedVar,origVar)
+          implicit none
+          type(active), dimension(:,:,:,:,:,:), allocatable :: allocatedVar
+          real(w2f__8), dimension(:,:,:,:,:,:) :: origVar
           if (.not. all(shape(allocatedVar)==shape(origVar))) call runTimeErrorStop(shapeChange) 
         end subroutine
 #ifndef DEFAULT_R8
