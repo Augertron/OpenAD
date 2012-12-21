@@ -12,11 +12,15 @@ module OAD_cp
   private
 
   integer, parameter :: store_increase=20000
-  integer, parameter :: string_length=80
 
-  public ::  cp_store_real_scalar, cp_store_real_vector, &
-& cp_store_int_scalar, cp_store_int_vector, &
-& cp_store_string_scalar, cp_store_bool_scalar , cp_store_p_real_vector
+  public ::  &
+       cp_store_real_scalar, & 
+       cp_store_real_vector, &
+       cp_store_p_real_vector, & 
+       cp_store_int_scalar, cp_store_int_vector, &
+       cp_store_string_scalar, cp_store_bool_scalar 
+
+  integer, parameter, public :: string_length=80
 
   interface cp_store_real_scalar
      module procedure cp_store_real_scalar_impl

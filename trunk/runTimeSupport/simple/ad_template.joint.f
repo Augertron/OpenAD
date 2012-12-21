@@ -15,8 +15,14 @@
 !$TEMPLATE_PRAGMA_DECLARATIONS
 
           ! checkpointing stacks and offsets
-          integer :: cp_loop_variable_1,cp_loop_variable_2,
-     +cp_loop_variable_3,cp_loop_variable_4,cp_loop_variable_5
+          integer :: 
+     +cp_loop_variable_1,
+     +cp_loop_variable_2,
+     +cp_loop_variable_3,
+     +cp_loop_variable_4,
+     +cp_loop_variable_5,
+     +cp_loop_variable_6
+
           ! floats 'F'
           double precision, dimension(:), allocatable, save :: 
      +theArgFStack
